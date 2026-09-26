@@ -192,7 +192,7 @@ One-time console setup (project `cutepad-aca8c`):
 2. **Firestore Database → Create database** (production mode, choose a region).
 3. **Firestore → Rules**: paste [`docs/firestore.rules`](docs/firestore.rules) → **Publish** (only the signed-in uid may read/write its own document).
 
-Then in the app: **Settings → Cloud sync** → provider `firebase (built-in cloud)` → tick the consent checkbox → **Sync now** (or leave auto-sync on). Every device stores one private document under its own anonymous ID; data from before enabling sync merges in automatically.
+Then in the app: **Settings → Cloud sync** → provider `firebase (built-in cloud)` → tick the consent checkbox. From that moment Firestore becomes the **primary save target**: the app loads your document at startup and pushes an updated copy ~2 seconds after every change (plus a 45 s safety tick and on reconnect). Local storage keeps working as an instant offline cache — if the network is down, changes merge in on the next successful save. Every device stores one private document under its own anonymous ID; data from before enabling sync merges in automatically.
 
 > The SDK loads lazily only when Firebase sync is active — no analytics, no `getAnalytics`, no external scripts. Config lives in `packages/core/src/cloud.ts`.
 

@@ -115,7 +115,17 @@ async function pushDoc(sync: Settings['sync'], data: CutepadData): Promise<void>
   if (!res.ok) throw new Error(`sync push failed (${res.status})`);
 }
 
-export async function performSync(): Promise<'ok' | 'skipped' | 'error'> {
+let inFlight: Promise<'ok' | 'skipped' | 'error'> | null = null;
+
+export function performSync(): Promise<'ok' | 'skipped' | 'error'> {
+  if (inFlight) return inFlight;
+  inFlight = runSync().finally(() => {
+    inFlight = null;
+  });
+  return inFlight;
+}
+
+async function runSync(): Promise<'ok' | 'skipped' | 'error'> {
   const app = useApp;
   const state = app.getState();
   const sync = state.settings.sync;
@@ -318,15 +328,36 @@ export function pushGroupSchedule(groupCode: string, blocks: unknown): Promise<v
 
 export function startAutoSync(): () => void {
   if (typeof window === 'undefined') return () => undefined;
+  const eligible = () => {
+    const { settings } = useApp.getState();
+    return settings.sync.autoSync && syncConfigured(settings.sync) && !!settings.legal?.sync;
+  };
   const tick = () => {
+    // runSync itself handles consent (marks status 'off' when it's missing)
     const { settings } = useApp.getState();
     if (settings.sync.autoSync && syncConfigured(settings.sync)) void performSync();
   };
+
+  // write-through: Firestore is the primary save target — push ~2s after every change
+  let lastSeen = useApp.getState().updatedAt;
+  let saveTimer: number | null = null;
+  const unsubscribe = useApp.subscribe((state) => {
+    if (state.updatedAt === lastSeen) return;
+    lastSeen = state.updatedAt;
+    if (saveTimer !== null) window.clearTimeout(saveTimer);
+    saveTimer = window.setTimeout(() => {
+      saveTimer = null;
+      if (eligible()) void performSync();
+    }, 2000);
+  });
+
   const interval = window.setInterval(tick, 45000);
   const onOnline = () => tick();
   window.addEventListener('online', onOnline);
   tick();
   return () => {
+    unsubscribe();
+    if (saveTimer !== null) window.clearTimeout(saveTimer);
     window.clearInterval(interval);
     window.removeEventListener('online', onOnline);
   };

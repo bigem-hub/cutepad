@@ -719,9 +719,11 @@ export default function SettingsView() {
                   id="sync-consent"
                   type="checkbox"
                   checked={!!settings.legal.sync}
-                  onChange={(e) =>
-                    setSettings({ legal: { ...settings.legal, sync: e.target.checked ? Date.now() : null } })
-                  }
+                  onChange={(e) => {
+                    const checked = e.target.checked;
+                    setSettings({ legal: { ...settings.legal, sync: checked ? Date.now() : null } });
+                    if (checked) void performSync();
+                  }}
                 />
                 <span>
                   <strong>I consent</strong> to Cutepad sending my notes, settings and study stats to{' '}
@@ -741,7 +743,7 @@ export default function SettingsView() {
                 </p>
               )}
               <div className="toggle-row">
-                <strong className="small">auto sync every 45s</strong>
+                <strong className="small">auto-save to cloud (~2s after every change, plus every 45s)</strong>
                 <Toggle
                   checked={sync.autoSync}
                   onChange={(autoSync) => setSettings({ sync: { ...sync, autoSync } })}
