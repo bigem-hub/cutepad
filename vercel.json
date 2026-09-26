@@ -1,5 +1,5 @@
 {
   "framework": "vite",
-  "installCommand": "npm ci && echo ==ROOT== && ls node_modules/@capacitor 2>&1 && echo ==WEB== && ls apps/web/node_modules 2>&1 && echo ==LS== && npm ls @capacitor/core 2>&1",
+  "installCommand": "npm ci; echo NPM_EXIT=$?; echo ==PWD==; pwd; npm -v; node -v; echo ==LOCK==; ls -la package-lock.json; grep -c workspaces package-lock.json; grep -c capacitor package-lock.json; echo ==ROOTNM==; ls node_modules 2>&1 | head -45; echo ==CAP==; ls -la node_modules/@capacitor 2>&1; echo ==WEBNM==; ls apps/web/node_modules 2>&1 | head -30; echo ==LS==; npm ls @capacitor/core 2>&1 | head -12",
   "buildCommand": "npm run build"
 }
