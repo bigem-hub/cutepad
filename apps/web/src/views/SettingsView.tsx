@@ -1207,6 +1207,21 @@ export default function SettingsView() {
             {settings.mascotName || 'Mochi'} the study buddy was drawn with <span aria-hidden="true">💗</span> — thanks
             for studying with us!
           </p>
+          {!isDesktop() && (
+            <div style={{ marginTop: 10 }}>
+              <a
+                className="btn btn-primary"
+                href="https://github.com/bigem-hub/cutepad/releases/latest"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <span aria-hidden="true">🪟</span> {t('settings.about.download')}
+              </a>
+              <p className="small muted" style={{ marginTop: 6 }}>
+                {t('settings.about.downloadNote')}
+              </p>
+            </div>
+          )}
           <div className="row wrap" style={{ marginTop: 10 }}>
             <button
               type="button"
