@@ -1,5 +1,5 @@
 {
   "framework": "vite",
-  "installCommand": "npm ci",
+  "installCommand": "npm ci && echo ==ROOT== && ls node_modules/@capacitor 2>&1 && echo ==WEB== && ls apps/web/node_modules 2>&1 && echo ==LS== && npm ls @capacitor/core 2>&1",
   "buildCommand": "npm run build"
 }
