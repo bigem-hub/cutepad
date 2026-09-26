@@ -1,0 +1,21 @@
+{
+  "name": "cutepad",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Cutepad - a kawaii notepad & study companion (Windows desktop app + companion website)",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w @cutepad/web",
+    "dev:desktop": "npm run dev -w @cutepad/desktop",
+    "build": "npm run build -w @cutepad/web",
+    "build:desktop": "npm run build:renderer -w @cutepad/web && npm run build -w @cutepad/desktop",
+    "typecheck": "tsc -p apps/web/tsconfig.json && tsc -p apps/desktop/tsconfig.json",
+    "dist": "npm run dist -w @cutepad/desktop"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

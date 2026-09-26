@@ -1,0 +1,31 @@
+.closet-top {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.closet-side {
+  flex: 1;
+  min-width: 240px;
+}
+.closet-preview {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  min-width: 156px;
+  text-align: center;
+}
+.sticker-milestone {
+  display: flex;
+  width: fit-content;
+  margin: 0 auto 8px;
+  padding: 2px 8px;
+  font-size: 10.5px;
+}
+
+@media (max-width: 640px) {
+  .closet-top {
+    justify-content: center;
+    text-align: center;
+  }
+}

@@ -1,0 +1,67 @@
+.lb-list {
+  display: grid;
+  gap: 8px;
+}
+.lb-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 9px 12px;
+  border-radius: 15px;
+  background: var(--surface-3);
+  border: 1px solid transparent;
+}
+.lb-row.mine {
+  background: var(--accent-soft);
+  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+.lb-rank {
+  width: 30px;
+  text-align: center;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+.lb-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--fg-strong);
+  overflow-wrap: anywhere;
+}
+.lb-stat {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--fg-muted);
+  white-space: nowrap;
+}
+
+.sched-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 9px 12px;
+  border-radius: 14px;
+  background: var(--surface-3);
+}
+.sched-title {
+  color: var(--fg-strong);
+  overflow-wrap: anywhere;
+}
+.sched-meta {
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .lb-row {
+    align-items: flex-start;
+  }
+  .lb-row .spacer {
+    display: none;
+  }
+  .lb-stat {
+    flex: 1 1 auto;
+  }
+}

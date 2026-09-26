@@ -1,0 +1,269 @@
+.heat-grid {
+  display: grid;
+  grid-template-rows: repeat(7, 15px);
+  grid-auto-flow: column;
+  gap: 4px;
+  justify-content: start;
+}
+.heat-cell {
+  width: 15px;
+  height: 15px;
+  border-radius: 5px;
+  background: var(--surface-3);
+  display: inline-block;
+  transition: transform 0.14s;
+}
+.heat-cell:hover {
+  transform: scale(1.22);
+}
+.heat-cell.l1 {
+  background: color-mix(in srgb, var(--accent) 32%, var(--surface-3));
+}
+.heat-cell.l2 {
+  background: color-mix(in srgb, var(--accent) 50%, var(--surface-3));
+}
+.heat-cell.l3 {
+  background: color-mix(in srgb, var(--accent) 68%, var(--accent-2));
+}
+.heat-cell.l4 {
+  background: color-mix(in srgb, var(--accent) 86%, var(--accent-2));
+}
+.heat-cell.l5 {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  box-shadow: 0 0 7px color-mix(in srgb, var(--accent) 55%, transparent);
+}
+.heat-cell.future {
+  background: transparent;
+  border: 1px dashed var(--line);
+}
+.heat-legend .heat-cell {
+  width: 11px;
+  height: 11px;
+  border-radius: 4px;
+}
+.heat-legend .heat-cell:hover {
+  transform: none;
+}
+
+.hbar-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.hbar-track {
+  display: block;
+  width: 100%;
+  height: 14px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  overflow: hidden;
+}
+.hbar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.app.dark .hbar-fill {
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+.hl-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 7px 0;
+}
+.hl-row .small.bold {
+  text-align: right;
+}
+
+/* focus trend (30d) */
+.trend-wrap {
+  position: relative;
+  padding-top: 4px;
+}
+.trend-svg {
+  display: block;
+  width: 100%;
+  height: 170px;
+}
+.trend-bar {
+  fill: color-mix(in srgb, var(--accent-2) 45%, transparent);
+  transition: fill 0.15s;
+}
+.trend-bar.zero {
+  fill: color-mix(in srgb, var(--accent-2) 16%, transparent);
+}
+.trend-bar:hover {
+  fill: var(--accent);
+}
+.trend-avg {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2.4;
+  stroke-dasharray: 7 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.trend-base {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+.trend-ymax {
+  display: block;
+  text-align: right;
+  font-size: 10.5px;
+  font-weight: 800;
+  color: var(--fg-muted);
+  background: var(--accent-soft);
+  border-radius: 999px;
+  padding: 2px 8px;
+  width: fit-content;
+  margin: 0 0 3px auto;
+}
+.trend-x {
+  display: grid;
+  grid-template-columns: repeat(30, 1fr);
+  margin-top: 6px;
+}
+.trend-x span {
+  text-align: center;
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--fg-muted);
+  min-width: 0;
+}
+.trend-swatch {
+  display: inline-block;
+  width: 16px;
+  border-top: 2.5px dashed var(--accent);
+  border-radius: 2px;
+}
+
+/* weekday / hour distributions */
+.dist-chart {
+  display: flex;
+  gap: 7px;
+  align-items: flex-end;
+}
+.dist-chart.hours {
+  gap: 3px;
+}
+.dist-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.dist-plot {
+  width: 100%;
+  height: 112px;
+  display: flex;
+  align-items: flex-end;
+}
+.dist-bar {
+  display: block;
+  width: 100%;
+  border-radius: 9px 9px 5px 5px;
+  background: color-mix(in srgb, var(--accent-2) 42%, transparent);
+  transition: height 0.5s cubic-bezier(0.22, 1, 0.36, 1), filter 0.15s;
+}
+.dist-bar:hover {
+  filter: brightness(1.07);
+}
+.dist-bar.top {
+  background: linear-gradient(180deg, var(--accent), var(--accent-2));
+  box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 50%, transparent);
+}
+.dist-label {
+  font-size: 10.5px;
+  font-weight: 800;
+  color: var(--fg-muted);
+  white-space: nowrap;
+}
+
+/* memory mini stats */
+.mini-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.mini-stat {
+  background: var(--accent-soft);
+  border-radius: 16px;
+  padding: 13px 10px;
+  text-align: center;
+}
+.mini-value {
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 600;
+  color: var(--fg-strong);
+  line-height: 1.15;
+}
+.mini-label {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--fg-muted);
+  margin-top: 3px;
+}
+
+.cmp-up {
+  background: #d7f5e4;
+  color: #2c7a55;
+}
+.cmp-down {
+  background: #ffe1e9;
+  color: #b3476a;
+}
+.cmp-flat {
+  background: var(--accent-soft);
+  color: var(--fg-strong);
+}
+.app.dark .cmp-up {
+  background: rgba(80, 210, 150, 0.18);
+  color: #8fe7bd;
+}
+.app.dark .cmp-down {
+  background: rgba(232, 105, 140, 0.18);
+  color: #ff9ab4;
+}
+
+@media (max-width: 720px) {
+  .heat-grid {
+    grid-template-rows: repeat(7, 12px);
+    gap: 3px;
+  }
+  .heat-cell {
+    width: 12px;
+    height: 12px;
+    border-radius: 4px;
+  }
+  .bar-chart .bar span {
+    font-size: 9px;
+  }
+  .trend-svg {
+    height: 140px;
+  }
+  .trend-x span {
+    font-size: 9px;
+  }
+  .dist-plot {
+    height: 96px;
+  }
+  .dist-chart.hours {
+    gap: 2px;
+  }
+  .dist-label {
+    font-size: 9.5px;
+  }
+}

@@ -1,0 +1,152 @@
+.fc-deck-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.fc-deck-icon {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.fc-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 12px 0;
+}
+
+.fc-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fc-front {
+  text-align: center;
+  font-size: 21px;
+  font-weight: 800;
+  line-height: 1.45;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+.fc-back-body {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.5;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+.fc-cloze {
+  background: linear-gradient(transparent 52%, #ffe08a 52%);
+  color: inherit;
+  padding: 0 3px;
+  border-radius: 5px;
+}
+
+.app.dark .fc-cloze {
+  background: linear-gradient(transparent 52%, rgba(255, 214, 110, 0.42) 52%);
+}
+
+.fc-rates {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.fc-rate {
+  border: 2px solid transparent;
+  border-radius: 16px;
+  padding: 10px 6px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-family: var(--font-body);
+  transition: transform 0.14s ease, filter 0.14s ease;
+}
+
+.fc-rate:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.03);
+}
+
+.fc-rate:active {
+  transform: scale(0.96);
+}
+
+.fc-rate-label {
+  font-weight: 800;
+  font-size: 13.5px;
+}
+
+.fc-rate-interval {
+  font-size: 11.5px;
+  font-weight: 700;
+  opacity: 0.75;
+}
+
+.fc-rate.again {
+  background: #ffe1ec;
+  color: #c2436a;
+}
+
+.fc-rate.hard {
+  background: #ffefd6;
+  color: #a96a15;
+}
+
+.fc-rate.good {
+  background: #d9f6ec;
+  color: #1f7a63;
+}
+
+.fc-rate.easy {
+  background: #dceeff;
+  color: #2f6bb0;
+}
+
+.app.dark .fc-rate.again {
+  background: rgba(232, 105, 140, 0.18);
+  color: #ff9ab4;
+}
+
+.app.dark .fc-rate.hard {
+  background: rgba(255, 183, 77, 0.16);
+  color: #ffcf8a;
+}
+
+.app.dark .fc-rate.good {
+  background: rgba(80, 214, 170, 0.16);
+  color: #8fe3c8;
+}
+
+.app.dark .fc-rate.easy {
+  background: rgba(120, 180, 255, 0.16);
+  color: #a8d4ff;
+}
+
+.fc-swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid rgba(140, 110, 170, 0.28);
+  padding: 0;
+  cursor: pointer;
+}
+
+@media (max-width: 560px) {
+  .fc-rates {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

@@ -1,0 +1,166 @@
+.focus-ring {
+  position: relative;
+}
+.focus-ring.is-running svg {
+  animation: focus-breathe 3.4s ease-in-out infinite;
+}
+.focus-ring.is-running svg circle:nth-of-type(2) {
+  animation: focus-stroke 3.4s ease-in-out infinite;
+}
+@keyframes focus-breathe {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 5px color-mix(in srgb, var(--accent) 30%, transparent));
+  }
+  50% {
+    filter: drop-shadow(0 0 16px color-mix(in srgb, var(--accent) 62%, transparent));
+  }
+}
+@keyframes focus-stroke {
+  0%,
+  100% {
+    stroke: var(--accent);
+  }
+  50% {
+    stroke: var(--accent-2);
+  }
+}
+
+.cycle-dots {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 4px;
+}
+.cycle-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+}
+.cycle-dot.on {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  transform: scale(1.16);
+  box-shadow: 0 0 9px color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+.focus-mascot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.focus-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--fg-strong);
+  font-size: 13px;
+  font-weight: 800;
+  box-shadow: var(--shadow-1);
+  animation: focus-chip-float 2.6s ease-in-out infinite;
+}
+@keyframes focus-chip-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-7px) rotate(2deg);
+  }
+}
+
+.focus-tip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface-3);
+  border: 1px dashed var(--line);
+  border-radius: 18px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+}
+.focus-tip .tip-emoji {
+  font-size: 26px;
+  flex-shrink: 0;
+}
+
+.eq {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 14px;
+}
+.eq span {
+  width: 4px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--accent), var(--accent-2));
+  transform-origin: bottom center;
+  animation: focus-eq 0.9s ease-in-out infinite;
+}
+.eq span:nth-child(1) {
+  height: 8px;
+  animation-delay: 0s;
+}
+.eq span:nth-child(2) {
+  height: 14px;
+  animation-delay: 0.16s;
+}
+.eq span:nth-child(3) {
+  height: 6px;
+  animation-delay: 0.32s;
+}
+@keyframes focus-eq {
+  0%,
+  100% {
+    transform: scaleY(0.4);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+.focus-range {
+  -webkit-appearance: none;
+  appearance: none;
+  flex: 1;
+  max-width: 300px;
+  height: 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  outline: none;
+  cursor: pointer;
+}
+.focus-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  border: 2px solid var(--surface-2);
+  box-shadow: var(--shadow-1);
+  cursor: pointer;
+}
+.focus-range::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  border: 2px solid var(--surface-2);
+  box-shadow: var(--shadow-1);
+  cursor: pointer;
+}
+
+@media (max-width: 560px) {
+  .focus-stage .time-display {
+    font-size: 44px;
+  }
+  .focus-ring {
+    transform: scale(0.9);
+  }
+}

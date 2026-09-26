@@ -1,0 +1,7 @@
+.task-row .btn {
+  opacity: 0.55;
+  transition: opacity 0.15s;
+}
+.task-row:hover .btn {
+  opacity: 1;
+}

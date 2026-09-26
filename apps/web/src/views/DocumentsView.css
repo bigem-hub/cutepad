@@ -1,0 +1,168 @@
+.doc-emoji {
+  font-size: 26px;
+  line-height: 1;
+}
+
+.doc-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--fg-strong);
+}
+
+.doc-note-link {
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  align-self: flex-start;
+}
+.doc-note-link:hover {
+  filter: brightness(1.04);
+}
+
+.doc-title {
+  font-family: var(--font-display);
+  color: var(--fg-strong);
+  max-width: 44vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.doc-tools {
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.doc-tool {
+  min-width: 36px;
+  height: 34px;
+  padding: 0 9px;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  background: var(--surface-3);
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+  transition: background 0.14s, transform 0.12s;
+}
+.doc-tool:hover {
+  transform: translateY(-1px);
+}
+.doc-tool.active {
+  background: var(--active-grad);
+  color: var(--active-fg);
+  box-shadow: var(--shadow-pop);
+}
+
+.doc-sep {
+  width: 1px;
+  height: 24px;
+  background: var(--line);
+  margin: 0 3px;
+  align-self: center;
+}
+
+.doc-color {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 9px;
+  border: 2px solid rgba(120, 90, 140, 0.28);
+  box-shadow: 0 1px 5px rgba(90, 60, 120, 0.25);
+  cursor: pointer;
+}
+.doc-color.active {
+  outline: 3px solid color-mix(in srgb, var(--accent) 70%, transparent);
+  outline-offset: 2px;
+}
+
+.doc-size {
+  width: 130px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.doc-err {
+  background: #ffe1e9;
+  color: #c2436a;
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.doc-stage {
+  position: relative;
+  height: 70vh;
+  min-height: 300px;
+  overflow: hidden;
+  border-radius: 16px;
+  border: 2px solid var(--line);
+  background: var(--surface-2);
+  box-shadow: inset 0 2px 8px rgba(120, 90, 140, 0.12);
+  user-select: none;
+}
+
+.doc-canvas-wrap {
+  position: absolute;
+  inset: 0;
+  overflow: auto;
+  background: #ffffff;
+  overscroll-behavior: contain;
+}
+
+.doc-img {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  height: auto;
+  -webkit-user-drag: none;
+}
+
+.doc-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #ffffff;
+}
+
+.doc-overlay {
+  position: absolute;
+  left: 0;
+  top: 0;
+  touch-action: none;
+  cursor: crosshair;
+}
+.doc-base {
+  pointer-events: none;
+}
+.doc-overlay.is-nav {
+  pointer-events: none;
+  cursor: default;
+}
+
+.app.dark .doc-err {
+  background: rgba(232, 105, 140, 0.18);
+  color: #ff9dbb;
+}
+.app.dark .doc-color {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+@media (max-width: 720px) {
+  .doc-stage {
+    height: 60vh;
+    min-height: 240px;
+  }
+  .doc-title {
+    max-width: 100%;
+  }
+  .doc-size {
+    width: 96px;
+  }
+}
