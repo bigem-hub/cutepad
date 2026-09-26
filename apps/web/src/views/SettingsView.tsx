@@ -38,7 +38,7 @@ const GUARD_MODES = ['nudge', 'shield', 'snap', 'off'] as const;
 
 type GuardMode = (typeof GUARD_MODES)[number];
 
-const LOCALES: Locale[] = ['en', 'es', 'ja'];
+const LOCALES: Locale[] = ['en', 'es', 'ja', 'ne'];
 
 const DYSLEXIA_SAMPLE_STYLE = {
   fontFamily: "'Comic Sans MS', 'Andika', 'OpenDyslexic', 'Trebuchet MS', Verdana, sans-serif",
@@ -658,11 +658,6 @@ export default function SettingsView() {
                 email, no password, no analytics. data is stored per-device and only readable with this device&apos;s
                 account.
               </p>
-              {!settings.legal.sync && (
-                <p className="small muted" style={{ margin: 0 }}>
-                  syncing stays off until you give consent below.
-                </p>
-              )}
             </div>
           )}
 

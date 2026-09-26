@@ -160,7 +160,7 @@ export function createInitialData(): CutepadData {
   };
 }
 
-const LOCALE_VALUES = ['en', 'es', 'ja'];
+const LOCALE_VALUES = ['en', 'es', 'ja', 'ne'];
 
 export function normalizeSettings(raw: unknown): Settings {
   const s = (raw ?? {}) as Partial<Settings>;

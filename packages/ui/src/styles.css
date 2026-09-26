@@ -153,6 +153,28 @@ button {
   outline: 3px solid color-mix(in srgb, var(--accent) 60%, transparent);
   outline-offset: 2px;
 }
+/* no blue focus box after clicking buttons (keyboard ring kept for inputs & links) */
+button:focus,
+button:focus-visible,
+[role='button']:focus,
+[role='button']:focus-visible,
+[role='tab']:focus,
+[role='tab']:focus-visible,
+a.btn:focus,
+a.btn:focus-visible,
+a.nav-item:focus,
+a.nav-item:focus-visible,
+.nav-item:focus,
+.nav-item:focus-visible,
+.modal:focus,
+.modal:focus-visible {
+  outline: none;
+}
+button,
+.btn {
+  user-select: none;
+  -webkit-user-select: none;
+}
 .sr-only {
   position: absolute;
   width: 1px;
@@ -635,6 +657,8 @@ button {
 /* ---------- segmented & switch ---------- */
 .segmented {
   display: inline-flex;
+  flex-wrap: wrap;
+  max-width: 100%;
   gap: 4px;
   background: var(--surface-2);
   padding: 4px;

@@ -51,6 +51,7 @@ export const en: Dict = {
   'settings.lang.en': 'English',
   'settings.lang.es': 'Español',
   'settings.lang.ja': '日本語',
+  'settings.lang.ne': 'नेपाली',
   'settings.lang.note': 'applies to navigation, shell & new feature views',
   'settings.about.download': 'Download for Windows',
   'settings.about.downloadAndroid': 'Download for Android',

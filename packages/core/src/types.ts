@@ -149,7 +149,7 @@ export interface Settings {
   legal: LegalConsents;
 }
 
-export type Locale = 'en' | 'es' | 'ja';
+export type Locale = 'en' | 'es' | 'ja' | 'ne';
 
 export interface AiSettings {
   provider: 'local' | 'openai';

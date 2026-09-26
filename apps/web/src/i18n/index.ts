@@ -12,11 +12,12 @@ import { en as moodEn, es as moodEs, ja as moodJa } from './views/mood';
 import { en as documentsEn, es as documentsEs, ja as documentsJa } from './views/documents';
 import { en as smartEn, es as smartEs, ja as smartJa } from './views/smart';
 import { en as legalEn, es as legalEs, ja as legalJa } from './legal';
+import { ne as partialNe } from './ne';
 
 export type Lang = Locale;
 export type Dict = Record<string, string>;
 
-const LANGS: Lang[] = ['en', 'es', 'ja'];
+const LANGS: Lang[] = ['en', 'es', 'ja', 'ne'];
 
 function pack(...dicts: Dict[]): Dict {
   return Object.assign({}, ...dicts);
@@ -26,6 +27,7 @@ export const DICTS: Record<Lang, Dict> = {
   en: pack(shellEn, notesEn, analyticsEn, achievementsEn, buddyEn, settingsEn, flashcardsEn, moodEn, documentsEn, smartEn, legalEn),
   es: pack(shellEn, shellEs, notesEn, notesEs, analyticsEn, analyticsEs, achievementsEn, achievementsEs, buddyEn, buddyEs, settingsEn, settingsEs, flashcardsEn, flashcardsEs, moodEn, moodEs, documentsEn, documentsEs, smartEn, smartEs, legalEn, legalEs),
   ja: pack(shellEn, shellJa, notesEn, notesJa, analyticsEn, analyticsJa, achievementsEn, achievementsJa, buddyEn, buddyJa, settingsEn, settingsJa, flashcardsEn, flashcardsJa, moodEn, moodJa, documentsEn, documentsJa, smartEn, smartJa, legalEn, legalJa),
+  ne: pack(shellEn, notesEn, analyticsEn, achievementsEn, buddyEn, settingsEn, flashcardsEn, moodEn, documentsEn, smartEn, legalEn, partialNe),
 };
 
 export function makeT(lang: Lang) {

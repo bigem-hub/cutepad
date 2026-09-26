@@ -90,7 +90,7 @@ cutepad/
 │   │                  # rewards, mood, AI, syllabus parser, TTS, sounds, export
 │   └── ui/            # themes, design-system CSS, mascot (+outfits), shared components
 ├── apps/
-│   ├── web/           # React app = website + Electron renderer (+ src/i18n for en/es/ja)
+│   ├── web/           # React app = website + Electron renderer (+ src/i18n for en/es/ja/ne)
 │   └── desktop/       # Electron main process, tray, stickies, PDF, backups, focus guard
 ├── android/           # Capacitor Android project (Gradle)
 ├── ios/               # Capacitor iOS project (Xcode, build on macOS)
@@ -229,7 +229,7 @@ Everything keeps working offline; changes merge the next time you're online.
 
 - **Focus Guard is soft enforcement**: on the Windows desktop, Cutepad polls the foreground window during focus sessions and applies *nudge* / *shield* / *snap*; the website only detects tab/window blur. It does not modify the hosts file or hard-terminate other apps — and website blocking only affects links opened from Cutepad. Honest OS-level blocking would need a privileged service (future work).
 - **AI defaults to local heuristics** (fast, offline, no API key). The optional cloud engine talks directly to whatever OpenAI-compatible endpoint *you* configure; your key lives in local storage on your device. Responses depend on the model you choose — no prompts are sent to us (there is no backend).
-- **Localization is partial**: navigation, shell, dialogs and all V2/V3 views are translated (en/es/ja); older V1 views still show English copy.
+- **Localization is partial**: navigation, shell, dialogs and all V2/V3 views are translated (English, Español, 日本語, नेपाली — missing Nepali keys fall back to English); older V1 views still show English copy.
 - **Share links embed your Supabase anon key** (`…?s=<url>&k=<anonKey>`) so recipients can fetch the published row — treat published notes as public, and rotate keys before any real deployment. Share/group tables are demo-open (RLS `using (true)`); tighten before shipping.
 - **PDF viewing/annotation** uses Chromium's built-in PDF viewer in an iframe; annotation strokes are anchored to the scroll position you drew them at. If a PDF renders blank, re-install the PDF viewer support or use image export instead.
 - **Voice dictation & TTS** depend on the browser/Electron speech support of your system; the mic button only appears where `SpeechRecognition` is available.

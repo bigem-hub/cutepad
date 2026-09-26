@@ -102,6 +102,15 @@ export default function App() {
     return () => window.removeEventListener('storage', onStorage);
   }, []);
 
+  // desktop app: lock scrolling on the home page only (content fits; extra page padding caused a phantom scroll)
+  useEffect(() => {
+    const lock = route.split('?')[0] === '/' && isDesktop();
+    document.documentElement.style.overflow = lock ? 'hidden' : '';
+    return () => {
+      document.documentElement.style.overflow = '';
+    };
+  }, [route]);
+
   useEffect(() => {
     let last = 0;
     const onActivity = () => {
