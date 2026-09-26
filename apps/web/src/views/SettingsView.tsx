@@ -1236,14 +1236,32 @@ export default function SettingsView() {
           </p>
           {!isDesktop() && !Capacitor.isNativePlatform() && (
             <div style={{ marginTop: 10 }}>
-              <a
-                className="btn btn-primary"
-                href="https://github.com/bigem-hub/cutepad/releases/latest"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <span aria-hidden="true">🪟</span> {t('settings.about.download')}
-              </a>
+              <div className="row wrap" style={{ gap: 8 }}>
+                <a
+                  className="btn btn-primary"
+                  href="https://github.com/bigem-hub/cutepad/releases/download/v0.1.0/Cutepad.Setup.0.1.0.exe"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <span aria-hidden="true">🪟</span> {t('settings.about.download')}
+                </a>
+                <a
+                  className="btn"
+                  href="https://github.com/bigem-hub/cutepad/releases/download/v0.1.0/Cutepad-0.1.0.apk"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <span aria-hidden="true">🤖</span> {t('settings.about.downloadAndroid')}
+                </a>
+                <a
+                  className="btn"
+                  href="https://github.com/bigem-hub/cutepad/releases"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <span aria-hidden="true">🍎</span> {t('settings.about.downloadIos')}
+                </a>
+              </div>
               <p className="small muted" style={{ marginTop: 6 }}>
                 {t('settings.about.downloadNote')}
               </p>

@@ -53,6 +53,8 @@ export const en: Dict = {
   'settings.lang.ja': '日本語',
   'settings.lang.note': 'applies to navigation, shell & new feature views',
   'settings.about.download': 'Download for Windows',
+  'settings.about.downloadAndroid': 'Download for Android',
+  'settings.about.downloadIos': 'iOS on GitHub',
   'settings.about.downloadNote':
     "you're on the website — the desktop app runs offline and launches right from your taskbar.",
 };
@@ -110,6 +112,8 @@ export const es: Dict = {
   'settings.lang.ja': '日本語',
   'settings.lang.note': 'se aplica a la navegación, el shell y las vistas de funciones nuevas',
   'settings.about.download': 'Descargar para Windows',
+  'settings.about.downloadAndroid': 'Descargar para Android',
+  'settings.about.downloadIos': 'iOS en GitHub',
   'settings.about.downloadNote':
     'estás en la web — la app de escritorio funciona sin conexión y se lanza desde la barra de tareas.',
 };
@@ -167,6 +171,8 @@ export const ja: Dict = {
   'settings.lang.ja': '日本語',
   'settings.lang.note': 'ナビゲーション・シェル・新しい機能ビューに適用されます',
   'settings.about.download': 'Windows 版をダウンロード',
+  'settings.about.downloadAndroid': 'Android 版をダウンロード',
+  'settings.about.downloadIos': 'iOS は GitHub で',
   'settings.about.downloadNote':
     'Web 版を利用中です — デスクトップアプリはオフラインで動いて、タスクバーから起動できます。',
 };
