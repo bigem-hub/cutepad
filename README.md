@@ -92,6 +92,9 @@ cutepad/
 ├── apps/
 │   ├── web/           # React app = website + Electron renderer (+ src/i18n for en/es/ja)
 │   └── desktop/       # Electron main process, tray, stickies, PDF, backups, focus guard
+├── android/           # Capacitor Android project (Gradle)
+├── ios/               # Capacitor iOS project (Xcode, build on macOS)
+├── scripts/           # procedural icon/splash generator (gen-mobile-icons.cjs)
 ├── docs/
 │   └── setup-supabase.sql
 └── README.md
@@ -112,6 +115,8 @@ npm run dev:desktop  # ▶ desktop app (Vite + Electron, hot reload)
 npm run build        # build the website → apps/web/dist
 npm run build:desktop# build renderer + Electron main (apps/desktop/dist)
 npm run dist         # package a Windows NSIS installer → release/Cutepad Setup 0.1.0.exe
+npm run build:mobile # build website + sync into android/ and ios/ (Capacitor)
+npm run dist:android # full Android release build → android/.../app-release-unsigned.apk
 npm run typecheck    # tsc across web + desktop
 ```
 
@@ -125,6 +130,55 @@ npm run build
 CUTEPAD_SMOKE=1 npx electron .
 ```
 Launches the app, cycles through every view, prints renderer errors and `CUTEPAD_SMOKE_OK`, then quits.
+
+---
+
+## 📱 Mobile apps (Android & iOS)
+
+Cutepad runs on phones via **Capacitor 8** — the same React app in a native shell.
+`isDesktop()`/`Capacitor.isNativePlatform()` hide desktop-only and web-only bits
+(the Download-for-Windows button, Electron tray/focus-guard features).
+
+### Install (Android)
+
+1. Grab **Cutepad-0.1.0.apk** from the [GitHub release](https://github.com/bigem-hub/cutepad/releases/tag/v0.1.0).
+2. On your phone: open the APK → allow "install from unknown sources" if asked.
+3. min Android 7.0 (API 24), only the INTERNET permission, local-first like desktop.
+
+### Build Android yourself (this machine is set up ✅)
+
+```bash
+npm run build:mobile          # website → android/app/src/main/assets/public
+cd android
+# Gradle needs JDK 21 (Android Studio's JBR works):
+set JAVA_HOME=C:\Program Files\Android\Android Studio\jbr
+gradlew assembleRelease       # → app/build/outputs/apk/release/app-release-unsigned.apk
+```
+
+Sign it (keystore lives **outside** the repo — never commit it):
+
+```bash
+# keystore + password: %USERPROFILE%\.android\cutepad.keystore(.password.txt)
+zipalign -f -p 4 app-release-unsigned.apk aligned.apk
+apksigner sign --ks %USERPROFILE%\.android\cutepad.keystore --ks-key-alias cutepad aligned.apk
+```
+
+Icons/splashes are generated (no binary assets): `node scripts/gen-mobile-icons.cjs`.
+
+### iOS (requires macOS + Xcode)
+
+```bash
+npm run build:mobile   # on Windows this prepares ios/ (already generated)
+npm run open:ios       # opens Xcode on a Mac → run on device / archive
+```
+The `ios/` project + kawaii icons are committed; signing needs your Apple ID
+team in Xcode. Can't be compiled on Windows — that's an Apple limitation, not a Cutepad one.
+
+### Known mobile limitations
+
+- File **export/download** (JSON/PDF) is unreliable in iOS WKWebView — use cloud sync or copy.
+- TTS/speech-recognition depend on the OS webview (works on Android, iOS needs a native plugin).
+- Focus Guard is desktop-only (tray/screenshot logic doesn't exist on mobile).
 
 ---
 

@@ -6,3 +6,5 @@ release/
 .env
 .env.local
 *.tsbuildinfo
+*.keystore
+*.jks

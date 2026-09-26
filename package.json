@@ -2,7 +2,7 @@
   "name": "cutepad",
   "version": "0.1.0",
   "private": true,
-  "description": "Cutepad - a kawaii notepad & study companion (Windows desktop app + companion website)",
+  "description": "Cutepad - a kawaii notepad & study companion (Windows desktop app, companion website & mobile apps)",
   "workspaces": [
     "packages/*",
     "apps/*"
@@ -12,10 +12,19 @@
     "dev:desktop": "npm run dev -w @cutepad/desktop",
     "build": "npm run build -w @cutepad/web",
     "build:desktop": "npm run build:renderer -w @cutepad/web && npm run build -w @cutepad/desktop",
+    "build:mobile": "npm run build && cap sync",
+    "dist:android": "npm run build:mobile && cd android && gradlew assembleRelease",
+    "open:ios": "cap open ios",
     "typecheck": "tsc -p apps/web/tsconfig.json && tsc -p apps/desktop/tsconfig.json",
     "dist": "npm run dist -w @cutepad/desktop"
   },
   "devDependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/cli": "^8.5.2",
+    "@capacitor/ios": "^8.5.2",
     "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@capacitor/core": "^8.5.2"
   }
 }

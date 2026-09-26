@@ -17,6 +17,7 @@ import {
   type BackgroundConfig,
   type Locale,
 } from '@cutepad/core';
+import { Capacitor } from '@capacitor/core';
 import {
   GRADIENT_SWATCHES,
   Modal,
@@ -1207,7 +1208,7 @@ export default function SettingsView() {
             {settings.mascotName || 'Mochi'} the study buddy was drawn with <span aria-hidden="true">💗</span> — thanks
             for studying with us!
           </p>
-          {!isDesktop() && (
+          {!isDesktop() && !Capacitor.isNativePlatform() && (
             <div style={{ marginTop: 10 }}>
               <a
                 className="btn btn-primary"
