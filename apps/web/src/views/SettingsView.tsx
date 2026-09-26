@@ -643,12 +643,28 @@ export default function SettingsView() {
             value={sync.provider}
             aria-label="sync provider"
             onChange={(e) =>
-              setSettings({ sync: { ...sync, provider: e.target.value as 'none' | 'supabase' } })
+              setSettings({ sync: { ...sync, provider: e.target.value as 'none' | 'supabase' | 'firebase' } })
             }
           >
             <option value="none">none (local only)</option>
-            <option value="supabase">supabase</option>
+            <option value="firebase">firebase (built-in cloud)</option>
+            <option value="supabase">supabase (self-hosted)</option>
           </select>
+
+          {sync.provider === 'firebase' && (
+            <div className="stack" style={{ gap: 12, marginTop: 12 }}>
+              <p className="small muted" style={{ margin: 0 }}>
+                backed up to the built-in Cutepad Firestore project (Google) using an anonymous device account — no
+                email, no password, no analytics. data is stored per-device and only readable with this device&apos;s
+                account.
+              </p>
+              {!settings.legal.sync && (
+                <p className="small muted" style={{ margin: 0 }}>
+                  syncing stays off until you give consent below.
+                </p>
+              )}
+            </div>
+          )}
 
           {sync.provider === 'supabase' && (
             <div className="stack" style={{ gap: 12, marginTop: 12 }}>
@@ -693,6 +709,11 @@ export default function SettingsView() {
                   onChange={(e) => setSettings({ sync: { ...sync, owner: e.target.value } })}
                 />
               </div>
+            </div>
+          )}
+
+          {sync.provider !== 'none' && (
+            <div className="stack" style={{ gap: 12, marginTop: 12 }}>
               <label className="consent-row" htmlFor="sync-consent">
                 <input
                   id="sync-consent"
@@ -704,8 +725,13 @@ export default function SettingsView() {
                 />
                 <span>
                   <strong>I consent</strong> to Cutepad sending my notes, settings and study stats to{' '}
-                  <em>the Supabase project I configured above</em>, for the purpose of syncing my data between my own
-                  devices. I can withdraw this at any time by unchecking this box, which stops all syncing.{' '}
+                  <em>
+                    {sync.provider === 'firebase'
+                      ? 'the built-in Cutepad Firestore project (Google Cloud, project cutepad-aca8c)'
+                      : 'the Supabase project I configured above'}
+                  </em>
+                  , for the purpose of syncing and backing up my data between my own devices. I can withdraw this at
+                  any time by unchecking this box, which stops all syncing.{' '}
                   <a href="#/privacy">Privacy Policy</a>
                 </span>
               </label>
@@ -735,8 +761,8 @@ export default function SettingsView() {
             <button
               type="button"
               className="btn btn-sm btn-primary"
-              disabled={busy || (sync.provider === 'supabase' && !settings.legal.sync)}
-              title={sync.provider === 'supabase' && !settings.legal.sync ? 'give sync consent first' : undefined}
+              disabled={busy || (sync.provider !== 'none' && !settings.legal.sync)}
+              title={sync.provider !== 'none' && !settings.legal.sync ? 'give sync consent first' : undefined}
               onClick={() => void runSync()}
             >
               {busy ? 'syncing…' : <><span aria-hidden="true">⬆️</span> sync now</>}
@@ -748,8 +774,8 @@ export default function SettingsView() {
             </div>
           )}
           <p className="small muted" style={{ marginTop: 12 }}>
-            local-first: everything is saved on this device. configure supabase (see docs/setup-supabase.sql)
-            to sync between the website and desktop app.
+            local-first: everything is saved on this device first. firebase sync backs up to the built-in Cutepad
+            Firestore project; supabase sync (see docs/setup-supabase.sql) lets you use your own project instead.
           </p>
         </div>
 

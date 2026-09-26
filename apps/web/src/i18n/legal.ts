@@ -16,9 +16,9 @@ export const en: Dict = {
   'legal.p.shortLabel': 'The short version:',
   'legal.p.shortBody1':
     'Cutepad is a local-first app. Your notes, planner, tasks, flashcards, moods and settings stay on your own device. We run',
-  'legal.p.shortStrong': 'no analytics, no tracking, no advertising and no accounts',
+  'legal.p.shortStrong': 'no analytics, no tracking, no advertising and no sign-ups',
   'legal.p.shortBody2':
-    ', and we do not operate any server that receives your data. Cloud features only exist if you switch them on yourself.',
+    ', and nothing leaves your device unless you switch on an optional cloud feature yourself. If you enable built-in sync, your data is stored under a private, device-only anonymous ID in our Firestore project — no personal account is ever created for you.',
   'legal.p.s1': '1. Who we are',
   'legal.p.who':
     '{product} is operated by {operatedBy}, {address}. Contact and data-grievance enquiries: {email}.',
@@ -31,15 +31,15 @@ export const en: Dict = {
   'legal.p.contentBody2': '. This is required for the app to work at all.',
   'legal.p.cfgLabel': 'Your optional configuration:',
   'legal.p.cfgBody1':
-    'if you enable cloud sync or bring-your-own AI, the URL, key and name you enter are stored locally on your device so the app can talk to',
-  'legal.p.cfgBody2': ' services.',
+    'if you enable cloud sync or bring-your-own AI, any URL, key and name you enter are stored locally on your device so the app can talk to',
+  'legal.p.cfgBody2': ' services. Built-in sync needs no entry — its project config ships with the app.',
   'legal.p.backupLabel': 'Desktop backups:',
   'legal.p.backupBody1': 'the desktop app writes local JSON backup files under',
   'legal.p.backupBody2': 'on your computer. Nothing leaves your machine.',
-  'legal.p.cloudLabel': 'Cloud sync (your Supabase project):',
-  'legal.p.cloudBody1': 'your data is sent to the Supabase project',
+  'legal.p.cloudLabel': 'Cloud sync (built-in Firestore or your Supabase project):',
+  'legal.p.cloudBody1': 'your data is sent to the cloud service you chose — the built-in Cutepad Firestore project (Google Cloud)',
   'legal.p.cloudBody2':
-    "configured. We do not host or see it; Supabase's terms and privacy policy apply to that project.",
+    'or the Supabase project you configured. Built-in sync keeps one private document per device under an anonymous ID, protected by security rules; Google processes it as our cloud provider. Self-hosted Supabase stays under your control — Supabase’s terms and privacy policy apply to your project.',
   'legal.p.pubLabel': 'Published notes:',
   'legal.p.pubBody':
     'when you press “publish”, the note’s content goes to your configured Supabase project and becomes readable by anyone who has the share link.',
@@ -70,7 +70,7 @@ export const en: Dict = {
   'legal.p.purposeBody': 'each optional feature collects only what it needs (listed above) and nothing more.',
   'legal.p.storageLabel': 'Storage limitation:',
   'legal.p.storageBody':
-    'we keep nothing on our side (we have no servers). Data on your device stays until you delete it — clear it any time via browser/site settings or the app’s “reset everything”. If you use sync, rows in your Supabase project persist until you delete them there.',
+    'we keep no copies of our own beyond what you choose to sync. Data on your device stays until you delete it — clear it any time via browser/site settings or the app’s “reset everything”. If you use built-in sync, one private document in our Firestore project persists until you withdraw consent and delete it there; if you use Supabase sync, rows in your project persist until you delete them there.',
   'legal.p.rightsLabel': 'Your rights:',
   'legal.p.rightsBody':
     'access, correction, erasure, withdrawal of consent, and nomination of another person to exercise your rights. Because your primary data lives on your own device, most of these are self-service (edit/delete in the app). For anything else, write to {email} — we aim to respond within the 90 days permitted by the Rules.',
@@ -80,15 +80,15 @@ export const en: Dict = {
   'legal.p.crossLabel': 'Cross-border transfer:',
   'legal.p.crossBody1': 'if you enable sync or BYO AI, data flows to the provider/region',
   'legal.p.crossBody2':
-    "chose (e.g. your Supabase project's location). We do not control that destination.",
+    'chose — built-in sync stores data in Google Cloud regions used by the Cutepad Firebase project, Supabase sync in your project’s location. We do not control that destination.',
   'legal.p.breachLabel': 'Breach notice:',
   'legal.p.breachBody':
-    'if we ever learn of a breach affecting data we hold (we currently hold none), we will notify affected individuals and the Data Protection Board of India without delay, as required by the Rules.',
+    'if we ever learn of a breach affecting data we hold (nothing, by default — only a private per-device document if you enabled built-in sync), we will notify affected individuals and the Data Protection Board of India without delay, as required by the Rules.',
   'legal.p.s5': '5. Third parties',
   'legal.p.thirdBody1':
     'None by default. The website loads no external scripts, fonts, trackers or embeds — even the fonts are served from our own files. Third parties only appear when',
   'legal.p.thirdBody2':
-    'configure them: Supabase (sync/sharing) and an AI provider endpoint (optional AI). The desktop operating system may process speech input for dictation/TTS.',
+    'configure them: Google Firebase/Cloud Firestore (built-in sync), Supabase (optional sync/sharing) and an AI provider endpoint (optional AI). The desktop operating system may process speech input for dictation/TTS.',
   'legal.p.s6': '6. Security',
   'legal.p.security':
     "Local-first design keeps your data off the internet by default. The app ships a Content-Security-Policy, sanitises HTML shown on public share pages, and does not include remote code. Honest caveat: anything stored in your browser's local storage is readable by anyone with access to your device or profile, so protect your machine (and your sync keys) accordingly.",
@@ -128,7 +128,7 @@ export const en: Dict = {
     'To the maximum extent permitted by applicable law, the operator is not liable for any indirect, incidental, special or consequential damages, or any loss of data, profits or goodwill arising from your use of (or inability to use) the app — including data loss from your device, your sync project or your own configuration. Nothing in these terms limits liability that cannot be limited under applicable law.',
   'legal.t.s8': '8. Third-party services you connect',
   'legal.t.s8Body':
-    'Supabase (sync/publishing), AI providers you configure, and your browser/OS speech services are governed by their own terms and privacy policies. You are responsible for your accounts with them.',
+    'Google Firebase/Cloud Firestore (built-in sync), Supabase (sync/publishing), AI providers you configure, and your browser/OS speech services are governed by their own terms and privacy policies. You are responsible for your accounts with them.',
   'legal.t.s9': '9. Copyright',
   'legal.t.s9Body':
     'The app’s code, visual design, mascot artwork and text are owned by the operator or its licensors. The bundled typefaces (Fredoka, Nunito) are licensed under the SIL Open Font License 1.1 — you may use and redistribute them under that license. In-app emoji and generated patterns are original; user-imported images and documents remain yours.',
@@ -156,7 +156,7 @@ export const en: Dict = {
   'legal.c.s3Body1':
     'None are loaded by us. Fonts are self-hosted; there are no trackers, embeds, or third-party scripts. If',
   'legal.c.s3Body2':
-    'enable optional features, your configured services (e.g. Supabase) may process your requests under their own policies — they do not set cookies through Cutepad.',
+    'enable optional features, your configured or built-in services (e.g. Google Firebase, Supabase) may process your requests under their own policies — they do not set cookies through Cutepad.',
   'legal.c.s4': '4. Managing stored data',
   'legal.c.m1':
     'Website: browser settings → “Clear browsing data” (or site settings for this origin) removes local storage and all app data permanently.',
@@ -200,9 +200,9 @@ export const es: Dict = {
   'legal.p.shortLabel': 'Versión corta:',
   'legal.p.shortBody1':
     'Cutepad es una app local-first. Tus notas, planificador, tareas, flashcards, estados de ánimo y ajustes permanecen en tu propio dispositivo. No ejecutamos',
-  'legal.p.shortStrong': 'ninguna analítica, ningún rastreo, ninguna publicidad y ninguna cuenta',
+  'legal.p.shortStrong': 'ninguna analítica, ningún rastreo, ninguna publicidad y ningún registro',
   'legal.p.shortBody2':
-    ', y no operamos ningún servidor que reciba tus datos. Las funciones en la nube solo existen si tú las activas.',
+    ', y nada sale de tu dispositivo salvo que actives tú mismo una función opcional en la nube. Si activas la sincronización integrada, tus datos se guardan con un ID anónimo privado, solo de este dispositivo, en nuestro proyecto Firestore — nunca se crea una cuenta personal para ti.',
   'legal.p.s1': '1. Quiénes somos',
   'legal.p.who':
     '{product} es operado por {operatedBy}, {address}. Contacto y reclamaciones de datos: {email}.',
@@ -215,15 +215,15 @@ export const es: Dict = {
   'legal.p.contentBody2': '. Esto es necesario para que la app funcione.',
   'legal.p.cfgLabel': 'Tu configuración opcional:',
   'legal.p.cfgBody1':
-    'si activas la sincronización en la nube o IA propia, la URL, la clave y el nombre que introduces se guardan localmente en tu dispositivo para que la app pueda hablar con',
-  'legal.p.cfgBody2': ' servicios.',
+    'si activas la sincronización en la nube o IA propia, cualquier URL, clave y nombre que introduces se guardan localmente en tu dispositivo para que la app pueda hablar con',
+  'legal.p.cfgBody2': ' servicios. La sincronización integrada no requiere nada — su configuración viene con la app.',
   'legal.p.backupLabel': 'Copias de seguridad de escritorio:',
   'legal.p.backupBody1': 'la app de escritorio escribe copias JSON locales en',
   'legal.p.backupBody2': 'en tu ordenador. Nada sale de tu equipo.',
-  'legal.p.cloudLabel': 'Sincronización en la nube (tu proyecto Supabase):',
-  'legal.p.cloudBody1': 'tus datos se envían al proyecto Supabase que',
+  'legal.p.cloudLabel': 'Sincronización en la nube (Firestore integrado o tu proyecto Supabase):',
+  'legal.p.cloudBody1': 'tus datos se envían al servicio en la nube que elegiste — el proyecto Firestore integrado de Cutepad (Google Cloud)',
   'legal.p.cloudBody2':
-    'configuraste. No los alojamos ni los vemos; aplican los términos y la política de privacidad de ese proyecto.',
+    'o el proyecto Supabase que configuraste. La sincronización integrada guarda un documento privado por dispositivo bajo un ID anónimo, protegido por reglas de seguridad; Google lo procesa como nuestro proveedor en la nube. Supabase autoalojado sigue bajo tu control — aplican los términos y la política de privacidad de tu proyecto.',
   'legal.p.pubLabel': 'Notas publicadas:',
   'legal.p.pubBody':
     'cuando pulsas “publicar”, el contenido de la nota llega a tu proyecto Supabase configurado y cualquiera con el enlace de compartir puede leerla.',
@@ -254,7 +254,7 @@ export const es: Dict = {
     'cada función opcional recopila solo lo que necesita (lo indicado arriba) y nada más.',
   'legal.p.storageLabel': 'Limitación de conservación:',
   'legal.p.storageBody':
-    'no guardamos nada en nuestro lado (no tenemos servidores). Los datos en tu dispositivo permanecen hasta que los borras — elimínalos cuando quieras con la configuración del navegador/sitio o con el “reiniciar todo” de la app. Si usas la sincronización, las filas de tu proyecto Supabase persisten hasta que las borres allí.',
+    'no guardamos copias propias más allá de lo que tú decidas sincronizar. Los datos en tu dispositivo permanecen hasta que los borras — elimínalos cuando quieras con la configuración del navegador/sitio o con el “reiniciar todo” de la app. Si usas la sincronización integrada, un documento privado en nuestro proyecto Firestore persiste hasta que retires el consentimiento y lo borres allí; si usas la de Supabase, las filas de tu proyecto persisten hasta que las borres allí.',
   'legal.p.rightsLabel': 'Tus derechos:',
   'legal.p.rightsBody':
     'acceso, rectificación, supresión, retirada del consentimiento y nombramiento de otra persona para ejercer tus derechos. Como tus datos viven principalmente en tu propio dispositivo, la mayoría son autoservicio (editar/borrar en la app). Para cualquier otra cosa, escribe a {email} — buscamos responder dentro de los 90 días que permiten las normas.',
@@ -264,15 +264,15 @@ export const es: Dict = {
   'legal.p.crossLabel': 'Transferencia transfronteriza:',
   'legal.p.crossBody1': 'si activas la sincronización o IA propia, los datos fluyen al proveedor/región que',
   'legal.p.crossBody2':
-    'elegiste (p. ej. la ubicación de tu proyecto Supabase). No controlamos ese destino.',
+    'elegiste — la sincronización integrada guarda los datos en las regiones de Google Cloud usadas por el proyecto Firebase de Cutepad y la de Supabase en la ubicación de tu proyecto. No controlamos ese destino.',
   'legal.p.breachLabel': 'Aviso de brecha:',
   'legal.p.breachBody':
-    'si alguna vez conocemos una brecha que afecte a datos que poseemos (ahora mismo no poseemos ninguno), notificaremos a las personas afectadas y a la Junta de Protección de Datos de India sin demora, como exigen las normas.',
+    'si alguna vez conocemos una brecha que afecte a datos que poseemos (ninguno, por defecto — solo un documento privado por dispositivo si activaste la sincronización integrada), notificaremos a las personas afectadas y a la Junta de Protección de Datos de India sin demora, como exigen las normas.',
   'legal.p.s5': '5. Terceros',
   'legal.p.thirdBody1':
     'Ninguno por defecto. El sitio no carga scripts, fuentes, rastreadores ni incrustaciones externas — incluso las tipografías se sirven desde nuestros propios archivos. Los terceros solo aparecen cuando',
   'legal.p.thirdBody2':
-    'los configuras: Supabase (sincronización/compartir) y un endpoint de proveedor de IA (IA opcional). El sistema operativo de escritorio puede procesar la entrada de voz para dictado/TTS.',
+    'los configuras: Google Firebase/Cloud Firestore (sincronización integrada), Supabase (sincronización/compartir opcional) y un endpoint de proveedor de IA (IA opcional). El sistema operativo de escritorio puede procesar la entrada de voz para dictado/TTS.',
   'legal.p.s6': '6. Seguridad',
   'legal.p.security':
     'El diseño local-first mantiene tus datos fuera de internet por defecto. La app incluye una Content-Security-Policy, sanea el HTML que se muestra en las páginas públicas compartidas y no incluye código remoto. Advertencia honesta: cualquier cosa guardada en el almacenamiento local de tu navegador es legible por quien tenga acceso a tu dispositivo o perfil, así que protege tu equipo (y tus claves de sincronización) en consecuencia.',
@@ -312,7 +312,7 @@ export const es: Dict = {
     'En la máxima medida permitida por la ley aplicable, el operador no responde de daños indirectos, incidentales, especiales o consecuentes, ni de pérdida de datos, beneficios o buena voluntad derivada de tu uso de (o imposibilidad de usar) la app — incluida la pérdida de datos de tu dispositivo, de tu proyecto de sincronización o de tu propia configuración. Nada en estos términos limita la responsabilidad que no pueda limitarse según la ley aplicable.',
   'legal.t.s8': '8. Servicios de terceros que conectas',
   'legal.t.s8Body':
-    'Supabase (sincronización/publicación), los proveedores de IA que configures y los servicios de voz de tu navegador/SO se rigen por sus propios términos y políticas de privacidad. Tú eres responsable de tus cuentas con ellos.',
+    'Google Firebase/Cloud Firestore (sincronización integrada), Supabase (sincronización/publicación), los proveedores de IA que configures y los servicios de voz de tu navegador/SO se rigen por sus propios términos y políticas de privacidad. Tú eres responsable de tus cuentas con ellos.',
   'legal.t.s9': '9. Derechos de autor',
   'legal.t.s9Body':
     'El código, el diseño visual, la mascota y los textos de la app son del operador o de sus licenciantes. Las tipografías incluidas (Fredoka, Nunito) están licenciadas bajo la SIL Open Font License 1.1 — puedes usarlas y redistribuirlas bajo esa licencia. Los emoji y patrones generados en la app son originales; las imágenes y documentos importados por el usuario siguen siendo tuyos.',
@@ -340,7 +340,7 @@ export const es: Dict = {
   'legal.c.s3Body1':
     'Ninguno cargado por nosotros. Las tipografías son propias; no hay rastreadores, incrustaciones ni scripts de terceros. Si',
   'legal.c.s3Body2':
-    'activas funciones opcionales, tus servicios configurados (p. ej. Supabase) pueden procesar tus solicitudes bajo sus propias políticas — no configuran cookies a través de Cutepad.',
+    'activas funciones opcionales, tus servicios configurados o integrados (p. ej. Google Firebase, Supabase) pueden procesar tus solicitudes bajo sus propias políticas — no configuran cookies a través de Cutepad.',
   'legal.c.s4': '4. Gestionar los datos almacenados',
   'legal.c.m1':
     'Sitio: ajustes del navegador → “Borrar datos de navegación” (o los ajustes del sitio para este origen) elimina el almacenamiento local y todos los datos de la app de forma permanente.',
@@ -384,9 +384,9 @@ export const ja: Dict = {
   'legal.p.shortLabel': '要約:',
   'legal.p.shortBody1':
     'Cutepad はローカルファーストのアプリです。ノート・プランナー・タスク・フラッシュカード・気持ち・設定はすべてあなたのデバイスに残ります。私たちが行うのは',
-  'legal.p.shortStrong': '解析・追跡・広告・アカウントの一切なし',
+  'legal.p.shortStrong': '解析・追跡・広告・登録手続きの一切なし',
   'legal.p.shortBody2':
-    '、データを受け取るサーバーも運用していません。クラウド機能はあなたが自分で有効にした場合にのみ存在します。',
+    '、あなた自身が任意のクラウド機能を有効にするまでデータはどこにも送信されません。内蔵同期を有効にした場合、データは当方の Firestore プロジェクトに、この端末専用の非公開な匿名 ID で保存されます — 個人アカウントが作られることは決してありません。',
   'legal.p.s1': '1. 運営者について',
   'legal.p.who':
     '{product} の運営は {operatedBy}（{address}）。連絡先・苦情窓口: {email}。',
@@ -401,14 +401,14 @@ export const ja: Dict = {
   'legal.p.cfgLabel': '任意の設定情報:',
   'legal.p.cfgBody1':
     'クラウド同期や独自の AI を有効にすると、入力した URL・キー・名前はデバイスのローカルに保存され、アプリが通信してよいのは',
-  'legal.p.cfgBody2': 'サービスだけです。',
+  'legal.p.cfgBody2': 'サービスだけです。内蔵同期は入力不要 — 設定はアプリに同梱されています。',
   'legal.p.backupLabel': 'デスクトップのバックアップ:',
   'legal.p.backupBody1': 'デスクトップアプリはローカルの JSON バックアップを',
   'legal.p.backupBody2': 'に書き込みます。マシンの外に出るものは何もありません。',
-  'legal.p.cloudLabel': 'クラウド同期（あなたの Supabase プロジェクト）:',
-  'legal.p.cloudBody1': 'データは',
+  'legal.p.cloudLabel': 'クラウド同期（内蔵の Firestore またはあなたの Supabase プロジェクト）:',
+  'legal.p.cloudBody1': 'データは、あなたが選んだクラウドサービス — Cutepad 内蔵の Firestore プロジェクト（Google Cloud）',
   'legal.p.cloudBody2':
-    'が設定した Supabase プロジェクトに送信されます。当方はホストも閲覧もしません。そのプロジェクトには Supabase の利用規約とプライバシーポリシーが適用されます。',
+    'またはあなたが設定した Supabase プロジェクトに送信されます。内蔵同期はセキュリティルールで保護された匿名 ID ごとの非公開ドキュメントとして保存され、Google が当方のクラウドプロバイダーとして処理します。セルフホストの Supabase はあなたの管理下にあり、そのプロジェクトには Supabase の利用規約とプライバシーポリシーが適用されます。',
   'legal.p.pubLabel': '公開したノート:',
   'legal.p.pubBody':
     '「公開」を押すと、ノートの内容は設定済みの Supabase プロジェクトに送られ、共有リンクを知るすべての人が読める状態になります。',
@@ -440,7 +440,7 @@ export const ja: Dict = {
     '各任意機能は必要なもの（上記）だけを収集し、それ以上は収集しません。',
   'legal.p.storageLabel': '保存期間の制限:',
   'legal.p.storageBody':
-    '当方は何も保持しません（サーバーがありません）。デバイス上のデータはあなたが削除するまで残ります — ブラウザ／サイト設定またはアプリの「すべてリセット」でいつでも消去できます。同期を使う場合、Supabase プロジェクトの行はそこ側で削除するまで残ります。',
+    '当方は、あなたが同期することを選んだもの以外、コピーを保持しません。デバイス上のデータはあなたが削除するまで残ります — ブラウザ／サイト設定またはアプリの「すべてリセット」でいつでも消去できます。内蔵同期を使う場合、当方の Firestore プロジェクト内の非公開ドキュメント 1 件は、同意を撤回してそこで削除するまで残ります。Supabase 同期を使う場合、そのプロジェクトの行はあなたが削除するまで残ります。',
   'legal.p.rightsLabel': 'あなたの権利:',
   'legal.p.rightsBody':
     'アクセス、訂正、削除、同意の撤回、および他者を権利行使のために指名する権利。主たるデータはあなたのデバイスにあるため、多くはセルフサービス（アプリ内での編集／削除）で行使できます。それ以外は {email} までご連絡ください — 規則で認められた 90 日以内の回答を目指します。',
@@ -451,15 +451,15 @@ export const ja: Dict = {
   'legal.p.crossBody1':
     '同期や独自の AI を有効にすると、データが届くのは',
   'legal.p.crossBody2':
-    'が選んだプロバイダー／地域です（例: あなたの Supabase プロジェクトの所在地）。その行き先を当方は管理しません。',
+    'が選んだ先です — 内蔵同期は Cutepad の Firebase プロジェクトが使う Google Cloud のリージョンに、Supabase 同期はあなたのプロジェクトの所在地に保存されます。その行き先を当方は管理しません。',
   'legal.p.breachLabel': '漏えい通知:',
   'legal.p.breachBody':
-    '当方が保有するデータ（現在はゼロ）に関わる漏えいを知った場合、規則の定めにより、影響を受ける個人とインドデータ保護委員会に遅滞なく通知します。',
+    '当方が保有するデータ（デフォルトではゼロ。内蔵同期を有効にした場合は端末ごとの非公開ドキュメント 1 件のみ）に関わる漏えいを知った場合、規則の定めにより、影響を受ける個人とインドデータ保護委員会に遅滞なく通知します。',
   'legal.p.s5': '5. サードパーティ',
   'legal.p.thirdBody1':
     'デフォルトでは何もありません。サイトは外部スクリプト・フォント・トラッカー・埋め込みを読み込まず、フォントさえ自前のファイルから配信しています。サードパーティが現れるのは',
   'legal.p.thirdBody2':
-    'が設定したときだけです: Supabase（同期／共有）と AI プロバイダーのエンドポイント（任意の AI）。デスクトップの OS が音声入力（入力・読み上げ）を処理する場合があります。',
+    'が設定したときだけです: Google Firebase/Cloud Firestore（内蔵同期）、Supabase（任意の同期／共有）と AI プロバイダーのエンドポイント（任意の AI）。デスクトップの OS が音声入力（入力・読み上げ）を処理する場合があります。',
   'legal.p.s6': '6. セキュリティ',
   'legal.p.security':
     'ローカルファースト設計により、データはデフォルトでインターネットに出ません。アプリは Content-Security-Policy を備え、公開共有ページの HTML をサニタイズし、リモートコードを含めません。正直な注意: ブラウザのローカルストレージに保存されたものは、デバイスやプロファイルにアクセスできる誰でも読めるため、マシン（と同期キー）を適切に守ってください。',
@@ -500,7 +500,7 @@ export const ja: Dict = {
     '適用法が許す最大限の範囲で、運営者は、アプリの利用（または利用不能）から生じる間接的・付随的・特別・結果的な損害、データ・利益・信用の喪失（デバイス、同期プロジェクト、あなた自身の設定からのデータ損失を含む）について責任を負いません。適用法により制限できない責任を、本条項で制限するものではありません。',
   'legal.t.s8': '8. 接続するサードパーティサービス',
   'legal.t.s8Body':
-    'Supabase（同期／公開）、あなたが設定する AI プロバイダー、ブラウザ／OS の音声サービスは、それぞれの利用規約とプライバシーポリシーに従います。それらとのアカウントはあなたの責任です。',
+    'Google Firebase/Cloud Firestore（内蔵同期）、Supabase（同期／公開）、あなたが設定する AI プロバイダー、ブラウザ／OS の音声サービスは、それぞれの利用規約とプライバシーポリシーに従います。それらとのアカウントはあなたの責任です。',
   'legal.t.s9': '9. 著作権',
   'legal.t.s9Body':
     'アプリのコード、ビジュアルデザイン、マスコットのアート、テキストは運営者またはライセンサーに帰属します。同梱フォント（Fredoka、Nunito）は SIL Open Font License 1.1 の下でライセンスされており、このライセンスの範囲で使用・再配布できます。アプリ内の絵文字や生成パターンはオリジナルです。ユーザーがインポートした画像・ドキュメントはあなたのものです。',
@@ -528,7 +528,7 @@ export const ja: Dict = {
   'legal.c.s3Body1':
     '当方が読み込むものは一切ありません。フォントは自前ホストで、トラッカー・埋め込み・サードパーティスクリプトはありません。もし',
   'legal.c.s3Body2':
-    'が任意機能を有効にした場合、設定したサービス（例: Supabase）が独自の方針のもとでリクエストを処理することがありますが、Cutepad 経由で Cookie を設定することはありません。',
+    'が任意機能を有効にした場合、設定済みまたは内蔵のサービス（例: Google Firebase、Supabase）が独自の方針のもとでリクエストを処理することがありますが、Cutepad 経由で Cookie を設定することはありません。',
   'legal.c.s4': '4. 保存データの管理',
   'legal.c.m1':
     'サイト: ブラウザ設定 →「閲覧データのクリア」（またはこの origin のサイト設定）でローカルストレージとアプリデータを完全に削除できます。',

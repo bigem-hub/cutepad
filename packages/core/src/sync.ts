@@ -31,6 +31,7 @@ function restBase(sync: Settings['sync']): string {
 }
 
 export function syncConfigured(sync: Settings['sync']): boolean {
+  if (sync.provider === 'firebase') return true;
   return sync.provider === 'supabase' && !!sync.url && !!sync.anonKey && !!sync.owner;
 }
 
@@ -86,6 +87,10 @@ export function mergeData(local: CutepadData, remote: CutepadData): CutepadData 
 }
 
 async function fetchDoc(sync: Settings['sync']): Promise<CutepadData | null> {
+  if (sync.provider === 'firebase') {
+    const { firebaseFetch } = await import('./cloud');
+    return firebaseFetch();
+  }
   const url = `${restBase(sync)}/${DOC_TABLE}?id=eq.${DOC_ID}&owner=eq.${encodeURIComponent(sync.owner)}&select=data`;
   const res = await fetch(url, { headers: headers(sync) });
   if (!res.ok) throw new Error(`sync fetch failed (${res.status})`);
@@ -94,6 +99,11 @@ async function fetchDoc(sync: Settings['sync']): Promise<CutepadData | null> {
 }
 
 async function pushDoc(sync: Settings['sync'], data: CutepadData): Promise<void> {
+  if (sync.provider === 'firebase') {
+    const { firebasePush } = await import('./cloud');
+    await firebasePush(data);
+    return;
+  }
   const url = `${restBase(sync)}/${DOC_TABLE}`;
   const res = await fetch(url, {
     method: 'POST',

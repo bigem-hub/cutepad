@@ -73,7 +73,7 @@ Pastel colors, rounded corners, a mascot named **Mochi** who cheers for you, pom
 | Desktop app | **Electron + React + TypeScript + Vite** | One React codebase for desktop *and* web guarantees notes/schedule parity; Electron gives system tray, native notifications, frameless windows, always-on-top stickies, print-to-PDF and file dialogs. (.NET/WinUI was considered but would mean maintaining two full UIs.) |
 | Website | **React + Vite** (same renderer package) | Responsive companion/sync hub; deploy `apps/web/dist` to any static host (Netlify, Vercel, GitHub Pages). |
 | State | **zustand + persist** | Tiny, fast, auto-saves every change to `localStorage` (auto-save + offline by default). |
-| Cloud sync | **Supabase** (Postgres + REST) — optional | Postgres JSONB doc per user, simple REST upserts from both environments, no SDK dependency, easy to self-host. Firebase was a close alternative; Supabase chosen for SQL/RLS and vendor-neutral REST. |
+| Cloud sync | **Firebase Firestore** (built-in, default) + **Supabase** (optional) | Firestore: zero-config per-device backup via anonymous auth, one private doc per uid, security rules in `docs/firestore.rules`, no analytics SDK. Supabase kept for self-hosters and for publish/buddy/group features. |
 | Backend-free core | `@cutepad/core` | Types, store, analytics, achievements, sync merge logic, Web-Audio ambience, exporters — all isomorphic and reusable. |
 | Design system | `@cutepad/ui` | Pastel tokens, 6 themes, mascot SVG, confetti, modals, progress bars — shared by every view. |
 
@@ -183,6 +183,20 @@ team in Xcode. Can't be compiled on Windows — that's an Apple limitation, not 
 ---
 
 ## ☁️ Optional cloud sync (website ↔ desktop)
+
+### Built-in sync — Firebase Firestore (default provider)
+
+One-time console setup (project `cutepad-aca8c`):
+
+1. **Authentication → Sign-in method → Anonymous**: enable (per-device accounts, no email/password).
+2. **Firestore Database → Create database** (production mode, choose a region).
+3. **Firestore → Rules**: paste [`docs/firestore.rules`](docs/firestore.rules) → **Publish** (only the signed-in uid may read/write its own document).
+
+Then in the app: **Settings → Cloud sync** → provider `firebase (built-in cloud)` → tick the consent checkbox → **Sync now** (or leave auto-sync on). Every device stores one private document under its own anonymous ID; data from before enabling sync merges in automatically.
+
+> The SDK loads lazily only when Firebase sync is active — no analytics, no `getAnalytics`, no external scripts. Config lives in `packages/core/src/cloud.ts`.
+
+### Alternative: your own Supabase project
 
 1. Create a Supabase project and run [`docs/setup-supabase.sql`](docs/setup-supabase.sql) in the SQL editor.
 2. In the app: **Settings → Cloud sync** → provider `Supabase`, paste:

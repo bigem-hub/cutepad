@@ -48,7 +48,7 @@ export const DEFAULT_SETTINGS: Settings = {
   studyBuddyName: '',
   pomodoro: { work: 25, shortBreak: 5, longBreak: 15, longEvery: 4, autoBreak: false, chime: true },
   ambient: { track: null, volume: 0.5 },
-  sync: { provider: 'none', url: '', anonKey: '', owner: '', autoSync: true },
+  sync: { provider: 'firebase', url: '', anonKey: '', owner: '', autoSync: true },
   reducedMotion: false,
   mascotOutfit: 'none',
   locale: 'en',

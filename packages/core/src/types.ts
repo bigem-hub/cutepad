@@ -115,7 +115,7 @@ export interface PomodoroSettings {
 }
 
 export interface SyncSettings {
-  provider: 'none' | 'supabase';
+  provider: 'none' | 'supabase' | 'firebase';
   url: string;
   anonKey: string;
   owner: string;
