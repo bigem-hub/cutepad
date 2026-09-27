@@ -12,7 +12,7 @@ import {
   type SessionLog,
   type TimeBlock,
 } from '@cutepad/core';
-import { Mascot, MascotDock, ProgressBar, Tabs } from '@cutepad/ui';
+import { Ic, Mascot, MascotDock, ProgressBar, Tabs } from '@cutepad/ui';
 import { useHashRoute } from '../hooks';
 import { useT } from '../i18n';
 import './ExtraViews.css';
@@ -123,7 +123,7 @@ export default function AchievementsView() {
         </div>
         <span className="spacer" />
         <span className="tag">
-          <span aria-hidden="true">🏆</span> {badgeCount}/{badgeTotal}
+          <Ic name="trophy" size={15} className="inline-icon" /> {badgeCount}/{badgeTotal}
         </span>
       </div>
 
@@ -131,9 +131,9 @@ export default function AchievementsView() {
         value={tab}
         onChange={setTab}
         tabs={[
-          { id: 'badges', emoji: '🏆', label: t('achievements.tabBadges'), badge: badgeCount },
-          { id: 'stickers', emoji: '🎨', label: t('achievements.tabStickers'), badge: stickerCount },
-          { id: 'outfits', emoji: '👗', label: t('achievements.tabOutfits'), badge: outfitCount },
+          { id: 'badges', icon: 'trophy', label: t('achievements.tabBadges'), badge: badgeCount },
+          { id: 'stickers', icon: 'palette', label: t('achievements.tabStickers'), badge: stickerCount },
+          { id: 'outfits', icon: 'shirt', label: t('achievements.tabOutfits'), badge: outfitCount },
         ]}
       />
 
@@ -211,7 +211,7 @@ export default function AchievementsView() {
                     </div>
                   ) : progress?.kind === 'hint' ? (
                     <div className="badge-hint">
-                      <span aria-hidden="true">💡</span> {progress.text}
+                      <Ic name="lightbulb" size={15} className="inline-icon" /> {progress.text}
                     </div>
                   ) : (
                     <div className="badge-hint">{t('achievements.badgesKeepGoing')}</div>
@@ -241,7 +241,7 @@ export default function AchievementsView() {
               <div className="row between wrap" style={{ gap: 8 }}>
                 <div className="page-title" role="heading" aria-level={2}>{t('achievements.stickersTitle')}</div>
                 <span className="tag">
-                  <span aria-hidden="true">🎨</span> {stickerCount}/{stickerTotal}
+                  <Ic name="palette" size={15} className="inline-icon" /> {stickerCount}/{stickerTotal}
                 </span>
               </div>
               <div className="row between" style={{ margin: '10px 0 7px' }}>
@@ -268,7 +268,7 @@ export default function AchievementsView() {
                     {def.emoji}
                   </span>
                   <div className="sticker-name">{def.name}</div>
-                  <div className="sticker-desc">{isUnlocked ? def.desc : <><span aria-hidden="true">🔒</span> {def.desc}</>}</div>
+                  <div className="sticker-desc">{isUnlocked ? def.desc : <><Ic name="lock" size={14} className="inline-icon" /> {def.desc}</>}</div>
                 </div>
               );
             })}
@@ -292,7 +292,7 @@ export default function AchievementsView() {
                 <div className="row between wrap" style={{ gap: 8 }}>
                   <div className="page-title" role="heading" aria-level={2}>{t('achievements.outfitsTitle')}</div>
                   <span className="tag">
-                    <span aria-hidden="true">👗</span> {outfitCount}/{outfitTotal}
+                    <Ic name="shirt" size={15} className="inline-icon" /> {outfitCount}/{outfitTotal}
                   </span>
                 </div>
               </div>
@@ -327,7 +327,7 @@ export default function AchievementsView() {
                       onBlur={() => setHoveredOutfit(null)}
                     >
                       <span aria-hidden="true">{def.emoji}</span> {def.name}{' '}
-                      <span aria-hidden="true">🔒</span> {def.desc}
+                      <Ic name="lock" size={14} className="inline-icon" /> {def.desc}
                     </button>
                   );
                 }

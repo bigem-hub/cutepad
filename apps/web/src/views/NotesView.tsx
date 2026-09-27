@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type MouseEvent as RMouseEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type MouseEvent as RMouseEvent, type ReactNode } from 'react';
 import {
   NOTE_COLORS,
   NOTE_TEMPLATES,
@@ -23,7 +23,7 @@ import {
   type Note,
   type NoteTemplate,
 } from '@cutepad/core';
-import { EmptyState, Modal, Segmented, STICKER_SETS } from '@cutepad/ui';
+import { EmptyState, Ic, Modal, Segmented, STICKER_SETS } from '@cutepad/ui';
 import { useDictation, useNow } from '../hooks';
 import { useT } from '../i18n';
 import NoteDrawing from './NoteDrawing';
@@ -37,11 +37,11 @@ const FOLDER_EMOJIS = ['📁', '📚', '💡', '🌸', '🎨', '📖', '🧪', '
 const HILITE_COLORS = ['#fff3a8', '#ffd6e8', '#d9f7e6'];
 const TEXT_COLORS = ['#3d2c3d', '#e0577f', '#7c6bf0'];
 
-const EXPORT_ITEMS: { format: ExportFormat; label: string }[] = [
-  { format: 'txt', label: '📄 Plain text · txt' },
-  { format: 'md', label: '📝 Markdown · md' },
-  { format: 'pdf', label: '📕 PDF · print' },
-  { format: 'html', label: '🌐 Web page · html' },
+const EXPORT_ITEMS: { format: ExportFormat; label: ReactNode }[] = [
+  { format: 'txt', label: <><Ic name="file" size={14} /> Plain text · txt</> },
+  { format: 'md', label: <><Ic name="notes" size={14} /> Markdown · md</> },
+  { format: 'pdf', label: <><Ic name="printer" size={14} /> PDF · print</> },
+  { format: 'html', label: <><Ic name="globe" size={14} /> Web page · html</> },
 ];
 
 const UNCATEGORIZED = 'none';
@@ -530,7 +530,7 @@ export default function NotesView() {
   return (
     <div className="stack" style={{ gap: 16 }}>
       <div className="page-head" style={{ marginBottom: 0 }}>
-        <h1 className="page-title"><span aria-hidden="true">📝 </span>Notes</h1>
+        <h1 className="page-title"><Ic name="notes" size={17} className="inline-icon" /> Notes</h1>
         <span className="page-sub">cozy pages, stickers & doodles</span>
         <span className="spacer" />
         <span className="tag">{notes.length} notes</span>
@@ -543,7 +543,7 @@ export default function NotesView() {
               Folders
             </span>
             <button type="button" className="btn btn-icon btn-soft" onClick={openAddFolder} title="Add folder" aria-label="Add folder">
-              ＋
+              <Ic name="plus" size={15} />
             </button>
           </div>
 
@@ -555,7 +555,7 @@ export default function NotesView() {
                 aria-current={activeFolderId === null ? 'true' : undefined}
                 onClick={() => setActiveFolderId(null)}
               >
-                <span className="folder-emoji" aria-hidden="true">🗂️</span>
+                <span className="folder-emoji" aria-hidden="true"><Ic name="layers" size={17} /></span>
                 <span className="folder-name">All notes</span>
                 <span className="folder-count">{notes.length}</span>
               </button>
@@ -569,7 +569,7 @@ export default function NotesView() {
                   aria-current={activeFolderId === UNCATEGORIZED ? 'true' : undefined}
                   onClick={() => setActiveFolderId(UNCATEGORIZED)}
                 >
-                  <span className="folder-emoji" aria-hidden="true">📂</span>
+                  <span className="folder-emoji" aria-hidden="true"><Ic name="folder" size={17} /></span>
                   <span className="folder-name">No folder</span>
                   <span className="folder-count">{uncategorizedCount}</span>
                 </button>
@@ -590,10 +590,10 @@ export default function NotesView() {
                 </button>
                 <span className="folder-actions">
                   <button type="button" onClick={() => openRenameFolder(folder)} title={`Rename ${folder.name}`} aria-label={`Rename ${folder.name}`}>
-                    ✏️
+                    <Ic name="pencil" size={14} />
                   </button>
                   <button type="button" onClick={() => setConfirmFolder(folder)} title={`Delete ${folder.name}`} aria-label={`Delete ${folder.name}`}>
-                    🗑
+                    <Ic name="trash" size={14} />
                   </button>
                 </span>
               </div>
@@ -630,7 +630,7 @@ export default function NotesView() {
         <div className="note-list-col">
           <div className="row" style={{ gap: 6 }}>
             <button type="button" className="btn btn-primary" style={{ flex: 1 }} onClick={newNote}>
-              <span aria-hidden="true">＋ </span>New note
+              <Ic name="plus" size={15} className="inline-icon" /> New note
             </button>
             <button
               type="button"
@@ -643,7 +643,7 @@ export default function NotesView() {
           </div>
 
           <div className="search-box">
-            <span className="search-icon" aria-hidden="true">🔍</span>
+            <span className="search-icon" aria-hidden="true"><Ic name="search" size={15} /></span>
             <input
               className="input"
               placeholder="search notes…"
@@ -664,19 +664,19 @@ export default function NotesView() {
               onClick={() => setSort(sort === 'recent' ? 'alpha' : 'recent')}
               title="Switch sorting"
             >
-              <span aria-hidden="true">{sort === 'recent' ? '🕒' : '🔤'}</span> {sort === 'recent' ? 'recent' : 'A–Z'}
+              <Ic name={sort === 'recent' ? 'clock' : 'type'} size={15} /> {sort === 'recent' ? 'recent' : 'A–Z'}
             </button>
           </div>
 
           <div className="note-list-scroll">
             {visibleNotes.length === 0 ? (
               <EmptyState
-                emoji="🔍"
+                icon="search"
                 title="No notes here"
                 hint="try another search, folder or tag~"
                 action={
                   <button type="button" className="btn btn-primary btn-sm" onClick={newNote}>
-                    <span aria-hidden="true">✏️ </span>new note
+                    <Ic name="pencil" size={15} className="inline-icon" /> new note
                   </button>
                 }
               />
@@ -728,7 +728,7 @@ export default function NotesView() {
                       aria-label={note.pinned ? 'Unpin note' : 'Pin note'}
                       aria-pressed={note.pinned}
                     >
-                      📌
+                      <Ic name="pin" size={14} />
                     </button>
                     <button
                       type="button"
@@ -739,7 +739,7 @@ export default function NotesView() {
                       title="Delete note"
                       aria-label="Delete note"
                     >
-                      🗑
+                      <Ic name="trash" size={14} />
                     </button>
                   </div>
                 </div>
@@ -751,12 +751,12 @@ export default function NotesView() {
         <div className="note-editor-col">
           {!selected ? (
             <EmptyState
-              emoji="🌸"
+              icon="flower"
               title="Pick a note to open"
               hint="choose a page from the list, or start a brand new one~"
               action={
                 <button type="button" className="btn btn-primary" onClick={newNote}>
-                  <span aria-hidden="true">✏️ </span>new note
+                  <Ic name="pencil" size={15} className="inline-icon" /> new note
                 </button>
               }
             />
@@ -773,8 +773,8 @@ export default function NotesView() {
               <div className="row wrap editor-head">
                 <Segmented
                   options={[
-                    { value: 'write', label: '✍️ Write' },
-                    { value: 'doodle', label: '🎨 Doodle' },
+                    { value: 'write', label: <><Ic name="pen" size={14} /> Write</> },
+                    { value: 'doodle', label: <><Ic name="palette" size={14} /> Doodle</> },
                   ]}
                   value={tab}
                   onChange={changeTab}
@@ -783,7 +783,7 @@ export default function NotesView() {
                 <span className="share-slot">
                   {selected.share && shareUrl ? (
                     <span className="tag share-chip" title={shareUrl}>
-                      <span aria-hidden="true">🔗 </span>
+                      <Ic name="link" size={15} className="inline-icon" /> 
                       <span className="share-slug">/share/{selected.share.slug}</span>
                       <button
                         type="button"
@@ -791,7 +791,7 @@ export default function NotesView() {
                         title={shareCopied ? t('notes.copied') : t('notes.copyLink')}
                         aria-label={t('notes.copyLink')}
                       >
-                        {shareCopied ? '✓' : '📋'}
+                        <Ic name={shareCopied ? 'check' : 'copy'} size={14} />
                       </button>
                       <button
                         type="button"
@@ -816,7 +816,7 @@ export default function NotesView() {
                             : t('notes.publish')
                       }
                     >
-                      <span aria-hidden="true">{shareBusy ? '⏳' : '🌐'}</span>{' '}
+                      <Ic name={shareBusy ? 'hourglass' : 'globe'} size={15} />{' '}
                       {shareBusy ? t('notes.publishing') : t('notes.publish')}
                     </button>
                   )}
@@ -850,7 +850,7 @@ export default function NotesView() {
               )}
               {shareErr && (
                 <p className="notes-alert error" role="status">
-                  <span aria-hidden="true">⚠️ </span>
+                  <Ic name="alert" size={15} className="inline-icon" /> 
                   {shareErr}
                 </p>
               )}
@@ -917,7 +917,7 @@ export default function NotesView() {
                         onMouseDown={keepFocus}
                         onClick={() => toggleMenu('hilite')}
                       >
-                        🖍️
+                        <Ic name="highlighter" size={15} />
                       </button>
                       {openMenu === 'hilite' && (
                         <div className="popover" data-popover="" role="menu">
@@ -1001,7 +1001,7 @@ export default function NotesView() {
                         onMouseDown={keepFocus}
                         onClick={() => toggleMenu('sticker')}
                       >
-                        🌸
+                        <Ic name="sticker" size={15} />
                       </button>
                       {openMenu === 'sticker' && (
                         <div className="popover" data-popover="" role="menu">
@@ -1067,7 +1067,7 @@ export default function NotesView() {
                           onMouseDown={keepFocus}
                           onClick={dict.toggle}
                         >
-                          {dict.listening ? '🔴' : '🎤'}
+                          <Ic name={dict.listening ? 'circleDot' : 'mic'} size={15} />
                         </button>
                         {dict.listening && (
                           <span className="tag listening-tag" role="status">
@@ -1094,7 +1094,7 @@ export default function NotesView() {
                       onMouseDown={keepFocus}
                       onClick={toggleReadAloud}
                     >
-                      {speakingNow ? '⏹' : '🔊'}
+                      <Ic name={speakingNow ? 'pause' : 'volume'} size={15} />
                     </button>
                     <button
                       type="button"
@@ -1103,7 +1103,7 @@ export default function NotesView() {
                       onMouseDown={keepFocus}
                       onClick={openAi}
                     >
-                      ✨
+                      <Ic name="sparkles" size={15} />
                     </button>
                   </div>
 
@@ -1185,7 +1185,7 @@ export default function NotesView() {
                     onClick={() => toggleMenu('export')}
                     title="Export note"
                   >
-                    <span aria-hidden="true">📤 </span>export
+                    <Ic name="upload" size={15} className="inline-icon" /> export
                   </button>
                   {openMenu === 'export' && (
                     <div className="popover right" data-popover="" role="menu">
@@ -1208,7 +1208,7 @@ export default function NotesView() {
                   )}
                 </span>
                 <button type="button" className="btn btn-sm btn-danger" onClick={() => setConfirmNote(selected)} title="Delete note">
-                  <span aria-hidden="true">🗑 </span>delete
+                  <Ic name="trash" size={15} className="inline-icon" /> delete
                 </button>
               </div>
             </>
@@ -1365,7 +1365,7 @@ export default function NotesView() {
               onClick={() => void runSummarize()}
               disabled={sumBusy || cardsBusy || !selected?.text.trim()}
             >
-              <span aria-hidden="true">📝 </span>
+              <Ic name="notes" size={17} className="inline-icon" /> 
               {t('notes.aiSummarize')}
             </button>
             <button
@@ -1374,7 +1374,7 @@ export default function NotesView() {
               onClick={() => void runMakeCards()}
               disabled={sumBusy || cardsBusy || !selected?.text.trim()}
             >
-              <span aria-hidden="true">🃏 </span>
+              <Ic name="layers" size={16} className="inline-icon" /> 
               {t('notes.aiCards')}
             </button>
             <span className="spacer" />
@@ -1397,13 +1397,13 @@ export default function NotesView() {
           )}
           {aiMsg && (
             <p className="notes-alert error" style={{ margin: 0 }} role="status">
-              <span aria-hidden="true">⚠️ </span>
+              <Ic name="alert" size={15} className="inline-icon" /> 
               {aiMsg}
             </p>
           )}
           {cardsMsg && (
             <p className="notes-alert ok" style={{ margin: 0 }} role="status">
-              <span aria-hidden="true">🎉 </span>
+              <Ic name="sparkles" size={15} className="inline-icon" /> 
               {cardsMsg}
             </p>
           )}

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useApp, type Priority, type Task } from '@cutepad/core';
-import { EmptyState, Mascot, ProgressBar, Segmented } from '@cutepad/ui';
+import { EmptyState, Ic, Mascot, ProgressBar, Segmented, type IconName } from '@cutepad/ui';
 import './TasksView.css';
 
 interface TaskDraft {
@@ -50,10 +50,10 @@ export default function TasksView() {
     return list;
   }, [tasks, filter, priorities, subjectFilter]);
 
-  const groups: { key: Priority; label: string; emoji: string }[] = [
-    { key: 'high', label: 'high', emoji: '🔥' },
-    { key: 'medium', label: 'medium', emoji: '⭐' },
-    { key: 'low', label: 'low', emoji: '🌿' },
+  const groups: { key: Priority; label: string; icon: IconName }[] = [
+    { key: 'high', label: 'high', icon: 'zap' },
+    { key: 'medium', label: 'medium', icon: 'star' },
+    { key: 'low', label: 'low', icon: 'sprout' },
   ];
 
   const activeList = visible.filter((t) => !t.done);
@@ -157,7 +157,7 @@ export default function TasksView() {
                 className="tag"
                 style={due.late && !task.done ? { background: '#ffd7e3', color: '#c2436a' } : undefined}
               >
-                <span aria-hidden="true">📅 </span>
+                <Ic name="calendar" size={15} /> 
                 {due.text}
               </span>
             )}
@@ -173,7 +173,7 @@ export default function TasksView() {
             setEditTitle(task.title);
           }}
         >
-          ✎
+          <Ic name="pencil" size={14} />
         </button>
         <button
           type="button"
@@ -185,7 +185,7 @@ export default function TasksView() {
             if (value !== null) updateTask(task.id, { due: value.trim() || null });
           }}
         >
-          📅
+          <Ic name="calendar" size={14} />
         </button>
         <button
           type="button"
@@ -196,7 +196,7 @@ export default function TasksView() {
             if (confirm(`Delete "${task.title}"?`)) deleteTask(task.id);
           }}
         >
-          🗑
+          <Ic name="trash" size={14} />
         </button>
       </div>
     );
@@ -206,7 +206,7 @@ export default function TasksView() {
     <div className="stack" style={{ gap: 16 }}>
       <div className="page-head">
         <div>
-          <div className="page-title" role="heading" aria-level={1}>Tasks<span aria-hidden="true"> ✅</span></div>
+          <div className="page-title" role="heading" aria-level={1}>Tasks <Ic className="inline-icon" name="checkCircle" size={20} /></div>
           <div className="page-sub">tiny checkboxes, big celebrations</div>
         </div>
         <span className="spacer" />
@@ -244,7 +244,7 @@ export default function TasksView() {
                   aria-pressed={priorities.includes(g.key)}
                   onClick={() => togglePriorityFilter(g.key)}
                 >
-                  <span aria-hidden="true">{g.emoji} </span>
+                  <Ic name={g.icon} size={14} /> 
                   {g.label}
                 </button>
               ))}
@@ -274,7 +274,7 @@ export default function TasksView() {
       </div>
 
       <div className="card pad">
-        <div className="card-title"><span aria-hidden="true">➕ </span>add a task</div>
+        <div className="card-title"><Ic name="plus" size={17} /> add a task</div>
         <div className="row wrap" style={{ gap: 10 }}>
           <input
             className="input"
@@ -303,9 +303,9 @@ export default function TasksView() {
             value={draft.priority}
             onChange={(p) => setDraft({ ...draft, priority: p })}
             options={[
-              { value: 'high', label: '🔥 high' },
-              { value: 'medium', label: '⭐ med' },
-              { value: 'low', label: '🌿 low' },
+              { value: 'high', label: <><Ic name="zap" size={14} /> high</> },
+              { value: 'medium', label: <><Ic name="star" size={14} /> med</> },
+              { value: 'low', label: <><Ic name="sprout" size={14} /> low</> },
             ]}
           />
           <input
@@ -317,7 +317,7 @@ export default function TasksView() {
             onChange={(e) => setDraft({ ...draft, due: e.target.value })}
           />
           <button type="button" className="btn btn-primary" onClick={commitAdd} disabled={!draft.title.trim()}>
-            add<span aria-hidden="true"> ✏️</span>
+            add <Ic name="pencil" size={15} />
           </button>
         </div>
       </div>
@@ -330,7 +330,7 @@ export default function TasksView() {
             return (
               <div key={g.key} className="stack" style={{ gap: 8 }}>
                 <div className="section-title">
-                  <span aria-hidden="true">{g.emoji} </span>{g.label} <span className="muted small">({rows.length})</span>
+                  <Ic name={g.icon} size={14} /> {g.label} <span className="muted small">({rows.length})</span>
                 </div>
                 {rows.map(renderTask)}
               </div>
@@ -356,7 +356,7 @@ export default function TasksView() {
 
       {visible.length === 0 && (
         <EmptyState
-          emoji={filter === 'done' ? '🎀' : '☁️'}
+          icon={filter === 'done' ? 'gift' : 'cloud'}
           title={filter === 'done' ? 'nothing finished yet' : 'no tasks here'}
           hint={filter === 'done' ? 'complete a task to see it sparkle' : 'add one above — or enjoy the calm~'}
         />

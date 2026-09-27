@@ -1,4 +1,5 @@
 import { getBridge, useApp } from '@cutepad/core';
+import { Ic } from '@cutepad/ui';
 
 const CYCLE = ['#fff3a8', '#ffd6e8', '#d9f7e6', '#d6e6ff', '#ecd9ff', '#ffe0cc'];
 
@@ -13,7 +14,7 @@ export default function StickyPage({ id }: { id: string }) {
     return (
       <div className="page center" style={{ paddingTop: 60 }}>
         <div className="empty">
-          <span className="emoji" aria-hidden="true">🫧</span>
+          <span className="emoji" aria-hidden="true"><Ic name="sparkle" size={32} /></span>
           <h3>this sticky floated away</h3>
           <button
             type="button"
@@ -33,7 +34,7 @@ export default function StickyPage({ id }: { id: string }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: sticky.color }}>
       <div className="titlebar" style={{ background: 'rgba(255,255,255,0.35)', color: '#6b5a4a' }}>
-        <span><span aria-hidden="true">📌 </span>sticky</span>
+        <span><Ic name="pin" size={15} className="inline-icon" /> sticky</span>
         <span className="spacer" />
         <button
           type="button"
@@ -44,7 +45,7 @@ export default function StickyPage({ id }: { id: string }) {
           }}
           style={{ color: '#6b5a4a' }}
         >
-          🎨
+          <Ic name="palette" size={16} />
         </button>
         <button type="button" aria-label="Close" className="close" onClick={() => bridge?.closeWindow()} style={{ color: '#6b5a4a' }}>
           ✕

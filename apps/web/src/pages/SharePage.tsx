@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { fetchPublicNote, type PublicNotePayload, type PublicFetchConfig } from '@cutepad/core';
+import { Ic } from '@cutepad/ui';
 import { sanitizeNoteHtml } from '../lib/sanitize';
 
 function parseParams(rest: string): { slug: string; config: PublicFetchConfig } {
@@ -42,9 +43,7 @@ export default function SharePage({ route }: { route: string }) {
   return (
     <div className="share-page">
       <div className="brand" style={{ justifyContent: 'center', marginBottom: 18 }}>
-        <span className="brand-dot" aria-hidden="true">
-          🌸
-        </span>
+        <span className="brand-dot" aria-hidden="true"><Ic name="flower" size={16} /></span>
         Cutepad
       </div>
       <div role="status" aria-live="polite">

@@ -1,4 +1,4 @@
-﻿import { useEffect, useState, type ChangeEvent } from 'react';
+import { useEffect, useState, type ChangeEvent } from 'react';
 import {
   DEFAULT_SETTINGS,
   PALETTE,
@@ -20,6 +20,10 @@ import {
 import { Capacitor } from '@capacitor/core';
 import {
   GRADIENT_SWATCHES,
+  WindowsMark,
+  Ic,
+  AppleMark,
+  AndroidMark,
   Modal,
   PATTERNS,
   Segmented,
@@ -28,7 +32,7 @@ import {
   Toggle,
   patternCss,
 } from '@cutepad/ui';
-import { ensureNotificationPermission, useHashRoute, useNow } from '../hooks';
+import { ensureNotificationPermission, notificationPermission, useHashRoute, useNow } from '../hooks';
 import { useT } from '../i18n';
 import './ExtraViews.css';
 
@@ -145,9 +149,16 @@ export default function SettingsView() {
   const syncStatus = useApp((s) => s.sync);
   const t = useT();
 
-  const [perm, setPerm] = useState<NotificationPermission | 'unsupported'>(() =>
-    typeof Notification === 'undefined' ? 'unsupported' : Notification.permission,
+  const [perm, setPerm] = useState<'granted' | 'denied' | 'default' | 'unsupported'>(() =>
+    Capacitor.isNativePlatform()
+      ? 'default'
+      : typeof Notification === 'undefined'
+        ? 'unsupported'
+        : Notification.permission,
   );
+  useEffect(() => {
+    void notificationPermission().then(setPerm);
+  }, []);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [resetOpen, setResetOpen] = useState(false);
@@ -210,7 +221,7 @@ export default function SettingsView() {
 
   const enableNotifications = async () => {
     await ensureNotificationPermission();
-    setPerm(typeof Notification === 'undefined' ? 'unsupported' : Notification.permission);
+    setPerm(await notificationPermission());
   };
 
   const runSync = async () => {
@@ -281,8 +292,8 @@ export default function SettingsView() {
     <div className="stack" style={{ gap: 16 }}>
       <div className="row between wrap">
         <div>
-          <div className="page-title" role="heading" aria-level={1}><span aria-hidden="true">⚙️</span> settings</div>
-          <div className="page-sub">make cutepad feel like yours <span aria-hidden="true">🎀</span></div>
+          <div className="page-title" role="heading" aria-level={1}><Ic name="settings" size={22} className="inline-icon" /> settings</div>
+          <div className="page-sub">make cutepad feel like yours <Ic name="sparkle" size={16} className="inline-icon" /></div>
         </div>
         {notice && (
           <span className="tag" role="status">
@@ -297,7 +308,7 @@ export default function SettingsView() {
       <div className="settings-grid">
         <div className="card pad">
           <div className="card-title">
-            <span aria-hidden="true">🎨</span> appearance
+            <Ic name="palette" size={16} className="inline-icon" /> appearance
           </div>
           <div className="theme-grid">
             {THEMES.map((theme) => {
@@ -334,8 +345,8 @@ export default function SettingsView() {
 
           <div className="toggle-row">
             <div>
-              <strong className="small"><span aria-hidden="true">🌙</span> kawaii night (dark mode)</strong>
-              <div className="small muted">sleepy pastels after dark <span aria-hidden="true">💤</span></div>
+              <strong className="small"><Ic name="moon" size={16} className="inline-icon" /> kawaii night (dark mode)</strong>
+              <div className="small muted">sleepy pastels after dark <Ic name="moon" size={14} className="inline-icon" /></div>
             </div>
             <Toggle
               checked={settings.dark}
@@ -345,7 +356,7 @@ export default function SettingsView() {
           </div>
           <div className="toggle-row">
             <div>
-              <strong className="small"><span aria-hidden="true">🍃</span> reduced motion</strong>
+              <strong className="small"><Ic name="leaf" size={16} className="inline-icon" /> reduced motion</strong>
               <div className="small muted">calmer, gentler animations for sensitive eyes</div>
             </div>
             <Toggle
@@ -358,7 +369,7 @@ export default function SettingsView() {
 
         <div className="card pad">
           <div className="card-title">
-            <span aria-hidden="true">🖼️</span> background
+            <Ic name="image" size={16} className="inline-icon" /> background
           </div>
           <Segmented<BackgroundConfig['type']>
             options={[
@@ -456,14 +467,14 @@ export default function SettingsView() {
                       className="btn btn-sm btn-soft"
                       onClick={() => setSettings({ background: DEFAULT_SETTINGS.background })}
                     >
-                      <span aria-hidden="true">🗑</span> remove image
+                      <Ic name="trash" size={15} className="inline-icon" /> remove image
                     </button>
                   </div>
                 ) : (
-                  <p className="small muted">no image yet — pick one from your device <span aria-hidden="true">🖼️</span></p>
+                  <p className="small muted">no image yet — pick one from your device <Ic name="image" size={16} className="inline-icon" /></p>
                 )}
                 <label className="btn btn-soft file-btn">
-                  <span aria-hidden="true">📂</span> choose image
+                  <Ic name="folderOpen" size={15} className="inline-icon" /> choose image
                   <input
                     type="file"
                     accept="image/*"
@@ -481,13 +492,13 @@ export default function SettingsView() {
             className="btn btn-sm btn-ghost"
             onClick={() => setSettings({ background: DEFAULT_SETTINGS.background })}
           >
-            <span aria-hidden="true">↺</span> reset background
+            <Ic name="rotate" size={15} className="inline-icon" /> reset background
           </button>
         </div>
 
         <div className="card pad">
           <div className="card-title">
-            <span aria-hidden="true">🐾</span> mascot & profile
+            <Ic name="paw" size={16} className="inline-icon" /> mascot & profile
           </div>
           <div className="stack" style={{ gap: 12 }}>
             <div>
@@ -514,7 +525,7 @@ export default function SettingsView() {
                 onChange={(e) => setSettings({ studyBuddyName: e.target.value })}
               />
                   <div className="small muted" style={{ marginTop: 6 }}>
-                    this is what appears in the buddy comparison <span aria-hidden="true">💕</span>
+                    this is what appears in the buddy comparison <Ic name="heart" size={14} className="inline-icon" />
                   </div>
             </div>
           </div>
@@ -522,7 +533,7 @@ export default function SettingsView() {
 
         <div className="card pad">
           <div className="card-title">
-            <span aria-hidden="true">🍅</span> pomodoro
+            <Ic name="timer" size={16} className="inline-icon" /> pomodoro
           </div>
           <div className="form-grid">
             <Stepper
@@ -558,7 +569,7 @@ export default function SettingsView() {
           <div className="toggle-row">
             <div>
               <strong className="small">auto-start breaks</strong>
-              <div className="small muted">roll straight into rest after focus <span aria-hidden="true">🫧</span></div>
+              <div className="small muted">roll straight into rest after focus <Ic name="sparkle" size={14} className="inline-icon" /></div>
             </div>
             <Toggle
               checked={pomo.autoBreak}
@@ -569,7 +580,7 @@ export default function SettingsView() {
           <div className="toggle-row">
             <div>
               <strong className="small">chime when done</strong>
-              <div className="small muted">a soft ding instead of a scare <span aria-hidden="true">🔔</span></div>
+              <div className="small muted">a soft ding instead of a scare <Ic name="bell" size={16} className="inline-icon" /></div>
             </div>
             <Toggle
               checked={pomo.chime}
@@ -581,28 +592,39 @@ export default function SettingsView() {
 
         <div className="card pad">
           <div className="card-title">
-            <span aria-hidden="true">🔔</span> notifications
+            <Ic name="bell" size={16} className="inline-icon" /> notifications
           </div>
           <div className="row wrap" style={{ gap: 10 }}>
             <span className="tag" role="status">
               {perm === 'granted' ? (
-                <><span aria-hidden="true">✅</span> granted</>
+                <><Ic name="checkCircle" size={15} className="inline-icon" /> granted</>
               ) : perm === 'denied' ? (
-                <><span aria-hidden="true">⛔</span> denied</>
+                <><Ic name="ban" size={15} className="inline-icon" /> denied</>
               ) : perm === 'default' ? (
-                <><span aria-hidden="true">🟡</span> not asked yet</>
+                <><Ic name="clock" size={15} className="inline-icon" /> not asked yet</>
               ) : (
-                <><span aria-hidden="true">🚫</span> unsupported here</>
+                <><Ic name="x" size={15} className="inline-icon" /> unsupported here</>
               )}
             </span>
             <button type="button" className="btn btn-sm btn-soft" onClick={() => void enableNotifications()}>
-              <span aria-hidden="true">🔔</span> enable notifications
+              <Ic name="bell" size={16} className="inline-icon" /> enable notifications
             </button>
+          </div>
+          <div className="toggle-row" style={{ marginTop: 12 }}>
+            <div>
+              <strong className="small">alarm sound</strong>
+              <div className="small muted">ring when deadlines & reminders fire</div>
+            </div>
+            <Toggle
+              checked={settings.alarmSound !== false}
+              onChange={(alarmSound) => setSettings({ alarmSound })}
+              label="Alarm sound"
+            />
           </div>
           <div className="divider" />
           <span className="field-label">reminder quick list</span>
           {reminders.length === 0 ? (
-            <p className="small muted">no reminders yet — add one in the planner <span aria-hidden="true">🗓️</span></p>
+            <p className="small muted">no reminders yet — add one in the planner <Ic name="calendarDays" size={16} className="inline-icon" /></p>
           ) : (
             <div className="stack" style={{ gap: 6 }}>
               {reminders.map((reminder) => (
@@ -629,13 +651,13 @@ export default function SettingsView() {
             style={{ marginTop: 12 }}
             onClick={() => navigate('/planner')}
           >
-            <span aria-hidden="true">🗓️</span> manage reminders in planner
+            <Ic name="calendarDays" size={16} className="inline-icon" /> manage reminders in planner
           </button>
         </div>
 
         <div className="card pad">
           <div className="card-title">
-            <span aria-hidden="true">☁️</span> cloud sync
+            <Ic name="cloud" size={16} className="inline-icon" /> cloud sync
           </div>
           <span className="field-label">provider</span>
           <select
@@ -762,7 +784,7 @@ export default function SettingsView() {
               title={sync.provider !== 'none' && !settings.legal.sync ? 'give sync consent first' : undefined}
               onClick={() => void runSync()}
             >
-              {busy ? 'syncing…' : <><span aria-hidden="true">⬆️</span> sync now</>}
+              {busy ? 'syncing…' : <><Ic name="upload" size={15} className="inline-icon" /> sync now</>}
             </button>
           </div>
           {syncStatus.error && (
@@ -778,7 +800,7 @@ export default function SettingsView() {
 
         <div className="card pad">
           <div className="card-title">
-            <span aria-hidden="true">💾</span> data & backup
+            <Ic name="save" size={16} className="inline-icon" /> data & backup
           </div>
           <div className="row wrap">
             <button
@@ -786,10 +808,10 @@ export default function SettingsView() {
               className="btn btn-soft"
               onClick={() => exportAllDataJson(selectData(useApp.getState()))}
             >
-              <span aria-hidden="true">⬇️</span> export backup (json)
+              <Ic name="download" size={15} className="inline-icon" /> export backup (json)
             </button>
             <label className="btn btn-soft file-btn">
-              <span aria-hidden="true">⬆️</span> import backup
+              <Ic name="upload" size={15} className="inline-icon" /> import backup
               <input
                 type="file"
                 accept="application/json,.json"
@@ -798,7 +820,7 @@ export default function SettingsView() {
               />
             </label>
             <button type="button" className="btn btn-danger" onClick={() => setResetOpen(true)}>
-              <span aria-hidden="true">🧹</span> reset everything
+              <Ic name="brush" size={16} className="inline-icon" /> reset everything
             </button>
           </div>
           {isDesktop() && (
@@ -807,26 +829,26 @@ export default function SettingsView() {
             </p>
           )}
           <p className="small muted" style={{ marginTop: 8 }}>
-            backups include notes, planner, tasks, badges and settings <span aria-hidden="true">✨</span>
+            backups include notes, planner, tasks, badges and settings <Ic name="sparkle" size={14} className="inline-icon" />
           </p>
         </div>
 
         <div className="card pad">
           <div className="card-title">
-            <span aria-hidden="true">📜</span> legal &amp; privacy
+            <Ic name="file" size={16} className="inline-icon" /> legal &amp; privacy
           </div>
           <div className="row wrap" style={{ gap: 8 }}>
             <a className="btn btn-soft btn-sm" href="#/privacy">
-              <span aria-hidden="true">🔒</span> privacy policy
+              <Ic name="lock" size={15} className="inline-icon" /> privacy policy
             </a>
             <a className="btn btn-soft btn-sm" href="#/terms">
-              <span aria-hidden="true">📄</span> terms &amp; conditions
+              <Ic name="file" size={15} className="inline-icon" /> terms &amp; conditions
             </a>
             <a className="btn btn-soft btn-sm" href="#/cookies">
-              <span aria-hidden="true">🍪</span> cookie policy
+              <Ic name="cookie" size={15} className="inline-icon" /> cookie policy
             </a>
             <a className="btn btn-soft btn-sm" href="#/refunds">
-              <span aria-hidden="true">💗</span> refund policy
+              <Ic name="heart" size={14} className="inline-icon" /> refund policy
             </a>
           </div>
           <p className="small muted" style={{ marginTop: 12 }}>
@@ -841,7 +863,7 @@ export default function SettingsView() {
 
         <div className="card pad">
           <div className="card-title">
-            <span aria-hidden="true">🌈</span> subjects
+            <Ic name="rainbow" size={16} className="inline-icon" /> subjects
           </div>
           <div className="stack" style={{ gap: 8 }}>
             {subjects.map((subject) => (
@@ -891,7 +913,7 @@ export default function SettingsView() {
                   aria-label={`delete ${subject.name}`}
                   onClick={() => deleteSubject(subject.id, subject.name)}
                 >
-                  🗑
+                  <Ic name="trash" size={14} />
                 </button>
               </div>
             ))}
@@ -943,7 +965,7 @@ export default function SettingsView() {
               disabled={!newSubject.name.trim()}
               onClick={addNewSubject}
             >
-              <span aria-hidden="true">＋</span> add
+              <Ic name="plus" size={16} className="inline-icon" /> add
             </button>
             </div>
           </div>
@@ -1216,19 +1238,17 @@ export default function SettingsView() {
 
         <div className="card pad">
           <div className="card-title">
-            <span aria-hidden="true">♡</span> about
+            <Ic name="heart" size={18} className="inline-icon" /> about
           </div>
           <div className="row" style={{ gap: 12 }}>
-            <span style={{ fontSize: 30 }} aria-hidden="true">
-              🌸
-            </span>
+            <Ic name="flower" size={30} />
             <div>
               <div className="stat-value">Cutepad</div>
-              <div className="small muted">version 0.1.0 · kawaii notepad & study companion</div>
+              <div className="small muted">version 0.1.1 · kawaii notepad & study companion</div>
             </div>
           </div>
           <p className="small muted" style={{ marginTop: 10 }}>
-            {settings.mascotName || 'Mochi'} the study buddy was drawn with <span aria-hidden="true">💗</span> — thanks
+            {settings.mascotName || 'Mochi'} the study buddy was drawn with <Ic name="heart" size={14} className="inline-icon" /> — thanks
             for studying with us!
           </p>
           {!isDesktop() && !Capacitor.isNativePlatform() && (
@@ -1236,19 +1256,19 @@ export default function SettingsView() {
               <div className="row wrap" style={{ gap: 8 }}>
                 <a
                   className="btn btn-primary"
-                  href="https://github.com/bigem-hub/cutepad/releases/download/v0.1.0/Cutepad.Setup.0.1.0.exe"
+                  href="https://github.com/bigem-hub/cutepad/releases/download/v0.1.1/Cutepad.Setup.0.1.1.exe"
                   target="_blank"
                   rel="noreferrer"
                 >
-                  <span aria-hidden="true">🪟</span> {t('settings.about.download')}
+                  <WindowsMark size={16} /> {t('settings.about.download')}
                 </a>
                 <a
                   className="btn"
-                  href="https://github.com/bigem-hub/cutepad/releases/download/v0.1.0/Cutepad-0.1.0.apk"
+                  href="https://github.com/bigem-hub/cutepad/releases/download/v0.1.1/Cutepad-0.1.1.apk"
                   target="_blank"
                   rel="noreferrer"
                 >
-                  <span aria-hidden="true">🤖</span> {t('settings.about.downloadAndroid')}
+                  <AndroidMark size={16} /> {t('settings.about.downloadAndroid')}
                 </a>
                 <a
                   className="btn"
@@ -1256,7 +1276,7 @@ export default function SettingsView() {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  <span aria-hidden="true">🍎</span> {t('settings.about.downloadIos')}
+                  <AppleMark size={16} /> {t('settings.about.downloadIos')}
                 </a>
               </div>
               <p className="small muted" style={{ marginTop: 6 }}>
@@ -1270,10 +1290,10 @@ export default function SettingsView() {
               className="btn btn-sm btn-soft"
               onClick={() => navigate('/achievements')}
             >
-              <span aria-hidden="true">🏆</span> badges
+              <Ic name="trophy" size={16} className="inline-icon" /> badges
             </button>
             <button type="button" className="btn btn-sm btn-soft" onClick={() => navigate('/buddy')}>
-              <span aria-hidden="true">👫</span> buddy
+              <Ic name="users" size={16} className="inline-icon" /> buddy
             </button>
           </div>
         </div>
@@ -1306,7 +1326,7 @@ export default function SettingsView() {
           this wipes every note, task, planner block, badge, subject and setting on this device and restores the
           cozy defaults.
         </p>
-        <p className="small muted">export a backup first if you might want it back later <span aria-hidden="true">💗</span></p>
+        <p className="small muted">export a backup first if you might want it back later <Ic name="heart" size={14} className="inline-icon" /></p>
       </Modal>
     </div>
   );

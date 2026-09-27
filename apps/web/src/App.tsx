@@ -1,6 +1,6 @@
 import { useEffect, type CSSProperties, type ReactElement } from 'react';
 import { deriveStats, isDesktop, useApp, type BackgroundConfig } from '@cutepad/core';
-import { AmbientPopover, CelebrationLayer, Mascot, PlantCompanion, patternCss } from '@cutepad/ui';
+import { AmbientPopover, CelebrationLayer, Ic, Mascot, PlantCompanion, patternCss, type IconName } from '@cutepad/ui';
 import Titlebar from './components/Titlebar';
 import StickyLayer from './components/StickyLayer';
 import StickyPage from './pages/StickyPage';
@@ -19,31 +19,31 @@ import AnalyticsView from './views/AnalyticsView';
 import AchievementsView from './views/AchievementsView';
 import BuddyView from './views/BuddyView';
 import SettingsView from './views/SettingsView';
-import { mascotLine, useAmbient, useDesktopBackup, useFocusGuard, useHashRoute, useMascotMood, useReminderTicker } from './hooks';
+import { mascotLine, useAmbient, useDeadlineTicker, useDesktopBackup, useFocusGuard, useHashRoute, useMascotMood, useReminderTicker } from './hooks';
 import { useT } from './i18n';
 
 interface NavItem {
   path: string;
   labelKey: string;
   fallback: string;
-  emoji: string;
+  icon: IconName;
   comp: () => ReactElement;
 }
 
 const NAV: NavItem[] = [
-  { path: '/', labelKey: 'nav.home', fallback: 'Home', emoji: '🏠', comp: DashboardView },
-  { path: '/notes', labelKey: 'nav.notes', fallback: 'Notes', emoji: '📝', comp: NotesView },
-  { path: '/planner', labelKey: 'nav.planner', fallback: 'Planner', emoji: '🗓️', comp: PlannerView },
-  { path: '/focus', labelKey: 'nav.focus', fallback: 'Focus', emoji: '🍅', comp: FocusView },
-  { path: '/tasks', labelKey: 'nav.tasks', fallback: 'Tasks', emoji: '✅', comp: TasksView },
-  { path: '/flashcards', labelKey: 'nav.flashcards', fallback: 'Flashcards', emoji: '🃏', comp: FlashcardsView },
-  { path: '/mood', labelKey: 'nav.mood', fallback: 'Mood', emoji: '😊', comp: MoodView },
-  { path: '/documents', labelKey: 'nav.documents', fallback: 'Documents', emoji: '📎', comp: DocumentsView },
-  { path: '/smart', labelKey: 'nav.smart', fallback: 'Smart', emoji: '✨', comp: SmartView },
-  { path: '/analytics', labelKey: 'nav.analytics', fallback: 'Stats', emoji: '📊', comp: AnalyticsView },
-  { path: '/achievements', labelKey: 'nav.achievements', fallback: 'Badges', emoji: '🏆', comp: AchievementsView },
-  { path: '/buddy', labelKey: 'nav.buddy', fallback: 'Buddy', emoji: '👫', comp: BuddyView },
-  { path: '/settings', labelKey: 'nav.settings', fallback: 'Settings', emoji: '⚙️', comp: SettingsView },
+  { path: '/', labelKey: 'nav.home', fallback: 'Home', icon: 'layoutDashboard', comp: DashboardView },
+  { path: '/notes', labelKey: 'nav.notes', fallback: 'Notes', icon: 'notes', comp: NotesView },
+  { path: '/planner', labelKey: 'nav.planner', fallback: 'Planner', icon: 'calendarDays', comp: PlannerView },
+  { path: '/focus', labelKey: 'nav.focus', fallback: 'Focus', icon: 'timer', comp: FocusView },
+  { path: '/tasks', labelKey: 'nav.tasks', fallback: 'Tasks', icon: 'listChecks', comp: TasksView },
+  { path: '/flashcards', labelKey: 'nav.flashcards', fallback: 'Flashcards', icon: 'layers', comp: FlashcardsView },
+  { path: '/mood', labelKey: 'nav.mood', fallback: 'Mood', icon: 'smile', comp: MoodView },
+  { path: '/documents', labelKey: 'nav.documents', fallback: 'Documents', icon: 'paperclip', comp: DocumentsView },
+  { path: '/smart', labelKey: 'nav.smart', fallback: 'Smart', icon: 'sparkles', comp: SmartView },
+  { path: '/analytics', labelKey: 'nav.analytics', fallback: 'Stats', icon: 'barChart', comp: AnalyticsView },
+  { path: '/achievements', labelKey: 'nav.achievements', fallback: 'Badges', icon: 'trophy', comp: AchievementsView },
+  { path: '/buddy', labelKey: 'nav.buddy', fallback: 'Buddy', icon: 'users', comp: BuddyView },
+  { path: '/settings', labelKey: 'nav.settings', fallback: 'Settings', icon: 'settings', comp: SettingsView },
 ];
 
 function backgroundStyle(bg: BackgroundConfig, dark: boolean): CSSProperties {
@@ -83,6 +83,7 @@ export default function App() {
   const t = useT();
 
   useReminderTicker();
+  useDeadlineTicker();
   useDesktopBackup();
   useAmbient();
 
@@ -187,7 +188,10 @@ export default function App() {
 
       {guard.enabled && guard.banner && guard.hit && (
         <div className="guard-banner" role="alert">
-          🛡️ “{guard.hit.app}” is on your block list — back to focus!{' '}
+          <span className="inline-icon" aria-hidden="true">
+            <Ic name="shield" size={17} />
+          </span>{' '}
+          “{guard.hit.app}” is on your block list — back to focus!{' '}
           <button className="btn btn-sm btn-soft" onClick={guard.dismiss}>
             ok 💗
           </button>
@@ -195,7 +199,7 @@ export default function App() {
       )}
       {guard.enabled && guard.shield && guard.hit && (
         <div className="guard-shield" role="alertdialog" aria-label="Focus guard">
-          <div style={{ fontSize: 54 }}>🛡️</div>
+          <Ic name="shield" size={54} strokeWidth={2} />
           <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 26, margin: 0 }}>Stay on track!</h2>
           <p style={{ opacity: 0.85, margin: 0 }}>
             you were just in <b>{guard.hit.app}</b>. your future self says thanks 💗
@@ -217,7 +221,7 @@ export default function App() {
         <aside className="sidebar">
           <div className="brand">
             <span className="brand-dot" aria-hidden="true">
-              🌸
+              <Ic name="flower" size={18} />
             </span>
             Cutepad
           </div>
@@ -229,8 +233,8 @@ export default function App() {
                 onClick={() => navigate(item.path)}
                 aria-current={routePath === item.path ? 'page' : undefined}
               >
-                <span className="nav-emoji" aria-hidden="true">
-                  {item.emoji}
+                <span className="nav-icon" aria-hidden="true">
+                  <Ic name={item.icon} size={19} />
                 </span>
                 {t(item.labelKey)}
               </button>
@@ -241,7 +245,10 @@ export default function App() {
               <div className="row between" style={{ gap: 6 }}>
                 <div>
                   <div className="stat-value" style={{ fontSize: 18 }}>
-                    🔥 {stats.streak}d
+                    <span className="inline-icon" aria-hidden="true">
+                      <Ic name="flame" size={16} />
+                    </span>{' '}
+                    {stats.streak}d
                   </div>
                   <div className="stat-label">{t('side.studyStreak')}</div>
                 </div>
@@ -269,7 +276,7 @@ export default function App() {
 
         <div className="main">
           <header className="topbar">
-            <span style={{ fontSize: 18 }}>{active.emoji}</span>
+            <Ic name={active.icon} size={20} />
             <strong style={{ fontFamily: 'var(--font-display)', fontSize: 17 }}>{greeting(settings.studyBuddyName)}</strong>
             <span className="spacer" />
             <span className="tag hide-mobile">{t('top.streak', { n: stats.streak })}</span>
@@ -300,7 +307,9 @@ export default function App() {
             onClick={() => navigate(item.path)}
             aria-current={routePath === item.path ? 'page' : undefined}
           >
-            <span aria-hidden="true">{item.emoji}</span>
+            <span className="nav-icon" aria-hidden="true">
+              <Ic name={item.icon} size={20} />
+            </span>
             {t(item.labelKey)}
           </button>
         ))}

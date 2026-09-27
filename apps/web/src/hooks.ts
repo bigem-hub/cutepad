@@ -4,16 +4,42 @@ import {
   dueReminders,
   getBridge,
   isDesktop,
+  playAlarm,
   selectData,
+  todayKey,
   useApp,
   type AmbientId,
   type MascotMood,
 } from '@cutepad/core';
+import { Capacitor } from '@capacitor/core';
+import { LocalNotifications } from '@capacitor/local-notifications';
+
+function isNative(): boolean {
+  return Capacitor.isNativePlatform();
+}
+
+async function nativeNotify(title: string, body: string): Promise<void> {
+  await LocalNotifications.schedule({
+    notifications: [
+      {
+        title,
+        body,
+        id: (Date.now() % 1_000_000) + Math.floor(Math.random() * 1000),
+      },
+    ],
+  });
+}
 
 export function notifyUser(title: string, body: string): void {
   const bridge = getBridge();
   if (bridge) {
     bridge.notify(title, body);
+    return;
+  }
+  if (isNative()) {
+    void nativeNotify(title, body).catch(() => {
+      /* falls through to web notification below */
+    });
     return;
   }
   if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
@@ -25,8 +51,44 @@ export function notifyUser(title: string, body: string): void {
   }
 }
 
+/** True when an in-app alarm tone should play (web only — native apps get the
+ *  notification channel sound, desktop gets the system toast sound). */
+function alarmAudible(): boolean {
+  if (useApp.getState().settings.alarmSound === false) return false;
+  if (isNative() || isDesktop()) return false;
+  if (typeof document !== 'undefined' && document.visibilityState !== 'visible') return false;
+  return true;
+}
+
+export async function notificationPermission(): Promise<'granted' | 'denied' | 'default' | 'unsupported'> {
+  if (getBridge()) return 'granted';
+  if (isNative()) {
+    try {
+      const status = await LocalNotifications.checkPermissions();
+      if (status.display === 'granted') return 'granted';
+      if (status.display === 'denied') return 'denied';
+      return 'default';
+    } catch {
+      return 'unsupported';
+    }
+  }
+  if (typeof Notification === 'undefined') return 'unsupported';
+  return Notification.permission;
+}
+
 export async function ensureNotificationPermission(): Promise<boolean> {
   if (getBridge()) return true;
+  if (isNative()) {
+    try {
+      const status = await LocalNotifications.checkPermissions();
+      if (status.display === 'granted') return true;
+      if (status.display === 'denied') return false;
+      const result = await LocalNotifications.requestPermissions();
+      return result.display === 'granted';
+    } catch {
+      return false;
+    }
+  }
   if (typeof Notification === 'undefined') return false;
   if (Notification.permission === 'granted') return true;
   if (Notification.permission === 'denied') return false;
@@ -42,8 +104,31 @@ export function useReminderTicker(): void {
       void ensureNotificationPermission();
       for (const reminder of due) {
         notifyUser('Cutepad reminder 🔔', reminder.title);
+        if (alarmAudible()) playAlarm();
         useApp.getState().fireReminder(reminder.id);
         useApp.getState().pushEvent('encourage', `⏰ ${reminder.title}`);
+      }
+    };
+    tick();
+    const id = window.setInterval(tick, 20000);
+    return () => window.clearInterval(id);
+  }, []);
+}
+
+export function useDeadlineTicker(): void {
+  useEffect(() => {
+    const tick = () => {
+      const state = useApp.getState();
+      const today = todayKey();
+      const due = state.tasks.filter((t) => !t.done && t.due && !t.dueAlarmed && t.due <= today);
+      if (due.length === 0) return;
+      void ensureNotificationPermission();
+      for (const task of due) {
+        state.updateTask(task.id, { dueAlarmed: true });
+        const when = task.due === today ? 'due today' : `was due ${task.due}`;
+        notifyUser('Cutepad deadline ⏰', `${task.title} — ${when}`);
+        if (alarmAudible()) playAlarm();
+        state.pushEvent('encourage', `📅 ${task.title} — ${when}`);
       }
     };
     tick();

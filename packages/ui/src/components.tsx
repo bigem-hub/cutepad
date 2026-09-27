@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useId, type ReactNode, type KeyboardEvent as ReactKeyboardEvent } from 'react';
 import { AMBIENT_TRACKS, moodDef, useApp } from '@cutepad/core';
 import { Mascot, type MascotProps } from './Mascot';
+import { Ic, type IconName } from './icons';
 
 const CONFETTI_COLORS = ['#ff9ec4', '#b8a6ff', '#8fe3c8', '#ffd76e', '#a8d4ff', '#ffb7d5', '#fff3a8'];
 
@@ -289,19 +290,21 @@ export function PlantCompanion({ stage, pct, size = 150 }: { stage: number; pct:
 }
 
 export function EmptyState({
-  emoji,
+  icon,
   title,
   hint,
   action,
 }: {
-  emoji: string;
+  icon: IconName;
   title: string;
   hint?: string;
   action?: ReactNode;
 }) {
   return (
     <div className="empty">
-      <span className="emoji">{emoji}</span>
+      <span className="emoji">
+        <Ic name={icon} size={46} strokeWidth={2} />
+      </span>
       <h3>{title}</h3>
       {hint && <p className="small">{hint}</p>}
       {action && <div style={{ marginTop: 14 }}>{action}</div>}
@@ -311,7 +314,7 @@ export function EmptyState({
 
 export interface SegmentedOption<T extends string> {
   value: T;
-  label: string;
+  label: ReactNode;
 }
 
 export function Segmented<T extends string>({
@@ -414,7 +417,7 @@ export function FlipCard({ front, back, flipped, onFlip, minHeight = 220, label 
 export interface TabDef {
   id: string;
   label: string;
-  emoji?: string;
+  icon?: IconName;
   badge?: string | number;
 }
 
@@ -446,7 +449,7 @@ export function Tabs({ tabs, value, onChange }: { tabs: TabDef[]; value: string;
           className={tab.id === value ? 'active' : ''}
           onClick={() => onChange(tab.id)}
         >
-          {tab.emoji && <span aria-hidden="true">{tab.emoji}</span>}
+          {tab.icon && <Ic name={tab.icon} size={15} />}
           {tab.label}
           {tab.badge !== undefined && <em className="tab-badge">{tab.badge}</em>}
         </button>

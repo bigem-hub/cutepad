@@ -14,7 +14,7 @@ import {
   type ScheduleSuggestion,
   type SyllabusItem,
 } from '@cutepad/core';
-import { EmptyState, MascotDock, ProgressBar, Tabs } from '@cutepad/ui';
+import { EmptyState, Ic, MascotDock, ProgressBar, Tabs, type IconName } from '@cutepad/ui';
 import { useHashRoute } from '../hooks';
 import { useT } from '../i18n';
 import './SmartView.css';
@@ -50,7 +50,7 @@ function errText(err: unknown): string {
 function Feedback({ kind, text }: { kind: 'error' | 'ok'; text: string }) {
   return (
     <div className={`smart-feedback ${kind}`} role="status">
-      <span aria-hidden="true">{kind === 'error' ? '⚠️' : '🎉'}</span> {text}
+      <Ic name={kind === 'error' ? 'alert' : 'sparkles'} size={16} /> {text}
     </div>
   );
 }
@@ -353,19 +353,19 @@ export default function SmartView() {
     }
   };
 
-  const tabs = [
-    { id: 'summarize', emoji: '🪄', label: t('smart.tabSummarize') },
-    { id: 'cards', emoji: '🃏', label: t('smart.tabCards') },
-    { id: 'quiz', emoji: '📝', label: t('smart.tabQuiz') },
-    { id: 'schedule', emoji: '🗓', label: t('smart.tabSchedule') },
-    { id: 'syllabus', emoji: '📋', label: t('smart.tabSyllabus') },
+  const tabs: { id: string; icon: IconName; label: string }[] = [
+    { id: 'summarize', icon: 'wand', label: t('smart.tabSummarize') },
+    { id: 'cards', icon: 'layers', label: t('smart.tabCards') },
+    { id: 'quiz', icon: 'notes', label: t('smart.tabQuiz') },
+    { id: 'schedule', icon: 'calendarDays', label: t('smart.tabSchedule') },
+    { id: 'syllabus', icon: 'clipboard', label: t('smart.tabSyllabus') },
   ];
 
   const notePicker = (
     <div className="card pad">
-      <div className="card-title"><span aria-hidden="true">📖</span> {t('smart.sourceNote')}</div>
+      <div className="card-title"><Ic name="book" size={16} className="inline-icon" /> {t('smart.sourceNote')}</div>
       {notes.length === 0 ? (
-        <EmptyState emoji="📝" title={t('smart.noNotes')} hint={t('smart.noNotesHint')} />
+        <EmptyState icon="notes" title={t('smart.noNotes')} hint={t('smart.noNotesHint')} />
       ) : (
         <div className="row wrap" style={{ gap: 10 }}>
           <select
@@ -404,7 +404,7 @@ export default function SmartView() {
         <span className="spacer" />
         <span className={`engine-pill ${remote ? 'remote' : ''}`}>{engineLabel}</span>
         <button type="button" className="btn btn-sm btn-soft" onClick={() => navigate('/settings')}>
-          <span aria-hidden="true">⚙️</span> {t('smart.settings')}
+          <Ic name="settings" size={15} className="inline-icon" /> {t('smart.settings')}
         </button>
       </div>
 
@@ -414,7 +414,7 @@ export default function SmartView() {
         <>
           {notePicker}
           <div className="card pad">
-            <div className="card-title"><span aria-hidden="true">🪄</span> {t('smart.summarizeTitle')}</div>
+            <div className="card-title"><Ic name="wand" size={16} className="inline-icon" /> {t('smart.summarizeTitle')}</div>
             <div className="row wrap" style={{ gap: 10 }}>
               <button
                 type="button"
@@ -424,11 +424,11 @@ export default function SmartView() {
               >
                 {sumBusy ? (
                   <>
-                    <span aria-hidden="true">⏳</span> {t('smart.thinking')}
+                    <Ic name="hourglass" size={15} className="inline-icon" /> {t('smart.thinking')}
                   </>
                 ) : (
                   <>
-                    <span aria-hidden="true">✨</span> {t('smart.summarize')}
+                    <Ic name="sparkles" size={15} className="inline-icon" /> {t('smart.summarize')}
                   </>
                 )}
               </button>
@@ -480,11 +480,11 @@ export default function SmartView() {
             )}
 
             {sumBullets !== null && sumBullets.length === 0 && (
-              <EmptyState emoji="🌱" title={t('smart.emptySummary')} hint={t('smart.emptySummaryHint')} />
+              <EmptyState icon="sprout" title={t('smart.emptySummary')} hint={t('smart.emptySummaryHint')} />
             )}
 
             {sumBullets === null && !sumBusy && (
-              <EmptyState emoji="💭" title={t('smart.readySummary')} hint={t('smart.readySummaryHint')} />
+              <EmptyState icon="message" title={t('smart.readySummary')} hint={t('smart.readySummaryHint')} />
             )}
           </div>
         </>
@@ -494,7 +494,7 @@ export default function SmartView() {
         <>
           {notePicker}
           <div className="card pad">
-            <div className="card-title"><span aria-hidden="true">🃏</span> {t('smart.cardsTitle')}</div>
+            <div className="card-title"><Ic name="layers" size={16} className="inline-icon" /> {t('smart.cardsTitle')}</div>
             <div className="row wrap" style={{ gap: 10 }}>
               <button
                 type="button"
@@ -504,11 +504,11 @@ export default function SmartView() {
               >
                 {cardsBusy ? (
                   <>
-                    <span aria-hidden="true">⏳</span> {t('smart.shuffling')}
+                    <Ic name="hourglass" size={15} className="inline-icon" /> {t('smart.shuffling')}
                   </>
                 ) : (
                   <>
-                    <span aria-hidden="true">✨</span> {t('smart.generateCards')}
+                    <Ic name="sparkles" size={15} className="inline-icon" /> {t('smart.generateCards')}
                   </>
                 )}
               </button>
@@ -543,7 +543,7 @@ export default function SmartView() {
               )}
               {cards.length > 0 && (
                 <button type="button" className="btn btn-primary" onClick={importSelectedCards}>
-                  <span aria-hidden="true">🎴</span> {t('smart.importN', { n: checkedCards.length })}
+                  <Ic name="sticky" size={15} className="inline-icon" /> {t('smart.importN', { n: checkedCards.length })}
                 </button>
               )}
             </div>
@@ -552,7 +552,7 @@ export default function SmartView() {
             {cardsMsg && <Feedback kind="ok" text={cardsMsg} />}
 
             {cards.length === 0 && !cardsBusy && (
-              <EmptyState emoji="🃏" title={t('smart.noCards')} hint={t('smart.noCardsHint')} />
+              <EmptyState icon="layers" title={t('smart.noCards')} hint={t('smart.noCardsHint')} />
             )}
 
             {cards.length > 0 && (
@@ -582,7 +582,7 @@ export default function SmartView() {
                       <span className="muted small">{c.back}</span>
                     </span>
                     <span className="tag">
-                      <span aria-hidden="true">{c.template === 'cloze' ? '✨' : '❓'}</span>{' '}
+                      <Ic name={c.template === 'cloze' ? 'sparkle' : 'listChecks'} size={15} />{' '}
                       {c.template === 'cloze' ? t('smart.tplCloze') : t('smart.tplBasic')}
                     </span>
                   </label>
@@ -597,7 +597,7 @@ export default function SmartView() {
         <>
           {notePicker}
           <div className="card pad">
-            <div className="card-title"><span aria-hidden="true">📝</span> {t('smart.quizTitle')}</div>
+            <div className="card-title"><Ic name="notes" size={16} className="inline-icon" /> {t('smart.quizTitle')}</div>
             <div className="row wrap" style={{ gap: 10 }}>
               <button
                 type="button"
@@ -607,17 +607,17 @@ export default function SmartView() {
               >
                 {quizBusy ? (
                   <>
-                    <span aria-hidden="true">⏳</span> {t('smart.writingQuestions')}
+                    <Ic name="hourglass" size={15} className="inline-icon" /> {t('smart.writingQuestions')}
                   </>
                 ) : (
                   <>
-                    <span aria-hidden="true">✨</span> {t('smart.makeQuiz')}
+                    <Ic name="sparkles" size={15} className="inline-icon" /> {t('smart.makeQuiz')}
                   </>
                 )}
               </button>
               {quiz.length > 0 && !showScore && (
                 <span className="tag">
-                  <span aria-hidden="true">⭐</span> {t('smart.score')} {score}/{quiz.length}
+                  <Ic name="star" size={15} className="inline-icon" /> {t('smart.score')} {score}/{quiz.length}
                 </span>
               )}
             </div>
@@ -625,7 +625,7 @@ export default function SmartView() {
             {quizErr && <Feedback kind="error" text={quizErr} />}
 
             {quiz.length === 0 && !quizBusy && (
-              <EmptyState emoji="📝" title={t('smart.noQuiz')} hint={t('smart.noQuizHint')} />
+              <EmptyState icon="notes" title={t('smart.noQuiz')} hint={t('smart.noQuizHint')} />
             )}
 
             {quiz.length > 0 && showScore && (
@@ -638,7 +638,7 @@ export default function SmartView() {
                   {t('smart.quizDone', { pct: scorePct })}
                 </p>
                 <button type="button" className="btn btn-primary" onClick={resetQuiz}>
-                  <span aria-hidden="true">🔁</span> {t('smart.tryAgain')}
+                  <Ic name="refresh" size={15} className="inline-icon" /> {t('smart.tryAgain')}
                 </button>
               </div>
             )}
@@ -704,17 +704,17 @@ export default function SmartView() {
         <div className="card pad">
           <div className="row between wrap" style={{ gap: 10, marginBottom: 10 }}>
             <div className="card-title" style={{ marginBottom: 0 }}>
-              <span aria-hidden="true">🗓</span> {t('smart.scheduleTitle')}
+              <Ic name="calendarDays" size={16} className="inline-icon" /> {t('smart.scheduleTitle')}
             </div>
             <button type="button" className="btn btn-sm btn-soft" onClick={refreshIdeas}>
-              <span aria-hidden="true">↻</span> {t('smart.refresh')}
+              <Ic name="rotate" size={15} className="inline-icon" /> {t('smart.refresh')}
             </button>
           </div>
 
           {ideaErr && <Feedback kind="error" text={ideaErr} />}
 
           {ideas.length === 0 && (
-            <EmptyState emoji="🌿" title={t('smart.allCaughtUp')} hint={t('smart.allCaughtUpHint')} />
+            <EmptyState icon="sprout" title={t('smart.allCaughtUp')} hint={t('smart.allCaughtUpHint')} />
           )}
 
           {ideas.length > 0 && (
@@ -759,7 +759,7 @@ export default function SmartView() {
 
       {tab === 'syllabus' && (
         <div className="card pad">
-          <div className="card-title"><span aria-hidden="true">📋</span> {t('smart.syllabusTitle')}</div>
+          <div className="card-title"><Ic name="clipboard" size={16} className="inline-icon" /> {t('smart.syllabusTitle')}</div>
           <textarea
             className="textarea smart-syllabus"
             rows={7}
@@ -777,17 +777,17 @@ export default function SmartView() {
             >
               {syBusy ? (
                 <>
-                  <span aria-hidden="true">⏳</span> {t('smart.parsing')}
+                  <Ic name="hourglass" size={15} className="inline-icon" /> {t('smart.parsing')}
                 </>
               ) : (
                 <>
-                  <span aria-hidden="true">✨</span> {t('smart.parse')}
+                  <Ic name="sparkles" size={15} className="inline-icon" /> {t('smart.parse')}
                 </>
               )}
             </button>
             {syItems && syItems.length > 0 && (
               <button type="button" className="btn btn-soft" onClick={importSelectedItems}>
-                <span aria-hidden="true">✅</span> {t('smart.importSelected', { n: checkedItems.length })}
+                <Ic name="checkCircle" size={15} className="inline-icon" /> {t('smart.importSelected', { n: checkedItems.length })}
               </button>
             )}
             <span className="spacer" />
@@ -824,11 +824,11 @@ export default function SmartView() {
           )}
 
           {syItems !== null && syItems.length === 0 && (
-            <EmptyState emoji="🔍" title={t('smart.noSyllabus')} hint={t('smart.noSyllabusHint')} />
+            <EmptyState icon="search" title={t('smart.noSyllabus')} hint={t('smart.noSyllabusHint')} />
           )}
 
           {syItems === null && (
-            <EmptyState emoji="📋" title={t('smart.syllabusIdle')} hint={t('smart.syllabusIdleHint')} />
+            <EmptyState icon="clipboard" title={t('smart.syllabusIdle')} hint={t('smart.syllabusIdleHint')} />
           )}
         </div>
       )}

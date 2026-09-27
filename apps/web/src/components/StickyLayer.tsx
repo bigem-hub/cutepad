@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { getBridge, useApp, type Sticky } from '@cutepad/core';
+import { Ic } from '@cutepad/ui';
 
 const CYCLE = ['#fff3a8', '#ffd6e8', '#d9f7e6', '#d6e6ff', '#ecd9ff', '#ffe0cc'];
 
@@ -70,11 +71,11 @@ function StickyWidget({ sticky }: { sticky: Sticky }) {
             updateSticky(sticky.id, { color: CYCLE[(idx + 1) % CYCLE.length] });
           }}
         >
-          🎨
+          <Ic name="palette" size={16} />
         </button>
         {bridge && (
           <button type="button" title="Open in own window" aria-label="Open in own window" onClick={() => bridge.openSticky(sticky.id)}>
-            🗗
+            <Ic name="move" size={16} />
           </button>
         )}
         <button type="button" title="Close" aria-label="Close" onClick={() => deleteSticky(sticky.id)}>

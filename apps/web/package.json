@@ -1,6 +1,6 @@
 {
   "name": "@cutepad/web",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@capacitor/core": "^8.5.2",
+    "@capacitor/local-notifications": "^8.3.1",
+    "@capacitor/status-bar": "^8.0.3",
     "@cutepad/core": "*",
     "@cutepad/ui": "*",
     "firebase": "^12.19.0",

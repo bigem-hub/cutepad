@@ -1,11 +1,12 @@
 import { getBridge } from '@cutepad/core';
+import { Ic } from '@cutepad/ui';
 
 export default function Titlebar() {
   const bridge = getBridge();
   if (!bridge) return null;
   return (
     <div className="titlebar">
-      <span><span aria-hidden="true">🌸 </span>Cutepad</span>
+      <span><Ic name="flower" size={15} className="inline-icon" /> Cutepad</span>
       <span className="spacer" />
       <button type="button" aria-label="Minimize" onClick={() => bridge.setTitleBarAction('minimize')}>
         ─

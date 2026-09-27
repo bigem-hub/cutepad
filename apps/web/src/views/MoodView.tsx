@@ -12,7 +12,7 @@ import {
   useApp,
   type MascotMood,
 } from '@cutepad/core';
-import { EmptyState, MascotDock, MoodFace } from '@cutepad/ui';
+import { EmptyState, Ic, MascotDock, MoodFace } from '@cutepad/ui';
 import { useT } from '../i18n';
 import './MoodView.css';
 
@@ -120,7 +120,7 @@ export default function MoodView() {
           <span className="spacer" />
           {todayEntry && (
             <button type="button" className="btn btn-sm btn-danger" onClick={removeToday}>
-              <span aria-hidden="true">🗑</span> {t('mood.removeToday')}
+              <Ic name="trash" size={15} /> {t('mood.removeToday')}
             </button>
           )}
         </div>
@@ -128,7 +128,7 @@ export default function MoodView() {
 
       <div className="card pad">
         <div className="card-title">
-          <span aria-hidden="true">📅</span> {t('mood.last30')}
+          <Ic name="calendar" size={15} /> {t('mood.last30')}
           <span className="spacer" />
           {streak > 0 && <span className="tag">{t('mood.streak', { n: streak })}</span>}
         </div>
@@ -159,12 +159,12 @@ export default function MoodView() {
       <div className="grid wide">
         <div className="card pad">
           <div className="card-title">
-            <span aria-hidden="true">🎯</span> {t('mood.focusTitle')}
+            <Ic name="target" size={15} /> {t('mood.focusTitle')}
             <span className="spacer" />
             {best && <span className="tag">{t('mood.bestFocus')}</span>}
           </div>
           {totalLogged === 0 ? (
-            <EmptyState emoji="🎯" title={t('mood.emptyTitle')} hint={t('mood.emptyHint')} />
+            <EmptyState icon="target" title={t('mood.emptyTitle')} hint={t('mood.emptyHint')} />
           ) : (
             avgs.map((row) => (
               <div key={row.level} className="mood-bar-row">
@@ -185,9 +185,9 @@ export default function MoodView() {
         </div>
 
         <div className="card pad">
-          <div className="card-title"><span aria-hidden="true">🌈</span> {t('mood.distTitle')}</div>
+          <div className="card-title"><Ic name="rainbow" size={15} /> {t('mood.distTitle')}</div>
           {totalLogged === 0 ? (
-            <EmptyState emoji="🌈" title={t('mood.emptyTitle')} hint={t('mood.emptyHint')} />
+            <EmptyState icon="rainbow" title={t('mood.emptyTitle')} hint={t('mood.emptyHint')} />
           ) : (
             dist
               .filter((row) => row.count > 0)

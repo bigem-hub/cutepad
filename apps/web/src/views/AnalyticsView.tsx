@@ -22,18 +22,18 @@ import {
   weekdayDistribution,
   type SessionLog,
 } from '@cutepad/core';
-import { EmptyState, Mascot, PlantCompanion, ProgressBar } from '@cutepad/ui';
+import { EmptyState, Ic, Mascot, PlantCompanion, ProgressBar, type IconName } from '@cutepad/ui';
 import { useHashRoute, useMascotMood } from '../hooks';
 import { useT } from '../i18n';
 import './AnalyticsView.css';
 
 const WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-function StatCard({ emoji, value, label }: { emoji: string; value: string; label: string }) {
+function StatCard({ icon, value, label }: { icon: IconName; value: string; label: string }) {
   return (
     <div className="card stat-card">
       <div className="stat-icon" aria-hidden="true">
-        {emoji}
+        <Ic name={icon} size={22} />
       </div>
       <div>
         <div className="stat-value">{value}</div>
@@ -162,12 +162,12 @@ export default function AnalyticsView() {
           <Mascot mood={mood} size={110} />
         </div>
         <EmptyState
-          emoji="📊"
+          icon="barChart"
           title="No study data yet"
           hint="finish one focus session and your stats will bloom here~"
           action={
             <button type="button" className="btn btn-primary" onClick={() => navigate('/focus')}>
-              <span aria-hidden="true">🍅</span> start first session
+              <Ic name="timer" size={15} className="inline-icon" /> start first session
             </button>
           }
         />
@@ -176,7 +176,7 @@ export default function AnalyticsView() {
   }
 
   const cmpClass = comparison.delta > 0 ? 'cmp-up' : comparison.delta < 0 ? 'cmp-down' : 'cmp-flat';
-  const cmpEmoji = comparison.delta > 0 ? '📈' : comparison.delta < 0 ? '📉' : '➡️';
+  const cmpEmoji: IconName = comparison.delta > 0 ? 'trend' : comparison.delta < 0 ? 'trendingDown' : 'minus';
   const trendCmpClass = comparison.delta > 0 ? 'cmp-up' : comparison.delta < 0 ? 'cmp-down' : 'cmp-flat';
   const trendCmpText =
     comparison.delta > 0
@@ -189,10 +189,10 @@ export default function AnalyticsView() {
     <div className="stack" style={{ gap: 16 }}>
       <h1 className="sr-only">{t('analytics.pageTitle')}</h1>
       <div className="grid">
-        <StatCard emoji="🕐" value={formatMinutes(stats.totalMinutes)} label="total studied" />
-        <StatCard emoji="🍅" value={`${stats.totalSessions}`} label="focus sessions" />
-        <StatCard emoji="🔥" value={`${streak.current}d`} label={`best streak ${streak.best}d`} />
-        <StatCard emoji="📈" value={`${avg7}m`} label="avg / day (last 7)" />
+        <StatCard icon="clock" value={formatMinutes(stats.totalMinutes)} label="total studied" />
+        <StatCard icon="timer" value={`${stats.totalSessions}`} label="focus sessions" />
+        <StatCard icon="flame" value={`${streak.current}d`} label={`best streak ${streak.best}d`} />
+        <StatCard icon="trend" value={`${avg7}m`} label="avg / day (last 7)" />
       </div>
 
       <div className="grid wide">
@@ -242,10 +242,10 @@ export default function AnalyticsView() {
       <div className="grid wide">
         <div className="card pad">
           <div className="card-title">
-            <span aria-hidden="true">📅</span> last 14 days
+            <Ic name="calendar" size={15} className="inline-icon" /> last 14 days
             <span className="spacer" />
             <span className={`tag ${cmpClass}`}>
-              <span aria-hidden="true">{cmpEmoji}</span> {comparison.delta > 0 ? '+' : ''}
+              <Ic name={cmpEmoji} size={16} /> {comparison.delta > 0 ? '+' : ''}
               {comparison.delta}% vs last week
             </span>
           </div>
@@ -268,7 +268,7 @@ export default function AnalyticsView() {
         </div>
 
         <div className="card pad">
-          <div className="card-title"><span aria-hidden="true">📚</span> time by subject</div>
+          <div className="card-title"><Ic name="book" size={16} className="inline-icon" /> time by subject</div>
           {shares.map((row) => {
             const w = Math.max(3, (row.minutes / maxSubject) * 100);
             return (
@@ -399,7 +399,7 @@ export default function AnalyticsView() {
 
       <div className="grid wide">
         <div className="card pad">
-          <div className="card-title"><span aria-hidden="true">🗓️</span> focus rhythm · 12 weeks</div>
+          <div className="card-title"><Ic name="calendarDays" size={16} className="inline-icon" /> focus rhythm · 12 weeks</div>
           <div className="heat-grid" role="img" aria-label="focus session heatmap for the last 12 weeks">
             {heat.map((cell) => (
               <span
@@ -422,9 +422,9 @@ export default function AnalyticsView() {
         </div>
 
         <div className="card pad">
-          <div className="card-title"><span aria-hidden="true">✨</span> highlights</div>
+          <div className="card-title"><Ic name="sparkles" size={15} className="inline-icon" /> highlights</div>
           <div className="hl-row">
-            <span className="small muted"><span aria-hidden="true">🍅</span> longest focus</span>
+            <span className="small muted"><Ic name="timer" size={15} className="inline-icon" /> longest focus</span>
             <span className="small bold">
               {longest
                 ? `${formatMinutes(longest.minutes)} · ${
@@ -434,20 +434,20 @@ export default function AnalyticsView() {
             </span>
           </div>
           <div className="hl-row">
-            <span className="small muted"><span aria-hidden="true">📅</span> favorite weekday</span>
+            <span className="small muted"><Ic name="calendar" size={15} className="inline-icon" /> favorite weekday</span>
             <span className="small bold">
               {weekday.name}
               {weekday.minutes > 0 ? ` · ${formatMinutes(weekday.minutes)}` : ''}
             </span>
           </div>
           <div className="hl-row">
-            <span className="small muted"><span aria-hidden="true">💖</span> top subject</span>
+            <span className="small muted"><Ic name="heart" size={15} className="inline-icon" /> top subject</span>
             <span className="small bold">
               {favorite ? `${favorite.name} · ${formatMinutes(favorite.minutes)}` : '—'}
             </span>
           </div>
           <div className="hl-row">
-            <span className="small muted"><span aria-hidden="true">⭐</span> best day</span>
+            <span className="small muted"><Ic name="star" size={14} className="inline-icon" /> best day</span>
             <span className="small bold">{bestDay ? `${prettyDate(bestDay.date)} · ${formatMinutes(bestDay.minutes)}` : '—'}</span>
           </div>
           <div className="divider" />
@@ -460,7 +460,7 @@ export default function AnalyticsView() {
               <p className="small muted" style={{ margin: '6px 0 10px' }}>
                 {plant.nextAt
                   ? `${plant.nextAt - stats.totalMinutes} more minutes to grow~`
-                  : <>your plant is fully bloomed! <span aria-hidden="true">🌸</span></>}
+                  : <>your plant is fully bloomed! <Ic name="flower" size={15} className="inline-icon" /></>}
               </p>
               <ProgressBar pct={plant.pct} tiny />
             </div>

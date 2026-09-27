@@ -48,6 +48,7 @@ export interface Task {
   subjectId: ID | null;
   priority: Priority;
   due: string | null;
+  dueAlarmed?: boolean;
   done: boolean;
   createdAt: number;
   completedAt: number | null;
@@ -137,6 +138,7 @@ export interface Settings {
   background: BackgroundConfig;
   mascotName: string;
   studyBuddyName: string;
+  alarmSound?: boolean;
   pomodoro: PomodoroSettings;
   ambient: { track: string | null; volume: number };
   sync: SyncSettings;

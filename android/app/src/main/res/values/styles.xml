@@ -13,10 +13,17 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:background">@null</item>
+        <!-- Keep the status bar visible: pink bar with dark icons, content laid out below it. -->
+        <item name="android:statusBarColor">#ffd6e8</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <!-- Android 15: opt out of enforced edge-to-edge so the WebView sits below the status bar. -->
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
     </style>
-
 
     <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
         <item name="android:background">@drawable/splash</item>
+        <item name="android:statusBarColor">#ffd6e8</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
     </style>
 </resources>

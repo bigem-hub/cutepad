@@ -46,6 +46,7 @@ export const DEFAULT_SETTINGS: Settings = {
   background: { type: 'gradient', value: 'linear-gradient(160deg, #ffe9f3 0%, #f0e6ff 45%, #e3f4ff 100%)' },
   mascotName: 'Mochi',
   studyBuddyName: '',
+  alarmSound: true,
   pomodoro: { work: 25, shortBreak: 5, longBreak: 15, longEvery: 4, autoBreak: false, chime: true },
   ambient: { track: null, volume: 0.5 },
   sync: { provider: 'firebase', url: '', anonKey: '', owner: '', autoSync: true },

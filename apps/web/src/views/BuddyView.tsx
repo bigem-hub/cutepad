@@ -15,7 +15,7 @@ import {
   type BuddyPresence,
   type GroupMemberRow,
 } from '@cutepad/core';
-import { EmptyState, MascotDock, Modal, ProgressBar, Tabs } from '@cutepad/ui';
+import { EmptyState, Ic, MascotDock, Modal, ProgressBar, Tabs, type IconName } from '@cutepad/ui';
 import { useHashRoute, useNow } from '../hooks';
 import { useT } from '../i18n';
 import './ExtraViews.css';
@@ -346,9 +346,9 @@ export default function BuddyView() {
     setAddedKeys((prev) => ({ ...prev, [key]: true }));
   };
 
-  const tabs = [
-    { id: 'buddy', emoji: '👫', label: t('buddy.tabBuddy') },
-    { id: 'group', emoji: '👥', label: t('buddy.tabGroup') },
+  const tabs: { id: string; icon: IconName; label: string }[] = [
+    { id: 'buddy', icon: 'user', label: t('buddy.tabBuddy') },
+    { id: 'group', icon: 'users', label: t('buddy.tabGroup') },
   ];
 
   const noSyncPane = (
@@ -357,16 +357,16 @@ export default function BuddyView() {
         <MascotDock mood="think" message="pairing needs cloud sync first~ it’s quick, promise! 🌤️" />
         <div style={{ flex: 1, minWidth: 260 }}>
           <div className="page-title" role="heading" aria-level={1}>
-            <span aria-hidden="true">👫</span> study buddy
+            <Ic name="users" size={16} className="inline-icon" /> study buddy
           </div>
           <p style={{ margin: '8px 0 14px', fontWeight: 700 }}>
             to pair up, cutepad needs <b>cloud sync</b> so you and your buddy can see each other’s study
-            stats. everything else still saves on this device <span aria-hidden="true">💗</span>
+            stats. everything else still saves on this device <Ic name="heart" size={14} className="inline-icon" />
           </p>
           <div className="grid" style={{ gap: 10 }}>
             <div className="card stat-card">
               <div className="stat-icon" aria-hidden="true">
-                🔥
+                <Ic name="flame" size={16} />
               </div>
               <div>
                 <div className="stat-value">{stats.streak}d</div>
@@ -375,7 +375,7 @@ export default function BuddyView() {
             </div>
             <div className="card stat-card">
               <div className="stat-icon" aria-hidden="true">
-                🌸
+                <Ic name="flower" size={16} />
               </div>
               <div>
                 <div className="stat-value">{stats.minutesToday}m</div>
@@ -384,7 +384,7 @@ export default function BuddyView() {
             </div>
             <div className="card stat-card">
               <div className="stat-icon" aria-hidden="true">
-                ⏱️
+                <Ic name="timer" size={16} />
               </div>
               <div>
                 <div className="stat-value">{Math.floor(stats.totalMinutes / 60)}h</div>
@@ -398,7 +398,7 @@ export default function BuddyView() {
             style={{ marginTop: 16 }}
             onClick={() => navigate('/settings')}
           >
-            <span aria-hidden="true">☁️</span> set up cloud sync
+            <Ic name="cloud" size={15} className="inline-icon" /> set up cloud sync
           </button>
         </div>
       </div>
@@ -452,7 +452,7 @@ export default function BuddyView() {
         </div>
         {error && (
           <div className="tag error-tag" style={{ marginTop: 12 }} role="status">
-            <span aria-hidden="true">⚠️</span> {error}
+            <Ic name="alert" size={15} className="inline-icon" /> {error}
           </div>
         )}
       </div>
@@ -460,21 +460,21 @@ export default function BuddyView() {
       <div className="grid wide">
         <div className="card pad">
           <div className="card-title">
-            <span aria-hidden="true">🔗</span> your pair code
+            <Ic name="link" size={15} className="inline-icon" /> your pair code
           </div>
           {pairCode ? (
             <div className="stack" style={{ gap: 12 }}>
               <div className="pair-code">{pairCode}</div>
               <div className="row wrap">
                 <button type="button" className="btn btn-primary" onClick={() => void copyCode()}>
-                  <span aria-hidden="true">📋</span> copy
+                  <Ic name="clipboard" size={15} className="inline-icon" /> copy
                 </button>
                 <button type="button" className="btn btn-soft" onClick={createCode}>
-                  <span aria-hidden="true">🔁</span> new code
+                  <Ic name="refresh" size={15} className="inline-icon" /> new code
                 </button>
                 {copied && (
                   <span className="tag" role="status">
-                    copied! <span aria-hidden="true">📋</span>
+                    copied! <Ic name="clipboard" size={15} className="inline-icon" />
                   </span>
                 )}
               </div>
@@ -484,9 +484,9 @@ export default function BuddyView() {
             </div>
           ) : (
             <div className="stack" style={{ gap: 10 }}>
-              <p className="small muted">no code yet — make one and send it to your study pal <span aria-hidden="true">✨</span></p>
+              <p className="small muted">no code yet — make one and send it to your study pal <Ic name="sparkles" size={15} className="inline-icon" /></p>
               <button type="button" className="btn btn-primary btn-block" onClick={createCode}>
-                <span aria-hidden="true">✨</span> create pair code
+                <Ic name="sparkles" size={15} className="inline-icon" /> create pair code
               </button>
             </div>
           )}
@@ -494,7 +494,7 @@ export default function BuddyView() {
 
         <div className="card pad">
           <div className="card-title">
-            <span aria-hidden="true">💌</span> join your buddy
+            <Ic name="send" size={15} className="inline-icon" /> join your buddy
           </div>
           <div className="row wrap" style={{ gap: 10 }}>
             <input
@@ -512,7 +512,7 @@ export default function BuddyView() {
               disabled={joinValue.length !== 6}
               onClick={joinBuddy}
             >
-              <span aria-hidden="true">💗</span> join
+              <Ic name="heart" size={14} className="inline-icon" /> join
             </button>
           </div>
           <p className="small muted" style={{ marginTop: 10 }}>
@@ -523,13 +523,13 @@ export default function BuddyView() {
 
         <div className="card pad">
           <div className="card-title">
-            <span aria-hidden="true">🌈</span> you vs your buddy
+            <Ic name="rainbow" size={16} className="inline-icon" /> you vs your buddy
           </div>
           {partner ? (
           <div className="buddy-compare">
             <div className="compare-head">
               <span className="tag">
-                <span aria-hidden="true">🌸</span> you
+                <Ic name="flower" size={15} className="inline-icon" /> you
               </span>
               <span className="compare-mid">vs</span>
               <span className="tag">
@@ -546,7 +546,7 @@ export default function BuddyView() {
                       {row.fmt(row.you)}{' '}
                       {winner === 'you' && (
                         <span title="you’re ahead!" role="img" aria-label="you’re ahead!">
-                          🎉
+                          <Ic name="trophy" size={15} />
                         </span>
                       )}
                     </div>
@@ -557,7 +557,7 @@ export default function BuddyView() {
                     <div className="compare-value">
                       {winner === 'them' && (
                         <span title="buddy is ahead!" role="img" aria-label="buddy is ahead!">
-                          🌷
+                          <Ic name="trophy" size={15} />
                         </span>
                       )}{' '}
                       {row.fmt(row.them)}
@@ -569,12 +569,12 @@ export default function BuddyView() {
             })}
             <div className="row between wrap small muted" style={{ marginTop: 4 }}>
               <span>last seen {relative(partner.at, now)}</span>
-              <span>{stale ? <>your buddy is napping <span aria-hidden="true">💤</span></> : <>buddy is studying right now <span aria-hidden="true">🌷</span></>}</span>
+              <span>{stale ? <>your buddy is napping <Ic name="moon" size={14} className="inline-icon" /></> : <>buddy is studying right now <Ic name="flower" size={15} className="inline-icon" /></>}</span>
             </div>
           </div>
         ) : (
           <EmptyState
-            emoji="⏳"
+            icon="hourglass"
             title="Waiting for your buddy"
             hint={
               pairCode
@@ -587,18 +587,18 @@ export default function BuddyView() {
 
         <div className="card pad">
           <div className="card-title">
-            <span aria-hidden="true">💡</span> buddy tips
+            <Ic name="lightbulb" size={15} className="inline-icon" /> buddy tips
           </div>
           <ul className="buddy-tips">
             <li>
-              <span aria-hidden="true">💌</span> share your pair code — it’s the only thing you need to connect.
+              <Ic name="send" size={15} className="inline-icon" /> share your pair code — it’s the only thing you need to connect.
             </li>
             <li>
-              <span aria-hidden="true">🏁</span> race on daily minutes: whoever studies more today gets bragging
-              rights <span aria-hidden="true">🎉</span>.
+              <Ic name="flag" size={15} className="inline-icon" /> race on daily minutes: whoever studies more today gets bragging
+              rights <Ic name="sparkles" size={15} className="inline-icon" />.
             </li>
             <li>
-              <span aria-hidden="true">🌷</span> cheer each other on — a tiny “you got this!” beats a hard day every
+              <Ic name="flower" size={15} className="inline-icon" /> cheer each other on — a tiny “you got this!” beats a hard day every
               time.
             </li>
           </ul>
@@ -613,7 +613,7 @@ export default function BuddyView() {
   const groupPane = !configured ? (
     <div className="card pad">
       <EmptyState
-        emoji="☁️"
+        icon="cloud"
         title={t('buddy.groupNeedsSync')}
         hint={t('buddy.groupSyncHint')}
         action={
@@ -638,15 +638,15 @@ export default function BuddyView() {
       <div className="card pad">
         <div className="row between wrap" style={{ gap: 10 }}>
           <div className="card-title" style={{ marginBottom: 0 }}>
-            <span aria-hidden="true">🔑</span> {t('buddy.groupTitle')}
+            <Ic name="key" size={15} className="inline-icon" /> {t('buddy.groupTitle')}
           </div>
           {groupCode && (
             <div className="row wrap" style={{ gap: 8 }}>
               <button type="button" className="btn btn-soft btn-sm" onClick={() => void copyGroupCode()}>
-                <span aria-hidden="true">📋</span> {t('buddy.copyCode')}
+                <Ic name="clipboard" size={15} className="inline-icon" /> {t('buddy.copyCode')}
               </button>
               <button type="button" className="btn btn-soft btn-sm" onClick={() => setLeaveOpen(true)}>
-                <span aria-hidden="true">🚪</span> {t('buddy.leave')}
+                <Ic name="logout" size={15} className="inline-icon" /> {t('buddy.leave')}
               </button>
             </div>
           )}
@@ -672,7 +672,7 @@ export default function BuddyView() {
           <div className="stack" style={{ gap: 10, marginTop: 10 }}>
             <div className="row wrap" style={{ gap: 10 }}>
               <button type="button" className="btn btn-primary" onClick={createGroup}>
-                <span aria-hidden="true">✨</span> {t('buddy.createGroup')}
+                <Ic name="sparkles" size={15} className="inline-icon" /> {t('buddy.createGroup')}
               </button>
               <input
                 className="input join-input"
@@ -689,7 +689,7 @@ export default function BuddyView() {
                 disabled={groupInput.length !== 6}
                 onClick={joinGroup}
               >
-                <span aria-hidden="true">🌈</span> {t('buddy.joinGroup')}
+                <Ic name="rainbow" size={16} className="inline-icon" /> {t('buddy.joinGroup')}
               </button>
             </div>
             <p className="small muted" style={{ margin: 0 }}>
@@ -702,7 +702,7 @@ export default function BuddyView() {
       <div className="card pad">
         <div className="row between wrap" style={{ gap: 10 }}>
           <div className="card-title" style={{ marginBottom: 0 }}>
-            <span aria-hidden="true">🏆</span> {t('buddy.boardTitle')}
+            <Ic name="trophy" size={15} className="inline-icon" /> {t('buddy.boardTitle')}
           </div>
           <div className="row wrap" style={{ gap: 8 }}>
             <button
@@ -711,7 +711,7 @@ export default function BuddyView() {
               disabled={!groupCode || boardBusy}
               onClick={() => void loadBoard()}
             >
-              <span aria-hidden="true">{boardBusy ? '⏳' : '🔄'}</span> {t('buddy.refresh')}
+              <Ic name={boardBusy ? 'hourglass' : 'refresh'} size={15} /> {t('buddy.refresh')}
             </button>
             <button
               type="button"
@@ -720,7 +720,7 @@ export default function BuddyView() {
               title={!settings.legal.share ? t('buddy.consentNeeded') : t('buddy.shareStats')}
               onClick={() => void shareStats()}
             >
-              <span aria-hidden="true">{shareState === 'busy' ? '⏳' : '📤'}</span> {t('buddy.shareStats')}
+              <Ic name={shareState === 'busy' ? 'hourglass' : 'upload'} size={15} /> {t('buddy.shareStats')}
             </button>
           </div>
         </div>
@@ -742,7 +742,7 @@ export default function BuddyView() {
           )}
         </div>
         {boardRows.length === 0 ? (
-          <EmptyState emoji="🌱" title={t('buddy.boardEmpty')} hint={t('buddy.boardNote')} />
+          <EmptyState icon="sprout" title={t('buddy.boardEmpty')} hint={t('buddy.boardNote')} />
         ) : (
           <div className="lb-list" style={{ marginTop: 12 }}>
             {boardRows.map((row, i) => {
@@ -750,12 +750,12 @@ export default function BuddyView() {
               const hours = Math.round((row.payload.totalMinutes / 60) * 10) / 10;
               return (
                 <div className={`lb-row ${mine ? 'mine' : ''}`} key={row.member}>
-                  <span className="lb-rank" role="img" aria-label={i === 0 ? '1st place' : i === 1 ? '2nd place' : i === 2 ? '3rd place' : `rank ${i + 1}`}>{i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}.`}</span>
+                  <span className="lb-rank" role="img" aria-label={i === 0 ? '1st place' : i === 1 ? '2nd place' : i === 2 ? '3rd place' : `rank ${i + 1}`}>{i === 0 ? <Ic name="trophy" size={15} /> : i <= 2 ? <Ic name="medal" size={15} /> : `${i + 1}.`}</span>
                   <span className="lb-name bold">
                     {row.payload.name || row.member}
                     {mine && (
                       <span className="tag" style={{ marginLeft: 6 }}>
-                        <span aria-hidden="true">🌸</span> {t('buddy.you')}
+                        <Ic name="flower" size={15} className="inline-icon" /> {t('buddy.you')}
                       </span>
                     )}
                   </span>
@@ -775,7 +775,7 @@ export default function BuddyView() {
 
       <div className="card pad">
         <div className="card-title">
-          <span aria-hidden="true">🗓</span> {t('buddy.schedTitle')}
+          <Ic name="calendarDays" size={16} className="inline-icon" /> {t('buddy.schedTitle')}
         </div>
         <div className="row wrap" style={{ gap: 10 }}>
           <button
@@ -785,7 +785,7 @@ export default function BuddyView() {
             title={!settings.legal.share ? t('buddy.consentNeeded') : undefined}
             onClick={() => void publishWeek()}
           >
-            <span aria-hidden="true">{schedBusy === 'publish' ? '⏳' : '📤'}</span> {t('buddy.publishWeek')}
+            <Ic name={schedBusy === 'publish' ? 'hourglass' : 'upload'} size={15} /> {t('buddy.publishWeek')}
           </button>
           <button
             type="button"
@@ -793,7 +793,7 @@ export default function BuddyView() {
             disabled={!groupCode || schedBusy !== null}
             onClick={() => void fetchSchedules()}
           >
-            <span aria-hidden="true">{schedBusy === 'fetch' ? '⏳' : '📥'}</span> {t('buddy.fetchSchedules')}
+            <Ic name={schedBusy === 'fetch' ? 'hourglass' : 'download'} size={15} /> {t('buddy.fetchSchedules')}
           </button>
         </div>
         {schedMsg && (
@@ -802,13 +802,13 @@ export default function BuddyView() {
           </div>
         )}
         {schedules.length === 0 ? (
-          <EmptyState emoji="🗓" title={t('buddy.schedEmptyTitle')} hint={t('buddy.schedEmptyHint')} />
+          <EmptyState icon="calendarDays" title={t('buddy.schedEmptyTitle')} hint={t('buddy.schedEmptyHint')} />
         ) : (
           <div className="stack" style={{ gap: 12, marginTop: 12 }}>
             {schedules.map((sched, si) => (
               <div className="stack" style={{ gap: 8 }} key={`${sched.member}-${si}`}>
                 <span className="tag pill small muted bold">
-                  <span aria-hidden="true">📅</span> {sched.member}
+                  <Ic name="calendar" size={15} className="inline-icon" /> {sched.member}
                 </span>
                 {sched.blocks.length === 0 ? (
                   <p className="small muted" style={{ margin: 0 }}>

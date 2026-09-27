@@ -367,7 +367,16 @@ export const useApp = create<AppState>()(
         return id;
       },
       updateTask: (id, patch) =>
-        set((s) => ({ tasks: s.tasks.map((t) => (t.id === id ? { ...t, ...patch } : t)), updatedAt: Date.now() })),
+        set((s) => ({
+          tasks: s.tasks.map((t) => {
+            if (t.id !== id) return t;
+            const next = { ...t, ...patch };
+            // moving a deadline re-arms its alarm
+            if (patch.due !== undefined && patch.due !== t.due) next.dueAlarmed = false;
+            return next;
+          }),
+          updatedAt: Date.now(),
+        })),
       deleteTask: (id) => set((s) => ({ tasks: s.tasks.filter((t) => t.id !== id), updatedAt: Date.now() })),
       toggleTask: (id) =>
         set((s) => {

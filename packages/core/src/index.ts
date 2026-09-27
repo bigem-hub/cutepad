@@ -5,6 +5,7 @@ export * from './analytics';
 export * from './achievements';
 export * from './sync';
 export * from './ambient';
+export * from './chime';
 export * from './exporters';
 export * from './reminders';
 export * from './bridge';

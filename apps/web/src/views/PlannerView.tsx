@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react';
 import { DAY_LABELS, dayKey, formatTime12, useApp, type Reminder, type TimeBlock } from '@cutepad/core';
-import { EmptyState, Modal, Segmented, Toggle } from '@cutepad/ui';
+import { EmptyState, Ic, Modal, Segmented, Toggle } from '@cutepad/ui';
 import { ensureNotificationPermission, useHashRoute, useNow } from '../hooks';
 import './PlannerView.css';
 
@@ -343,7 +343,7 @@ export default function PlannerView() {
     <div className="stack" style={{ gap: 16 }}>
       <div className="page-head">
         <div>
-          <div className="page-title" role="heading" aria-level={1}>Study Planner<span aria-hidden="true"> 🗓️</span></div>
+          <div className="page-title" role="heading" aria-level={1}>Study Planner <Ic className="inline-icon" name="calendarDays" size={20} /></div>
           <div className="page-sub">drag blocks around to reshape your week</div>
         </div>
         <span className="spacer" />
@@ -361,10 +361,10 @@ export default function PlannerView() {
           title="Import deadlines from a syllabus"
           onClick={() => (window.location.hash = '/smart?tab=syllabus')}
         >
-          <span aria-hidden="true">✨ </span>import syllabus
+          <Ic name="sparkles" size={16} /> import syllabus
         </button>
         <button type="button" className="btn btn-primary" onClick={() => openAdd(view === 'week' ? weekDays[0].key : today)}>
-          <span aria-hidden="true">＋ </span>add block
+          <Ic name="plus" size={15} /> add block
         </button>
       </div>
 
@@ -502,7 +502,7 @@ export default function PlannerView() {
                   >
                     <div className="row between">
                       <span>{dayNum}</span>
-                      {dueCount > 0 && <span style={{ fontSize: 11 }}><span aria-hidden="true">📌</span>{dueCount}</span>}
+                      {dueCount > 0 && <><span className="inline-icon" style={{ fontSize: 11 }}><Ic name="pin" size={11} /></span>{dueCount}</>}
                     </div>
                     <div className="month-dots">
                       {dayBlocks.slice(0, 6).map((b) => (
@@ -521,11 +521,11 @@ export default function PlannerView() {
                 {dayLabel(selectedDay)}
                 <span className="spacer" />
                 <button type="button" className="btn btn-sm btn-primary" onClick={() => openAdd(selectedDay)}>
-                  <span aria-hidden="true">＋ </span>add block
+                  <Ic name="plus" size={15} /> add block
                 </button>
               </div>
               {selectedDayBlocks.length === 0 && selectedDayTasks.length === 0 ? (
-                <EmptyState emoji="🫧" title="Nothing planned" hint="a free day — rest or play!" />
+                <EmptyState icon="sparkle" title="Nothing planned" hint="a free day — rest or play!" />
               ) : (
                 <div className="stack" style={{ gap: 8 }}>
                   {selectedDayBlocks.map((b) => (
@@ -545,13 +545,13 @@ export default function PlannerView() {
                           if (confirm(`Delete "${b.title}"?`)) deleteBlock(b.id);
                         }}
                       >
-                        🗑
+                        <Ic name="trash" size={14} />
                       </button>
                     </div>
                   ))}
                   {selectedDayTasks.map((t) => (
                     <div key={t.id} className="row">
-                      <span aria-hidden="true">📌</span>
+                      <span className="inline-icon" aria-hidden="true"><Ic name="pin" size={14} /></span>
                       <span className="small">{t.title}</span>
                       <span className="spacer" />
                       <button type="button" className="btn btn-sm btn-soft" onClick={() => navigate('/tasks')}>
@@ -568,9 +568,9 @@ export default function PlannerView() {
 
       <div className="grid wide">
         <div className="card pad">
-          <div className="card-title"><span aria-hidden="true">📌 </span>deadlines coming up</div>
+          <div className="card-title"><Ic name="pin" size={17} /> deadlines coming up</div>
           {deadlines.length === 0 ? (
-            <EmptyState emoji="🌈" title="No deadlines soon" hint="everything is under control~" />
+            <EmptyState icon="rainbow" title="No deadlines soon" hint="everything is under control~" />
           ) : (
             <div className="stack" style={{ gap: 8 }}>
               {deadlines.map(({ task, days }) => (
@@ -596,7 +596,7 @@ export default function PlannerView() {
 
         <div className="card pad">
           <div className="card-title">
-            <span aria-hidden="true">🔔 </span>recurring reminders
+            <Ic name="bell" size={17} /> recurring reminders
             <span className="spacer" />
             <button
               type="button"
@@ -604,11 +604,11 @@ export default function PlannerView() {
               aria-label="New reminder"
               onClick={() => setReminderDraft({ title: '', time: '08:00', days: [1, 2, 3, 4, 5] })}
             >
-              <span aria-hidden="true">＋ </span>new
+              <Ic name="plus" size={15} /> new
             </button>
           </div>
           {reminders.length === 0 ? (
-            <EmptyState emoji="⏰" title="No reminders" hint="set a cozy nudge for study time" />
+            <EmptyState icon="alarm" title="No reminders" hint="set a cozy nudge for study time" />
           ) : (
             <div className="stack" style={{ gap: 10 }}>
               {reminders.map((r) => (
@@ -644,7 +644,7 @@ export default function PlannerView() {
                       })
                     }
                   >
-                    ✎
+                    <Ic name="pencil" size={14} />
                   </button>
                   <button
                     type="button"
@@ -655,7 +655,7 @@ export default function PlannerView() {
                       if (confirm(`Delete reminder "${r.title}"?`)) deleteReminder(r.id);
                     }}
                   >
-                    🗑
+                    <Ic name="trash" size={14} />
                   </button>
                 </div>
               ))}
@@ -666,7 +666,7 @@ export default function PlannerView() {
 
       <Modal
         open={blockDraft !== null}
-        title={blockDraft?.id ? 'Edit study block ✏️' : 'New study block 🌸'}
+        title={blockDraft?.id ? 'Edit study block' : 'New study block'}
         onClose={() => setBlockDraft(null)}
         actions={
           <>
@@ -798,7 +798,7 @@ export default function PlannerView() {
 
       <Modal
         open={reminderDraft !== null}
-        title={reminderDraft?.id ? 'Edit reminder 🔔' : 'New reminder 🔔'}
+        title={reminderDraft?.id ? 'Edit reminder' : 'New reminder'}
         onClose={() => setReminderDraft(null)}
         actions={
           <>

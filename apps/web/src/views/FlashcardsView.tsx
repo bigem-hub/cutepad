@@ -15,6 +15,7 @@ import {
   EmptyState,
   FlipCard,
   MascotDock,
+  Ic,
   Modal,
   ProgressBar,
   Segmented,
@@ -294,7 +295,7 @@ export default function FlashcardsView() {
 
   const noDecksState = (
     <EmptyState
-      emoji="🎴"
+      icon="layers"
       title={t('flashcards.emptyDecksTitle')}
       hint={t('flashcards.emptyDecksHint')}
       action={newDeckAction}
@@ -325,14 +326,14 @@ export default function FlashcardsView() {
         value={tab}
         onChange={setTab}
         tabs={[
-          { id: 'decks', emoji: '📚', label: t('flashcards.tabDecks') },
+          { id: 'decks', icon: 'book', label: t('flashcards.tabDecks') },
           {
             id: 'study',
-            emoji: '▶️',
+            icon: 'play',
             label: t('flashcards.tabStudy'),
             badge: dueTotal > 0 ? dueTotal : undefined,
           },
-          { id: 'browse', emoji: '🗂', label: t('flashcards.tabBrowse') },
+          { id: 'browse', icon: 'layoutGrid', label: t('flashcards.tabBrowse') },
         ]}
       />
 
@@ -366,7 +367,7 @@ export default function FlashcardsView() {
                           aria-label={t('common.edit')}
                           onClick={() => openEditDeck(deck)}
                         >
-                          ✎
+                          <Ic name="pencil" size={14} />
                         </button>
                         <button
                           type="button"
@@ -375,19 +376,19 @@ export default function FlashcardsView() {
                           aria-label={t('common.delete')}
                           onClick={() => removeDeck(deck)}
                         >
-                          🗑
+                          <Ic name="trash" size={14} />
                         </button>
                       </div>
                     </div>
                     <div className="fc-stats">
                       <span className="tag">
-                        <span aria-hidden="true">🗂</span> {p.total} {t('flashcards.statCards')}
+                        <Ic name="layers" size={15} /> {p.total} {t('flashcards.statCards')}
                       </span>
                       <span className="tag">
-                        <span aria-hidden="true">✅</span> {p.learned} {t('flashcards.statLearned')}
+                        <Ic name="checkCircle" size={15} /> {p.learned} {t('flashcards.statLearned')}
                       </span>
                       <span className="tag">
-                        <span aria-hidden="true">⏰</span> {p.due} {t('flashcards.statDue')}
+                        <Ic name="alarm" size={15} /> {p.due} {t('flashcards.statDue')}
                       </span>
                     </div>
                     <button
@@ -395,7 +396,7 @@ export default function FlashcardsView() {
                       className="btn btn-primary btn-block"
                       onClick={() => pickDeck(deck.id)}
                     >
-                      <span aria-hidden="true">▶️</span> {t('flashcards.tabStudy')}
+                      <Ic name="play" size={15} /> {t('flashcards.tabStudy')}
                     </button>
                   </div>
                 );
@@ -417,7 +418,7 @@ export default function FlashcardsView() {
                   {t('flashcards.doneHint', { n: session.queue.length })}
                 </p>
                 <span className="pill">
-                  <span aria-hidden="true">🎯</span> {t('flashcards.retention')}: {retention}%
+                  <Ic name="target" size={15} /> {t('flashcards.retention')}: {retention}%
                 </span>
                 <div className="row wrap" style={{ justifyContent: 'center', gap: 10, marginTop: 16 }}>
                   <button
@@ -488,7 +489,7 @@ export default function FlashcardsView() {
                       ))}
                       {current.sourceNoteId && (
                         <span className="tag small">
-                          <span aria-hidden="true">📝</span> {t('flashcards.fromNote')}
+                          <Ic name="notes" size={15} /> {t('flashcards.fromNote')}
                         </span>
                       )}
                     </div>
@@ -514,7 +515,7 @@ export default function FlashcardsView() {
           ) : (
             <div className="card pad">
               <div className="card-title">
-                <span aria-hidden="true">▶️</span> {t('flashcards.studyPickDeck')}
+                <Ic name="play" size={15} /> {t('flashcards.studyPickDeck')}
               </div>
               <div className="row wrap" style={{ gap: 8 }}>
                 {decks.map((deck) => (
@@ -537,14 +538,14 @@ export default function FlashcardsView() {
                 <>
                   <div className="fc-stats">
                     <span className="tag">
-                      <span aria-hidden="true">⏰</span> {studyProgress.due} {t('flashcards.statDue')}
+                      <Ic name="alarm" size={15} /> {studyProgress.due} {t('flashcards.statDue')}
                     </span>
                     <span className="tag">
-                      <span aria-hidden="true">🆕</span> {studyCards.filter((c) => c.srs.state === 'new').length}{' '}
+                      <Ic name="sparkle" size={15} /> {studyCards.filter((c) => c.srs.state === 'new').length}{' '}
                       {t('flashcards.statNew')}
                     </span>
                     <span className="tag">
-                      <span aria-hidden="true">🗂</span> {studyProgress.total} {t('flashcards.statCards')}
+                      <Ic name="layers" size={15} /> {studyProgress.total} {t('flashcards.statCards')}
                     </span>
                   </div>
                   <button
@@ -560,14 +561,14 @@ export default function FlashcardsView() {
           )}
           {notice === 'due' && (
             <EmptyState
-              emoji="🌙"
+              icon="moon"
               title={t('flashcards.studyNothingDueTitle')}
               hint={t('flashcards.studyNothingDueHint')}
             />
           )}
           {notice === 'emptyDeck' && (
             <EmptyState
-              emoji="✏️"
+              icon="pencil"
               title={t('flashcards.studyEmptyDeckTitle')}
               hint={t('flashcards.studyEmptyDeckHint')}
               action={
@@ -588,7 +589,7 @@ export default function FlashcardsView() {
             <>
               <div className="card pad">
                 <div className="card-title">
-                  <span aria-hidden="true">🗂</span> {t('flashcards.tabBrowse')}
+                  <Ic name="layers" size={15} /> {t('flashcards.tabBrowse')}
                   <span className="spacer" />
                   <span className="small muted">
                     {browseCards.length} {t('flashcards.statCards')}
@@ -623,13 +624,13 @@ export default function FlashcardsView() {
               {browseCards.length === 0 ? (
                 filtering ? (
                   <EmptyState
-                    emoji="🔍"
+                    icon="search"
                     title={t('flashcards.noResultsTitle')}
                     hint={t('flashcards.noResultsHint')}
                   />
                 ) : (
                   <EmptyState
-                    emoji="✏️"
+                    icon="pencil"
                     title={t('flashcards.emptyCardsTitle')}
                     hint={t('flashcards.emptyCardsHint')}
                     action={
@@ -685,7 +686,7 @@ export default function FlashcardsView() {
                               ))}
                               {card.sourceNoteId && (
                                 <span className="tag small">
-                                  <span aria-hidden="true">📝</span> {t('flashcards.fromNote')}
+                                  <Ic name="notes" size={15} /> {t('flashcards.fromNote')}
                                 </span>
                               )}
                             </div>
@@ -698,7 +699,7 @@ export default function FlashcardsView() {
                               aria-label={t('common.edit')}
                               onClick={() => openEditCard(card)}
                             >
-                              ✎
+                              <Ic name="pencil" size={14} />
                             </button>
                             <button
                               type="button"
@@ -707,7 +708,7 @@ export default function FlashcardsView() {
                               aria-label={t('common.delete')}
                               onClick={() => removeCard(card)}
                             >
-                              🗑
+                              <Ic name="trash" size={14} />
                             </button>
                           </div>
                         </div>
@@ -885,7 +886,7 @@ export default function FlashcardsView() {
             />
             {cardDraft.template === 'cloze' && (
               <div className="tag">
-                <span aria-hidden="true">💡</span> {t('flashcards.clozeHint')}
+                <Ic name="lightbulb" size={15} /> {t('flashcards.clozeHint')}
               </div>
             )}
             <label className="field-label" htmlFor="fc-card-tags">

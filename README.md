@@ -114,7 +114,7 @@ npm run dev:desktop  # ▶ desktop app (Vite + Electron, hot reload)
 
 npm run build        # build the website → apps/web/dist
 npm run build:desktop# build renderer + Electron main (apps/desktop/dist)
-npm run dist         # package a Windows NSIS installer → release/Cutepad Setup 0.1.0.exe
+npm run dist         # package a Windows NSIS installer → release/Cutepad Setup 0.1.1.exe
 npm run build:mobile # build website + sync into android/ and ios/ (Capacitor)
 npm run dist:android # full Android release build → android/.../app-release-unsigned.apk
 npm run typecheck    # tsc across web + desktop
@@ -141,7 +141,7 @@ Cutepad runs on phones via **Capacitor 8** — the same React app in a native sh
 
 ### Install (Android)
 
-1. Grab **Cutepad-0.1.0.apk** from the [GitHub release](https://github.com/bigem-hub/cutepad/releases/tag/v0.1.0).
+1. Grab **Cutepad-0.1.1.apk** from the [GitHub release](https://github.com/bigem-hub/cutepad/releases/tag/v0.1.1).
 2. On your phone: open the APK → allow "install from unknown sources" if asked.
 3. min Android 7.0 (API 24), only the INTERNET permission, local-first like desktop.
 

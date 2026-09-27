@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type PointerEvent as RPointerEvent } from 'react';
 import { PALETTE, useApp } from '@cutepad/core';
-import { Modal } from '@cutepad/ui';
+import { Ic, Modal, type IconName } from '@cutepad/ui';
 
 type Tool = 'pen' | 'marker' | 'glitter' | 'rainbow' | 'eraser';
 type SizeId = 'S' | 'M' | 'L';
@@ -18,12 +18,12 @@ export interface Stroke {
   points: Point[];
 }
 
-const TOOLS: { id: Tool; emoji: string; label: string }[] = [
-  { id: 'pen', emoji: '✏️', label: 'Pen' },
-  { id: 'marker', emoji: '🖊️', label: 'Marker' },
-  { id: 'glitter', emoji: '✨', label: 'Glitter pen' },
-  { id: 'rainbow', emoji: '🌈', label: 'Rainbow pen' },
-  { id: 'eraser', emoji: '⌫', label: 'Eraser' },
+const TOOLS: { id: Tool; icon: IconName; label: string }[] = [
+  { id: 'pen', icon: 'pencil', label: 'Pen' },
+  { id: 'marker', icon: 'pen', label: 'Marker' },
+  { id: 'glitter', icon: 'sparkles', label: 'Glitter pen' },
+  { id: 'rainbow', icon: 'rainbow', label: 'Rainbow pen' },
+  { id: 'eraser', icon: 'eraser', label: 'Eraser' },
 ];
 
 const SIZES: { id: SizeId; px: number }[] = [
@@ -306,7 +306,7 @@ export default function NoteDrawing({ noteId, drawing }: NoteDrawingProps) {
             aria-label={t.label}
             aria-pressed={tool === t.id}
           >
-            {t.emoji}
+            <Ic name={t.icon} size={16} />
           </button>
         ))}
         <span className="doodle-sep" />
@@ -328,7 +328,7 @@ export default function NoteDrawing({ noteId, drawing }: NoteDrawingProps) {
           ↩ undo
         </button>
         <button type="button" className="btn btn-sm btn-danger" onClick={() => setConfirmClear(true)} title="Clear the whole doodle" aria-label="Clear the whole doodle">
-          🗑 clear
+          <Ic name="trash" size={14} /> clear
         </button>
       </div>
 
@@ -364,10 +364,10 @@ export default function NoteDrawing({ noteId, drawing }: NoteDrawingProps) {
 
       <div className="row wrap">
         <button type="button" className="btn btn-primary btn-sm" onClick={save} title="Save doodle to this note" aria-label="Save doodle to this note">
-          💾 save doodle
+          <Ic name="save" size={14} /> save doodle
         </button>
         <button type="button" className="btn btn-sm" onClick={download} title="Download doodle as PNG" aria-label="Download doodle as PNG">
-          ⬇ download png
+          <Ic name="download" size={14} /> download png
         </button>
         {drawing && (
           <button type="button" className="btn btn-sm btn-danger" onClick={removeDoodle} title="Remove saved doodle" aria-label="Remove saved doodle">
@@ -377,13 +377,13 @@ export default function NoteDrawing({ noteId, drawing }: NoteDrawingProps) {
         <span className="spacer" />
         {drawing && (
           <span className="tag">
-            <span aria-hidden="true">🎨 </span>doodle attached
+            <Ic name="palette" size={15} className="inline-icon" /> doodle attached
           </span>
         )}
       </div>
 
       <p className="doodle-hint">
-        <span aria-hidden="true">✎ </span>doodles only stick to your note when you press <b>save</b> — saving auto-saves the whole note to your notebook right away.
+        <Ic name="pencil" size={15} className="inline-icon" /> doodles only stick to your note when you press <b>save</b> — saving auto-saves the whole note to your notebook right away.
         {strokes.length > 0 && ' unsaved strokes live only on the canvas until then.'}
       </p>
 

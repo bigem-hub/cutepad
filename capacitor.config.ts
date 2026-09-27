@@ -11,6 +11,17 @@ const config: CapacitorConfig = {
   ios: {
     contentInset: 'automatic',
   },
+  plugins: {
+    StatusBar: {
+      overlaysWebView: false,
+      style: 'LIGHT',
+      backgroundColor: '#ffd6e8',
+    },
+    LocalNotifications: {
+      iconColor: '#ffd6e8',
+      presentationOptions: ['badge', 'sound', 'banner', 'list'],
+    },
+  },
 };
 
 export default config;

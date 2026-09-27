@@ -8,7 +8,7 @@ import {
   type PointerEvent as RPointerEvent,
 } from 'react';
 import { PALETTE, useApp, type InkPoint, type InkStroke, type InkTool, type StudyDoc } from '@cutepad/core';
-import { EmptyState, MascotDock, Modal, Segmented } from '@cutepad/ui';
+import { EmptyState, Ic, MascotDock, Modal, Segmented, type IconName } from '@cutepad/ui';
 import { useT } from '../i18n';
 import './DocumentsView.css';
 
@@ -26,14 +26,14 @@ const MAX_BYTES = 10 * 1024 * 1024;
 const INK_COLORS: string[] = [...PALETTE, '#ffffff', '#2b2340'];
 const DEFAULT_COLOR = '#2b2340';
 
-const TOOLS: { id: InkTool; emoji: string; key: string }[] = [
-  { id: 'pen', emoji: '✏️', key: 'documents.toolPen' },
-  { id: 'marker', emoji: '🖊️', key: 'documents.toolMarker' },
-  { id: 'highlighter', emoji: '🖍️', key: 'documents.toolHighlighter' },
-  { id: 'glitter', emoji: '✨', key: 'documents.toolGlitter' },
-  { id: 'rainbow', emoji: '🌈', key: 'documents.toolRainbow' },
-  { id: 'neon', emoji: '💡', key: 'documents.toolNeon' },
-  { id: 'eraser', emoji: '🧽', key: 'documents.toolEraser' },
+const TOOLS: { id: InkTool; icon: IconName; key: string }[] = [
+  { id: 'pen', icon: 'pencil', key: 'documents.toolPen' },
+  { id: 'marker', icon: 'pen', key: 'documents.toolMarker' },
+  { id: 'highlighter', icon: 'highlighter', key: 'documents.toolHighlighter' },
+  { id: 'glitter', icon: 'sparkles', key: 'documents.toolGlitter' },
+  { id: 'rainbow', icon: 'rainbow', key: 'documents.toolRainbow' },
+  { id: 'neon', icon: 'lightbulb', key: 'documents.toolNeon' },
+  { id: 'eraser', icon: 'eraser', key: 'documents.toolEraser' },
 ];
 
 function seeded(n: number): number {
@@ -408,7 +408,7 @@ function DocViewer({ doc, onBack }: { doc: StudyDoc; onBack: () => void }) {
     setConfirmClear(false);
   };
 
-  const kindIcon = doc.kind === 'pdf' ? '📄' : '🖼️';
+  const kindIcon: IconName = doc.kind === 'pdf' ? 'file' : 'image';
   const countLabel =
     annotations.length === 0 ? t('documents.noScribbles') : t('documents.strokes', { n: annotations.length });
 
@@ -417,15 +417,15 @@ function DocViewer({ doc, onBack }: { doc: StudyDoc; onBack: () => void }) {
       <div className="card pad">
         <div className="row wrap" style={{ gap: 10 }}>
           <button type="button" className="btn btn-sm btn-soft" onClick={onBack}>
-            <span aria-hidden="true">🚪</span> {t('documents.back')}
+            <Ic name="arrowLeft" size={15} /> {t('documents.back')}
           </button>
           <strong className="doc-title" title={doc.name}>
-            <span aria-hidden="true">{kindIcon}</span> {doc.name}
+            <Ic name={kindIcon} size={16} /> {doc.name}
           </strong>
           <span className="tag">{doc.kind === 'pdf' ? t('documents.kindPdf') : t('documents.kindImage')}</span>
           {doc.kind === 'pdf' && (
             <span className="tag">
-              <span aria-hidden="true">📌</span> {t('documents.pdfHint')}
+              <Ic name="pin" size={15} /> {t('documents.pdfHint')}
             </span>
           )}
           <span className="spacer" />
@@ -445,7 +445,7 @@ function DocViewer({ doc, onBack }: { doc: StudyDoc; onBack: () => void }) {
             title={t('documents.undo')}
             aria-label={t('documents.undo')}
           >
-            <span aria-hidden="true">↶</span> {t('documents.undo')}
+            <Ic name="rotate" size={15} /> {t('documents.undo')}
           </button>
           <button
             type="button"
@@ -455,7 +455,7 @@ function DocViewer({ doc, onBack }: { doc: StudyDoc; onBack: () => void }) {
             title={t('documents.clear')}
             aria-label={t('documents.clear')}
           >
-            <span aria-hidden="true">🗑</span> {t('documents.clear')}
+            <Ic name="trash" size={15} /> {t('documents.clear')}
           </button>
         </div>
 
@@ -472,7 +472,7 @@ function DocViewer({ doc, onBack }: { doc: StudyDoc; onBack: () => void }) {
                 aria-label={t(item.key)}
                 aria-pressed={tool === item.id}
               >
-                {item.emoji}
+                <Ic name={item.icon} size={16} />
               </button>
             ))}
             <span className="doc-sep" />
@@ -540,7 +540,7 @@ function DocViewer({ doc, onBack }: { doc: StudyDoc; onBack: () => void }) {
 
       <div className="row wrap" style={{ gap: 8 }}>
         <span className="tag">
-          <span aria-hidden="true">🎨</span> {countLabel}
+          <Ic name="palette" size={15} /> {countLabel}
         </span>
         <span className="small muted" role="status">
           {mode === 'draw' ? t('documents.drawHint') : t('documents.navHint')}
@@ -675,7 +675,7 @@ export default function DocumentsView() {
         <span className="spacer" />
         {!openDoc && (
           <button type="button" className="btn btn-primary" onClick={openImport}>
-            <span aria-hidden="true">＋</span> {t('documents.import')}
+            <Ic name="plus" size={15} className="inline-icon" /> {t('documents.import')}
           </button>
         )}
       </div>
@@ -686,12 +686,12 @@ export default function DocumentsView() {
         <>
           {docs.length === 0 ? (
             <EmptyState
-              emoji="📎"
+              icon="paperclip"
               title={t('documents.emptyTitle')}
               hint={t('documents.emptyHint')}
               action={
                 <button type="button" className="btn btn-primary" onClick={openImport}>
-                  <span aria-hidden="true">＋</span> {t('documents.import')}
+                  <Ic name="plus" size={15} className="inline-icon" /> {t('documents.import')}
                 </button>
               }
             />
@@ -703,7 +703,7 @@ export default function DocumentsView() {
                   <div className="card pad stack" key={doc.id} style={{ gap: 8 }}>
                     <div className="row between" style={{ gap: 8 }}>
                       <span className="doc-emoji" aria-hidden="true">
-                        {doc.kind === 'pdf' ? '📄' : '🖼️'}
+                        <Ic name={doc.kind === 'pdf' ? 'file' : 'image'} size={20} />
                       </span>
                       <div className="row wrap" style={{ gap: 6 }}>
                         <span className="tag">{doc.kind === 'pdf' ? t('documents.kindPdf') : t('documents.kindImage')}</span>
@@ -722,16 +722,16 @@ export default function DocumentsView() {
                           window.location.hash = '/notes';
                         }}
                       >
-                        <span aria-hidden="true">📝</span> {note.title || t('documents.untitled')}
+                        <Ic name="notes" size={15} /> {note.title || t('documents.untitled')}
                       </button>
                     )}
                     <div className="row" style={{ gap: 8 }}>
                       <button type="button" className="btn btn-primary btn-sm" onClick={() => setOpenId(doc.id)}>
-                        <span aria-hidden="true">📂</span> {t('documents.open')}
+                        <Ic name="folderOpen" size={15} /> {t('documents.open')}
                       </button>
                       <span className="spacer" />
                       <button type="button" className="btn btn-sm btn-danger" onClick={() => setDeleteId(doc.id)}>
-                        <span aria-hidden="true">🗑</span> {t('documents.delete')}
+                        <Ic name="trash" size={15} /> {t('documents.delete')}
                       </button>
                     </div>
                   </div>
@@ -761,14 +761,14 @@ export default function DocumentsView() {
         <div className="stack" style={{ gap: 12 }}>
           <div className="row wrap" style={{ gap: 10 }}>
             <label className="btn btn-sm btn-soft">
-              <span aria-hidden="true">📁</span> {t('documents.choose')}
+              <Ic name="folder" size={15} /> {t('documents.choose')}
               <input type="file" accept=".pdf,image/*" onChange={onFile} hidden />
             </label>
             <span className="small muted">{t('documents.fileHint')}</span>
           </div>
           {pending && (
             <div className="pill small">
-              <span aria-hidden="true">📎</span> {t('documents.fileReady', { name: pending.name, size: pending.sizeKb })}
+              <Ic name="paperclip" size={15} /> {t('documents.fileReady', { name: pending.name, size: pending.sizeKb })}
             </div>
           )}
           <label className="stack" style={{ gap: 4 }}>
@@ -793,7 +793,7 @@ export default function DocumentsView() {
           </label>
           {importErr && (
             <div className="doc-err" role="status">
-              <span aria-hidden="true">⚠️</span> {importErr}
+              <Ic name="alert" size={15} /> {importErr}
             </div>
           )}
         </div>

@@ -238,6 +238,7 @@ button,
   border-radius: 12px;
   display: grid;
   place-items: center;
+  color: #fff;
   font-size: 19px;
   background: linear-gradient(135deg, var(--accent), var(--accent-2));
   box-shadow: var(--shadow-pop);
@@ -275,10 +276,15 @@ button,
   color: var(--active-fg);
   box-shadow: var(--shadow-pop);
 }
-.nav-item .nav-emoji {
+.nav-item .nav-icon {
   width: 22px;
-  text-align: center;
-  font-size: 17px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.inline-icon {
+  display: inline-flex;
+  vertical-align: -3px;
 }
 .sidebar-foot {
   margin-top: auto;

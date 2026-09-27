@@ -10,15 +10,15 @@ import {
   useApp,
   type MascotMood,
 } from '@cutepad/core';
-import { EmptyState, Mascot, MoodFace, PlantCompanion, ProgressBar } from '@cutepad/ui';
+import { EmptyState, Ic, Mascot, MoodFace, PlantCompanion, ProgressBar, type IconName } from '@cutepad/ui';
 import { mascotLine, useHashRoute, useMascotMood, useNow } from '../hooks';
 
 const DAILY_GOAL = 60;
 
-function StatCard({ emoji, value, label }: { emoji: string; value: string; label: string }) {
+function StatCard({ icon, value, label }: { icon: IconName; value: string; label: string }) {
   return (
     <div className="card stat-card">
-      <div className="stat-icon" aria-hidden="true">{emoji}</div>
+      <div className="stat-icon" aria-hidden="true"><Ic name={icon} size={22} /></div>
       <div>
         <div className="stat-value">{value}</div>
         <div className="stat-label">{label}</div>
@@ -89,7 +89,7 @@ export default function DashboardView() {
       <div className="card pad" style={{ display: 'flex', gap: 20, flexWrap: 'wrap', alignItems: 'center' }}>
         <Mascot mood={mood} size={120} />
         <div style={{ flex: 1, minWidth: 240 }}>
-          <h1 style={{ fontSize: 24 }}>{mascotName} says hi!<span aria-hidden="true"> 🌸</span></h1>
+          <h1 style={{ fontSize: 24 }}>{mascotName} says hi! <Ic name="flower" size={22} className="inline-icon" /></h1>
           <p style={{ margin: '6px 0 14px', fontWeight: 700 }}>{line}</p>
           <div className="row between" style={{ marginBottom: 6 }}>
             <span className="small bold">daily goal · {stats.minutesToday}/{DAILY_GOAL} min</span>
@@ -98,7 +98,7 @@ export default function DashboardView() {
           <ProgressBar pct={goalPct} />
           <div className="row wrap" style={{ marginTop: 14 }}>
             <button type="button" className="btn btn-primary" onClick={() => navigate('/focus')}>
-              <span aria-hidden="true">🍅 </span>start focus
+              <Ic name="timer" size={16} /> start focus
             </button>
             <button
               type="button"
@@ -108,7 +108,7 @@ export default function DashboardView() {
                 navigate('/notes');
               }}
             >
-              <span aria-hidden="true">✏️ </span>new note
+              <Ic name="pencil" size={16} /> new note
             </button>
             <button
               type="button"
@@ -118,23 +118,23 @@ export default function DashboardView() {
                 navigate('/tasks');
               }}
             >
-              <span aria-hidden="true">✅ </span>new task
+              <Ic name="checkCircle" size={16} /> new task
             </button>
           </div>
         </div>
       </div>
 
       <div className="grid">
-        <StatCard emoji="🔥" value={`${stats.streak}`} label="day streak" />
-        <StatCard emoji="🌸" value={`${stats.minutesToday}m`} label="studied today" />
-        <StatCard emoji="🍅" value={`${stats.sessionsToday}`} label="sessions today" />
-        <StatCard emoji="📝" value={`${stats.notesCount}`} label="notes written" />
+        <StatCard icon="flame" value={`${stats.streak}`} label="day streak" />
+        <StatCard icon="flower" value={`${stats.minutesToday}m`} label="studied today" />
+        <StatCard icon="timer" value={`${stats.sessionsToday}`} label="sessions today" />
+        <StatCard icon="notes" value={`${stats.notesCount}`} label="notes written" />
       </div>
 
       <div className="grid wide">
         <div className="card pad">
           <div className="card-title">
-            <span aria-hidden="true">😊 </span>how are you feeling?
+            <Ic name="smile" size={17} /> how are you feeling?
             <span className="spacer" />
             <button type="button" className="btn btn-sm btn-soft" onClick={() => navigate('/mood')}>
               mood log
@@ -160,14 +160,14 @@ export default function DashboardView() {
 
         <div className="card pad">
           <div className="card-title">
-            <span aria-hidden="true">✨ </span>smart ideas
+            <Ic name="sparkles" size={17} /> smart ideas
             <span className="spacer" />
             <button type="button" className="btn btn-sm btn-soft" onClick={() => navigate('/smart')}>
               open
             </button>
           </div>
           {suggestions.length === 0 ? (
-            <EmptyState emoji="🧠" title="All caught up!" hint="finish tasks to get study suggestions" />
+            <EmptyState icon="brain" title="All caught up!" hint="finish tasks to get study suggestions" />
           ) : (
             <div className="stack" style={{ gap: 8 }}>
               {suggestions.slice(0, 3).map((sug) => (
@@ -185,7 +185,7 @@ export default function DashboardView() {
 
       <div className="grid wide">
         <div className="card pad">
-          <div className="card-title"><span aria-hidden="true">🌱 </span>study garden</div>
+          <div className="card-title"><Ic name="sprout" size={17} /> study garden</div>
           <div className="row" style={{ gap: 16, alignItems: 'center' }}>
             <PlantCompanion stage={plant.current.index} pct={plant.pct} size={130} />
             <div style={{ flex: 1 }}>
@@ -207,7 +207,7 @@ export default function DashboardView() {
         </div>
 
         <div className="card pad">
-          <div className="card-title"><span aria-hidden="true">📅 </span>last 7 days</div>
+          <div className="card-title"><Ic name="calendar" size={17} /> last 7 days</div>
           <div
             className="bar-chart"
             role="img"
@@ -234,14 +234,14 @@ export default function DashboardView() {
       <div className="grid wide">
         <div className="card pad">
           <div className="card-title">
-            <span aria-hidden="true">🗓️ </span>today’s study blocks
+            <Ic name="calendarDays" size={17} /> today’s study blocks
             <span className="spacer" />
             <button type="button" className="btn btn-sm btn-soft" onClick={() => navigate('/planner')}>
               open planner
             </button>
           </div>
           {todaysBlocks.length === 0 ? (
-            <EmptyState emoji="🫧" title="No blocks yet" hint="drag some study time into today!" />
+            <EmptyState icon="sparkle" title="No blocks yet" hint="drag some study time into today!" />
           ) : (
             <div className="stack" style={{ gap: 8 }}>
               {todaysBlocks.map((b) => (
@@ -259,7 +259,7 @@ export default function DashboardView() {
 
         <div className="card pad">
           <div className="card-title">
-            <span aria-hidden="true">⏰ </span>deadlines & reminders
+            <Ic name="alarm" size={17} /> deadlines & reminders
             <span className="spacer" />
             <button type="button" className="btn btn-sm btn-soft" onClick={() => navigate('/tasks')}>
               tasks
@@ -267,7 +267,7 @@ export default function DashboardView() {
           </div>
           <div className="stack" style={{ gap: 8 }}>
             {dueTasks.length === 0 && !nextReminder && (
-              <EmptyState emoji="🌈" title="All clear!" hint="no deadlines haunting you~" />
+              <EmptyState icon="rainbow" title="All clear!" hint="no deadlines haunting you~" />
             )}
             {dueTasks.map((t) => {
               const days = daysUntil(t.due!);
@@ -282,7 +282,7 @@ export default function DashboardView() {
             })}
             {nextReminder && (
               <div className="row" style={{ gap: 10 }}>
-                <span className="tag"><span aria-hidden="true">🔔 </span>{nextReminder.time}</span>
+                <span className="tag"><Ic name="bell" size={14} /> {nextReminder.time}</span>
                 <span className="small">{nextReminder.title}</span>
               </div>
             )}

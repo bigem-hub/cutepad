@@ -3,11 +3,12 @@ import {
   AMBIENT_TRACKS,
   formatMinutes,
   minutesToday,
+  playChime as playCoreChime,
   sessionsToday,
   useApp,
   type SessionKind,
 } from '@cutepad/core';
-import { EmptyState, MascotDock, RingProgress } from '@cutepad/ui';
+import { EmptyState, Ic, MascotDock, RingProgress, type IconName } from '@cutepad/ui';
 import { mascotLine, notifyUser, useMascotMood } from '../hooks';
 import './FocusView.css';
 
@@ -19,7 +20,7 @@ const PHASE_LABEL: Record<Phase, string> = {
   long: 'Long Break',
 };
 
-const KIND_ICON: Record<SessionKind, string> = { focus: '🍅', break: '☕', custom: '⏱️' };
+const KIND_ICON: Record<SessionKind, IconName> = { focus: 'timer', break: 'coffee', custom: 'clock' };
 
 const TIPS: { emoji: string; text: string }[] = [
   { emoji: '💧', text: 'sip some water — your brain loves hydration!' },
@@ -49,31 +50,7 @@ function relTime(ts: number): string {
 }
 
 function playChime(): void {
-  try {
-    const Ctor: typeof AudioContext =
-      window.AudioContext ?? (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-    const ctx = new Ctor();
-    if (ctx.state === 'suspended') void ctx.resume();
-    const start = ctx.currentTime;
-    [660, 880].forEach((freq, i) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      const at = start + i * 0.16;
-      osc.type = 'sine';
-      osc.frequency.value = freq;
-      gain.gain.setValueAtTime(0.0001, at);
-      gain.gain.exponentialRampToValueAtTime(0.2, at + 0.03);
-      gain.gain.exponentialRampToValueAtTime(0.0001, at + 0.4);
-      osc.connect(gain).connect(ctx.destination);
-      osc.start(at);
-      osc.stop(at + 0.45);
-    });
-    window.setTimeout(() => {
-      void ctx.close();
-    }, 1000);
-  } catch {
-    return;
-  }
+  playCoreChime();
 }
 
 function ignoreKeyTarget(target: EventTarget | null): boolean {
@@ -240,9 +217,9 @@ export default function FocusView() {
       <div className="grid wide">
         <div className="card pad">
           <div className="card-title" role="heading" aria-level={1}>
-            <span aria-hidden="true">🍅 </span>pomodoro focus
+            <Ic name="timer" size={17} /> pomodoro focus
             <span className="spacer" />
-            <span className="tag" role="status">{running ? '● live' : '⏸ paused'}</span>
+            <span className="tag" role="status">{running ? '● live' : <><Ic name="pause" size={13} /> paused</>}</span>
           </div>
           <div className="focus-stage">
             <select
@@ -274,13 +251,13 @@ export default function FocusView() {
 
             <div className="row wrap" style={{ justifyContent: 'center' }}>
               <button type="button" className="btn btn-primary" onClick={toggleRun}>
-                <span aria-hidden="true">{running ? '⏸' : '▶'}</span> {running ? 'pause' : 'start'}
+                {running ? <Ic name="pause" size={16} /> : <Ic name="play" size={16} />} {running ? 'pause' : 'start'}
               </button>
               <button type="button" className="btn btn-soft" onClick={reset} title="Reset timer" aria-label="Reset timer">
                 ↺ reset
               </button>
               <button type="button" className="btn btn-soft" onClick={skip} title="Skip to next phase" aria-label="Skip to next phase">
-                ⏭ skip
+                <Ic name="skipForward" size={15} /> skip
               </button>
             </div>
 
@@ -294,7 +271,7 @@ export default function FocusView() {
         <div className="stack" style={{ gap: 16 }}>
           {inBreak ? (
             <div className="card pad">
-              <div className="card-title"><span aria-hidden="true">🫧 </span>self-care break</div>
+              <div className="card-title"><Ic name="sparkle" size={17} /> self-care break</div>
               <div className="focus-tip">
                 <span className="tip-emoji" aria-hidden="true">{TIPS[tipIdx].emoji}</span>
                 <p className="small bold" style={{ margin: 0 }}>
@@ -307,14 +284,14 @@ export default function FocusView() {
             </div>
           ) : (
             <div className="card pad">
-              <div className="card-title"><span aria-hidden="true">🌸 </span>how this works</div>
+              <div className="card-title"><Ic name="flower" size={17} /> how this works</div>
               <div className="row wrap" style={{ gap: 8 }}>
-                <span className="tag">🍅 {pomodoro.work}m focus</span>
-                <span className="tag">☕ {pomodoro.shortBreak}m short</span>
-                <span className="tag">🌙 {pomodoro.longBreak}m long</span>
-                <span className="tag">every {pomodoro.longEvery} 🍅</span>
+                <span className="tag"><Ic name="timer" size={14} /> {pomodoro.work}m focus</span>
+                <span className="tag"><Ic name="coffee" size={14} /> {pomodoro.shortBreak}m short</span>
+                <span className="tag"><Ic name="moon" size={14} /> {pomodoro.longBreak}m long</span>
+                <span className="tag">every {pomodoro.longEvery} <Ic name="timer" size={14} /></span>
                 <span className="tag">{pomodoro.autoBreak ? 'auto breaks on' : 'manual breaks'}</span>
-                <span className="tag">{pomodoro.chime ? '🔔 chime on' : '🔕 chime off'}</span>
+                <span className="tag"><><Ic name={pomodoro.chime ? 'bell' : 'bellOff'} size={14} /> {pomodoro.chime ? 'chime on' : 'chime off'}</></span>
               </div>
               <p className="small muted" style={{ marginTop: 12, marginBottom: 0 }}>
                 press <span className="kbd">space</span> to start or pause · skipping a focus after 1m still logs it
@@ -323,7 +300,7 @@ export default function FocusView() {
           )}
 
           <div className="card pad">
-            <div className="card-title"><span aria-hidden="true">🛡️ </span>focus guard</div>
+            <div className="card-title"><Ic name="shield" size={17} /> focus guard</div>
             <div className="row between" style={{ gap: 10 }}>
               <span className="tag">
                 {guardCfg.enabled
@@ -335,7 +312,7 @@ export default function FocusView() {
                   : 'off'}
               </span>
               <button type="button" className="btn btn-sm btn-soft" onClick={() => (window.location.hash = '/settings')}>
-                <span aria-hidden="true">⚙️ </span>settings
+                <Ic name="settings" size={16} /> settings
               </button>
             </div>
             <p className="small muted" style={{ marginTop: 10, marginBottom: 0 }}>
@@ -347,14 +324,14 @@ export default function FocusView() {
 
           <div className="card pad">
             <div className="card-title">
-              <span aria-hidden="true">🕘 </span>recent sessions
+              <Ic name="clock" size={17} /> recent sessions
               <span className="spacer" />
               <span className="tag">
                 {todayMin}m today · {todayCount}
               </span>
             </div>
             {recent.length === 0 ? (
-              <EmptyState emoji="🍅" title="No sessions yet" hint="hit start and your first pomodoro lands here" />
+              <EmptyState icon="timer" title="No sessions yet" hint="hit start and your first pomodoro lands here" />
             ) : (
               <div className="stack" style={{ gap: 8 }}>
                 {recent.map((s) => {
@@ -366,7 +343,7 @@ export default function FocusView() {
                       <span className="spacer" />
                       <span className="small muted">{relTime(s.startedAt)}</span>
                       <span className="tag">
-                        {KIND_ICON[s.kind]} {formatMinutes(s.minutes)}
+                        <Ic name={KIND_ICON[s.kind]} size={14} /> {formatMinutes(s.minutes)}
                       </span>
                     </div>
                   );
@@ -378,7 +355,7 @@ export default function FocusView() {
       </div>
 
       <div className="card pad">
-        <div className="card-title"><span aria-hidden="true">🎧 </span>ambient vibes</div>
+        <div className="card-title"><Ic name="headphones" size={17} /> ambient vibes</div>
         <div className="row wrap" style={{ gap: 8 }}>
           {AMBIENT_TRACKS.map((t) => (
             <button
@@ -398,7 +375,7 @@ export default function FocusView() {
                 <span />
                 <span />
               </span>
-              ♪ playing
+              <Ic name="music" size={14} /> playing
             </span>
           )}
         </div>
