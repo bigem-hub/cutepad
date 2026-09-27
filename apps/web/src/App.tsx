@@ -21,6 +21,7 @@ import BuddyView from './views/BuddyView';
 import SettingsView from './views/SettingsView';
 import { mascotLine, useAmbient, useDeadlineTicker, useDesktopBackup, useFocusGuard, useHashRoute, useMascotMood, useReminderTicker } from './hooks';
 import { useT } from './i18n';
+import { setRoutePresence } from './lib/presence';
 
 interface NavItem {
   path: string;
@@ -128,6 +129,12 @@ export default function App() {
       window.removeEventListener('keydown', onActivity);
     };
   }, []);
+
+  useEffect(() => {
+    const path = route.split('?')[0];
+    const item = NAV.find((n) => n.path === path);
+    setRoutePresence(item ? t(item.labelKey) : 'Cutepad');
+  }, [route, t]);
 
   const stats = deriveStats({ sessions, tasks, notesCount: notes.length });
   const stickyMatch = route.match(/^\/sticky\/(.+)$/);

@@ -28,4 +28,6 @@ contextBridge.exposeInMainWorld('cutepad', {
   },
   guardNudge: () => ipcRenderer.send('guard-nudge'),
   openExternal: (url: string) => ipcRenderer.send('open-external', url),
+  setPresence: (payload: { details?: string; state?: string; startMs?: number | null } | null) =>
+    ipcRenderer.send('presence-set', payload),
 });

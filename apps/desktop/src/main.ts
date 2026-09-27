@@ -15,6 +15,7 @@ import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
 import { makeKawaiiPng } from './icon';
+import { DiscordPresence, type PresenceActivity } from './discord-rpc';
 
 const DEV_SERVER = process.env.CUTEPAD_DEV_SERVER ?? '';
 const PRELOAD = path.join(__dirname, 'preload.js');
@@ -25,6 +26,7 @@ let tray: Electron.Tray | null = null;
 let trayIcon: NativeImage | null = null;
 let quitting = false;
 let lastRotation = 0;
+const presence = new DiscordPresence();
 
 // ===== focus guard =====
 
@@ -284,6 +286,25 @@ function setupIpc(): void {
 
   ipcMain.on('guard-nudge', () => showMainWindow());
 
+  ipcMain.on('presence-set', (_event, payload: { details?: string; state?: string; startMs?: number | null }) => {
+    if (!payload || typeof payload !== 'object') {
+      presence.update(null);
+      return;
+    }
+    const activity: PresenceActivity | null =
+      payload.details || payload.state
+        ? {
+            details: typeof payload.details === 'string' ? payload.details : undefined,
+            state: typeof payload.state === 'string' ? payload.state : undefined,
+            startTimestamp:
+              typeof payload.startMs === 'number' && Number.isFinite(payload.startMs) && payload.startMs > 0
+                ? payload.startMs / 1000
+                : undefined,
+          }
+        : null;
+    presence.update(activity);
+  });
+
   ipcMain.on('open-external', (_event, url: string) => {
     if (typeof url !== 'string') return;
     if (!/^https?:\/\//i.test(url)) return;
@@ -387,6 +408,7 @@ app.whenReady().then(() => {
   setupIpc();
   setupMenu();
   setupTray();
+  presence.start();
   void createMainWindow();
 
   app.on('activate', showMainWindow);
@@ -395,6 +417,7 @@ app.whenReady().then(() => {
 app.on('before-quit', () => {
   quitting = true;
   stopGuardPoller();
+  presence.stop();
 });
 
 app.on('window-all-closed', () => {

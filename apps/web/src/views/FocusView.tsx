@@ -10,6 +10,7 @@ import {
 } from '@cutepad/core';
 import { EmptyState, Ic, MascotDock, RingProgress, type IconName } from '@cutepad/ui';
 import { mascotLine, notifyUser, useMascotMood } from '../hooks';
+import { setFocusPresence } from '../lib/presence';
 import './FocusView.css';
 
 type Phase = 'focus' | 'short' | 'long';
@@ -146,8 +147,23 @@ export default function FocusView() {
   }, [running, phase, guardCfg.enabled]);
 
   useEffect(() => {
-    document.title = running ? `${mmss(remaining)} · Cutepad` : DEFAULT_TITLE;
+    document.title = running ? `Cutepad · ${mmss(remaining)}` : DEFAULT_TITLE;
   }, [running, remaining]);
+
+  useEffect(() => {
+    if (!running) {
+      setFocusPresence(null);
+      return;
+    }
+    setFocusPresence({
+      details:
+        phase === 'focus' ? '🍅 Focus session' : phase === 'short' ? '☕ Short break' : '🌿 Long break',
+      state: `${mmss(remaining)} left`,
+      startMs: Date.now() - (total - remaining) * 1000,
+    });
+  }, [running, phase, remaining, total]);
+
+  useEffect(() => () => setFocusPresence(null), []);
 
   useEffect(() => {
     return () => {

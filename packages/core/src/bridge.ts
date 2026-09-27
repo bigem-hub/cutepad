@@ -19,6 +19,7 @@ export interface CutepadBridge {
   onGuardForeground(callback: (info: GuardForeground) => void): () => void;
   guardNudge(): void;
   openExternal(url: string): void;
+  setPresence(payload: { details?: string; state?: string; startMs?: number | null } | null): void;
 }
 
 interface WindowWithBridge {
