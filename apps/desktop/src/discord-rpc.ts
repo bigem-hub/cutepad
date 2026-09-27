@@ -14,7 +14,7 @@ const OP_CLOSE = 2;
 const OP_PING = 3;
 const OP_PONG = 4;
 
-const DEFAULT_CLIENT_ID = '';
+const DEFAULT_CLIENT_ID = '1553668102376525845';
 const MIN_FLUSH_MS = 10000;
 const MAX_TEXT = 128;
 
