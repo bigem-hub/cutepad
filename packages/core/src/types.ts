@@ -123,6 +123,16 @@ export interface SyncSettings {
   autoSync: boolean;
 }
 
+export interface AuthState {
+  isLoggedIn: boolean;
+  user: { email: string; name: string } | null;
+}
+
+export interface OnboardingState {
+  hasCompletedOnboarding: boolean;
+  step: number;
+}
+
 export interface LegalConsents {
   /** epoch ms when the user consented to cloud sync transmission of their data, null = not given */
   sync: number | null;
@@ -130,6 +140,8 @@ export interface LegalConsents {
   publish: number | null;
   /** epoch ms when the user consented to sharing name + study stats with buddy/group, null = not given */
   share: number | null;
+  /** epoch ms when the user acknowledged the age / parental-consent notice on first launch, null = not yet */
+  age: number | null;
 }
 
 export interface Settings {
@@ -149,6 +161,7 @@ export interface Settings {
   guard: GuardSettings;
   accessibility: AccessibilitySettings;
   legal: LegalConsents;
+  onboarding: OnboardingState;
 }
 
 export type Locale = 'en' | 'es' | 'ja' | 'ne';
@@ -310,6 +323,7 @@ export interface CutepadData {
   unlockedOutfits: string[];
   settings: Settings;
   buddy: BuddyState;
+  auth: AuthState;
   updatedAt: number;
 }
 

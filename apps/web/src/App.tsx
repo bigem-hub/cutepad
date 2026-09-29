@@ -1,11 +1,12 @@
-import { useEffect, type CSSProperties, type ReactElement } from 'react';
+import { useEffect, useLayoutEffect, type CSSProperties, type ReactElement } from 'react';
 import { deriveStats, isDesktop, useApp, type BackgroundConfig } from '@cutepad/core';
-import { AmbientPopover, CelebrationLayer, Ic, Mascot, PlantCompanion, patternCss, type IconName } from '@cutepad/ui';
+import { AmbientPopover, CelebrationLayer, Ic, Mascot, Modal, PlantCompanion, patternCss, type IconName } from '@cutepad/ui';
 import Titlebar from './components/Titlebar';
 import StickyLayer from './components/StickyLayer';
 import StickyPage from './pages/StickyPage';
 import SharePage from './pages/SharePage';
 import { PrivacyPage, TermsPage, CookiesPage, RefundsPage } from './pages/LegalPages';
+import { ForgotPasswordPage, LoginPage, SignupPage, WelcomePage } from './pages/AuthPages';
 import DashboardView from './views/DashboardView';
 import NotesView from './views/NotesView';
 import PlannerView from './views/PlannerView';
@@ -19,7 +20,7 @@ import AnalyticsView from './views/AnalyticsView';
 import AchievementsView from './views/AchievementsView';
 import BuddyView from './views/BuddyView';
 import SettingsView from './views/SettingsView';
-import { mascotLine, useAmbient, useDeadlineTicker, useDesktopBackup, useFocusGuard, useHashRoute, useMascotMood, useReminderTicker } from './hooks';
+import { mascotLine, useAmbient, useAuthBootstrap, useDeadlineTicker, useDesktopBackup, useFocusGuard, useHashRoute, useMascotMood, useReminderTicker } from './hooks';
 import { useT } from './i18n';
 import { setRoutePresence } from './lib/presence';
 
@@ -79,6 +80,7 @@ export default function App() {
   const syncState = useApp((s) => s.sync.state);
   const addSticky = useApp((s) => s.addSticky);
   const pushEvent = useApp((s) => s.pushEvent);
+  const setSettings = useApp((s) => s.setSettings);
   const mascotMood = useMascotMood();
   const guard = useFocusGuard();
   const t = useT();
@@ -87,6 +89,7 @@ export default function App() {
   useDeadlineTicker();
   useDesktopBackup();
   useAmbient();
+  useAuthBootstrap();
 
   useEffect(() => {
     document.documentElement.dataset.theme = settings.theme;
@@ -104,14 +107,11 @@ export default function App() {
     return () => window.removeEventListener('storage', onStorage);
   }, []);
 
-  // desktop app: lock scrolling on the home page only (content fits; extra page padding caused a phantom scroll)
-  useEffect(() => {
-    const lock = route.split('?')[0] === '/' && isDesktop();
-    document.documentElement.style.overflow = lock ? 'hidden' : '';
-    return () => {
-      document.documentElement.style.overflow = '';
-    };
-  }, [route]);
+  // desktop app: the phantom home-page scroll was fixed in CSS (titlebar-aware layout
+  // math + tighter page padding) — no scroll locking here, real scrolling stays available
+  useLayoutEffect(() => {
+    document.documentElement.dataset.platform = isDesktop() ? 'desktop' : 'web';
+  }, []);
 
   useEffect(() => {
     let last = 0;
@@ -131,13 +131,29 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    setRoutePresence(route.split('?')[0]);
+  }, [route]);
+
+  // first-time users (no real data beyond the built-in demo content) start at the welcome tour
+  useEffect(() => {
     const path = route.split('?')[0];
-    const item = NAV.find((n) => n.path === path);
-    setRoutePresence(item ? t(item.labelKey) : 'Cutepad');
-  }, [route, t]);
+    const d = useApp.getState();
+    const hasUserData =
+      d.notes.length > 1 ||
+      d.sessions.length > 0 ||
+      d.decks.length > 1 ||
+      d.docs.length > 0 ||
+      d.moods.length > 0 ||
+      d.achievements.length > 0 ||
+      d.reviewLogs.length > 0;
+    const onboarded = d.settings.onboarding.hasCompletedOnboarding || hasUserData;
+    if (path === '/' && !onboarded) navigate('/welcome');
+    else if (path === '/welcome' && onboarded) navigate('/');
+  }, [route, navigate]);
 
   const stats = deriveStats({ sessions, tasks, notesCount: notes.length });
   const stickyMatch = route.match(/^\/sticky\/(.+)$/);
+  const acknowledgeAge = () => setSettings({ legal: { ...settings.legal, age: Date.now() } });
   const appClass = [
     'app',
     settings.dark ? 'dark' : '',
@@ -147,6 +163,29 @@ export default function App() {
     .filter(Boolean)
     .join(' ');
   const bg = backgroundStyle(settings.background, settings.dark);
+  const ageGate = (
+    <Modal
+      open={!settings.legal.age}
+      title="quick check 🌸"
+      onClose={acknowledgeAge}
+      actions={
+        <button type="button" className="btn btn-primary" autoFocus onClick={acknowledgeAge}>
+          i understand 💗
+        </button>
+      }
+    >
+      <div className="stack" style={{ gap: 10 }}>
+        <p style={{ margin: 0 }}>
+          cutepad is made for everyone — but if you&rsquo;re under 18, please use it with a parent or
+          guardian&rsquo;s approval.
+        </p>
+        <p style={{ margin: 0 }}>
+          by continuing you confirm that you&rsquo;re 18 or older, or a parent/guardian has approved you using
+          cutepad. this one-time note won&rsquo;t show again.
+        </p>
+      </div>
+    </Modal>
+  );
 
   if (stickyMatch) {
     return (
@@ -181,6 +220,25 @@ export default function App() {
       <div className={appClass}>
         <div className="bg-layer" style={bg} />
         <LegalView />
+      </div>
+    );
+  }
+
+  const AUTH: Record<string, () => ReactElement> = {
+    '/welcome': WelcomePage,
+    '/login': LoginPage,
+    '/signup': SignupPage,
+    '/forgot': ForgotPasswordPage,
+  };
+  const AuthView = AUTH[routePath];
+  if (AuthView) {
+    return (
+      <div className={appClass}>
+        <div className="bg-layer" style={bg} />
+        {isDesktop() && <Titlebar />}
+        <AuthView />
+        {ageGate}
+        <CelebrationLayer />
       </div>
     );
   }
@@ -324,6 +382,8 @@ export default function App() {
 
       <StickyLayer />
       <CelebrationLayer />
+
+      {ageGate}
     </div>
   );
 }

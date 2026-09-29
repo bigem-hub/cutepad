@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
+import { createJSONStorage, persist, type StateStorage } from 'zustand/middleware';
+import { getBridge } from './bridge';
 import { newlyUnlocked } from './achievements';
 import { newlyUnlockedRewards } from './rewards';
 import { applyRating, freshSrs as freshCardSrs, reviewLog as makeReviewLog } from './srs';
@@ -31,6 +32,50 @@ import type {
   UiEvent,
   UiEventType,
 } from './types';
+
+// ===== AI key at rest: encrypt in localStorage with the OS keychain (Electron safeStorage).
+// On the web there is no bridge → the key is stored as-is (documented limitation).
+const SECURE_PREFIX = 'enc:v1:';
+const AI_KEY_SNIP = '"apiKey":"';
+
+function transformAiKey(json: string, direction: 'encrypt' | 'decrypt'): string {
+  if (json.includes('"apiKey":""')) return json; // no key stored — nothing to transform
+  if (!json.includes(AI_KEY_SNIP)) return json;
+  const bridge = getBridge();
+  if (!bridge?.secureSync) return json;
+  try {
+    const parsed = JSON.parse(json) as { state?: { settings?: { ai?: { apiKey?: unknown } } } };
+    const ai = parsed?.state?.settings?.ai;
+    const key = ai?.apiKey;
+    if (typeof key !== 'string' || key.length === 0) return json;
+    if (direction === 'encrypt') {
+      if (key.startsWith(SECURE_PREFIX)) return json;
+      const enc = bridge.secureSync('encrypt', key);
+      if (!enc?.startsWith(SECURE_PREFIX)) return json;
+      ai!.apiKey = enc;
+    } else {
+      if (!key.startsWith(SECURE_PREFIX)) return json;
+      // decrypt failed (other device / OS keychain reset) → drop the key so the user re-enters it
+      ai!.apiKey = bridge.secureSync('decrypt', key) ?? '';
+    }
+    return JSON.stringify(parsed);
+  } catch {
+    return json;
+  }
+}
+
+const secureLocalStorage: StateStorage = {
+  getItem: (name) => {
+    const raw = localStorage.getItem(name);
+    return raw === null ? null : transformAiKey(raw, 'decrypt');
+  },
+  setItem: (name, value) => {
+    localStorage.setItem(name, transformAiKey(value, 'encrypt'));
+  },
+  removeItem: (name) => {
+    localStorage.removeItem(name);
+  },
+};
 
 export interface AddNoteInput {
   title?: string;
@@ -141,6 +186,9 @@ interface AppState extends CutepadData {
 
   setSettings: (patch: SettingsPatch) => void;
   setBuddy: (patch: Partial<BuddyState>) => void;
+  setAuth: (patch: Partial<CutepadData['auth']>) => void;
+  completeOnboarding: () => void;
+  setOnboardingStep: (step: number) => void;
   setSyncStatus: (patch: Partial<SyncStatus>) => void;
   setSaveError: (message: string | null) => void;
 
@@ -169,6 +217,7 @@ function pickData(state: AppState): CutepadData {
     unlockedOutfits: state.unlockedOutfits,
     settings: state.settings,
     buddy: state.buddy,
+    auth: state.auth,
     updatedAt: state.updatedAt,
   };
 }
@@ -593,6 +642,24 @@ export const useApp = create<AppState>()(
       setSettings: (patch) =>
         set((s) => ({ settings: mergeSettings(s.settings, patch), updatedAt: Date.now() })),
       setBuddy: (patch) => set((s) => ({ buddy: { ...s.buddy, ...patch }, updatedAt: Date.now() })),
+      setAuth: (patch) =>
+        set((s) => ({ auth: { ...s.auth, ...patch }, updatedAt: Date.now() })),
+      completeOnboarding: () =>
+        set((s) => ({
+          settings: {
+            ...s.settings,
+            onboarding: { ...s.settings.onboarding, hasCompletedOnboarding: true },
+          },
+          updatedAt: Date.now(),
+        })),
+      setOnboardingStep: (step) =>
+        set((s) => ({
+          settings: {
+            ...s.settings,
+            onboarding: { ...s.settings.onboarding, step },
+          },
+          updatedAt: Date.now(),
+        })),
       setSyncStatus: (patch) => set((s) => ({ sync: { ...s.sync, ...patch } })),
       setSaveError: (message) => set({ saveError: message }),
 
@@ -610,7 +677,7 @@ export const useApp = create<AppState>()(
     {
       name: 'cutepad-state',
       version: 1,
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() => secureLocalStorage),
       partialize: (state) => pickData(state) as unknown as AppState,
       merge: (persisted, current) => {
         const p = (persisted ?? {}) as Partial<CutepadData>;

@@ -12,6 +12,7 @@ import {
 } from '@cutepad/core';
 import { EmptyState, Ic, Mascot, MoodFace, PlantCompanion, ProgressBar, type IconName } from '@cutepad/ui';
 import { mascotLine, useHashRoute, useMascotMood, useNow } from '../hooks';
+import { useT } from '../i18n';
 
 const DAILY_GOAL = 60;
 
@@ -29,6 +30,7 @@ function StatCard({ icon, value, label }: { icon: IconName; value: string; label
 
 export default function DashboardView() {
   const [, navigate] = useHashRoute();
+  const t = useT();
   const now = useNow(30000);
   const mood = useMascotMood();
   const sessions = useApp((s) => s.sessions);
@@ -89,16 +91,16 @@ export default function DashboardView() {
       <div className="card pad" style={{ display: 'flex', gap: 20, flexWrap: 'wrap', alignItems: 'center' }}>
         <Mascot mood={mood} size={120} />
         <div style={{ flex: 1, minWidth: 240 }}>
-          <h1 style={{ fontSize: 24 }}>{mascotName} says hi! <Ic name="flower" size={22} className="inline-icon" /></h1>
+          <h1 style={{ fontSize: 24 }}>{t('dash.hi', { name: mascotName })} <Ic name="flower" size={22} className="inline-icon" /></h1>
           <p style={{ margin: '6px 0 14px', fontWeight: 700 }}>{line}</p>
           <div className="row between" style={{ marginBottom: 6 }}>
-            <span className="small bold">daily goal · {stats.minutesToday}/{DAILY_GOAL} min</span>
+            <span className="small bold">{t('dash.goal', { cur: stats.minutesToday, goal: DAILY_GOAL })}</span>
             <span className="small muted">{Math.round(goalPct)}%</span>
           </div>
           <ProgressBar pct={goalPct} />
           <div className="row wrap" style={{ marginTop: 14 }}>
             <button type="button" className="btn btn-primary" onClick={() => navigate('/focus')}>
-              <Ic name="timer" size={16} /> start focus
+              <Ic name="timer" size={16} /> {t('dash.startFocus')}
             </button>
             <button
               type="button"
@@ -108,7 +110,7 @@ export default function DashboardView() {
                 navigate('/notes');
               }}
             >
-              <Ic name="pencil" size={16} /> new note
+              <Ic name="pencil" size={16} /> {t('dash.newNote')}
             </button>
             <button
               type="button"
@@ -118,26 +120,26 @@ export default function DashboardView() {
                 navigate('/tasks');
               }}
             >
-              <Ic name="checkCircle" size={16} /> new task
+              <Ic name="checkCircle" size={16} /> {t('dash.newTask')}
             </button>
           </div>
         </div>
       </div>
 
       <div className="grid">
-        <StatCard icon="flame" value={`${stats.streak}`} label="day streak" />
-        <StatCard icon="flower" value={`${stats.minutesToday}m`} label="studied today" />
-        <StatCard icon="timer" value={`${stats.sessionsToday}`} label="sessions today" />
-        <StatCard icon="notes" value={`${stats.notesCount}`} label="notes written" />
+        <StatCard icon="flame" value={`${stats.streak}`} label={t('dash.streak')} />
+        <StatCard icon="flower" value={`${stats.minutesToday}m`} label={t('dash.studied')} />
+        <StatCard icon="timer" value={`${stats.sessionsToday}`} label={t('dash.sessions')} />
+        <StatCard icon="notes" value={`${stats.notesCount}`} label={t('dash.notes')} />
       </div>
 
       <div className="grid wide">
         <div className="card pad">
           <div className="card-title">
-            <Ic name="smile" size={17} /> how are you feeling?
+            <Ic name="smile" size={17} /> {t('dash.feel')}
             <span className="spacer" />
             <button type="button" className="btn btn-sm btn-soft" onClick={() => navigate('/mood')}>
-              mood log
+              {t('dash.moodLog')}
             </button>
           </div>
           <div className="row" style={{ gap: 10, flexWrap: 'wrap' }}>
@@ -152,22 +154,24 @@ export default function DashboardView() {
             ))}
             <span className="small muted" style={{ marginLeft: 6 }}>
               {todayMoodEntry
-                ? `today: ${['😣', '😴', '😐', '😊', '🌸'][todayMoodEntry.level - 1]} logged${moodDays > 1 ? ` · ${moodDays}-day mood streak` : ''}`
-                : 'tap to log today’s mood 💗'}
+                ? `${t('dash.moodToday', { emoji: ['😣', '😴', '😐', '😊', '🌸'][todayMoodEntry.level - 1] })}${
+                    moodDays > 1 ? t('dash.moodStreak', { n: moodDays }) : ''
+                  }`
+                : t('dash.moodTap')}
             </span>
           </div>
         </div>
 
         <div className="card pad">
           <div className="card-title">
-            <Ic name="sparkles" size={17} /> smart ideas
+            <Ic name="sparkles" size={17} /> {t('dash.smart')}
             <span className="spacer" />
             <button type="button" className="btn btn-sm btn-soft" onClick={() => navigate('/smart')}>
-              open
+              {t('dash.open')}
             </button>
           </div>
           {suggestions.length === 0 ? (
-            <EmptyState icon="brain" title="All caught up!" hint="finish tasks to get study suggestions" />
+            <EmptyState icon="brain" title={t('dash.smartEmpty')} hint={t('dash.smartEmptyHint')} />
           ) : (
             <div className="stack" style={{ gap: 8 }}>
               {suggestions.slice(0, 3).map((sug) => (
@@ -185,7 +189,7 @@ export default function DashboardView() {
 
       <div className="grid wide">
         <div className="card pad">
-          <div className="card-title"><Ic name="sprout" size={17} /> study garden</div>
+          <div className="card-title"><Ic name="sprout" size={17} /> {t('dash.garden')}</div>
           <div className="row" style={{ gap: 16, alignItems: 'center' }}>
             <PlantCompanion stage={plant.current.index} pct={plant.pct} size={130} />
             <div style={{ flex: 1 }}>
@@ -194,39 +198,41 @@ export default function DashboardView() {
               </div>
               <p className="small muted" style={{ margin: '6px 0 10px' }}>
                 {plant.nextAt
-                  ? `${plant.nextAt - stats.totalMinutes} more minutes to grow the next stage~`
-                  : 'your garden is fully bloomed! 🌸'}
+                  ? t('dash.gardenNext', { n: plant.nextAt - stats.totalMinutes })
+                  : t('dash.gardenFull')}
               </p>
               <ProgressBar pct={plant.pct} tiny />
               <div className="row between small muted" style={{ marginTop: 8 }}>
-                <span>total {Math.floor(stats.totalMinutes / 60)}h studied</span>
-                <span>best streak {stats.bestStreak}d</span>
+                <span>{t('dash.gardenTotal', { n: Math.floor(stats.totalMinutes / 60) })}</span>
+                <span>{t('dash.gardenBest', { n: stats.bestStreak })}</span>
               </div>
             </div>
           </div>
         </div>
 
         <div className="card pad">
-          <div className="card-title"><Ic name="calendar" size={17} /> last 7 days</div>
+          <div className="card-title"><Ic name="calendar" size={17} /> {t('dash.week')}</div>
           <div
             className="bar-chart"
             role="img"
-            aria-label={week.map((day) => `${day.date}: ${day.minutes} minutes`).join(', ')}
+            aria-label={week.map((day) => t('dash.barLabel', { date: day.date, n: day.minutes })).join(', ')}
           >
             {week.map((day) => (
               <div
                 key={day.date}
                 className={`bar ${day.minutes === 0 ? 'empty' : ''}`}
                 style={{ height: `${Math.max(4, (day.minutes / maxWeek) * 100)}%` }}
-                title={`${day.date}: ${day.minutes} min`}
+                title={t('dash.barLabel', { date: day.date, n: day.minutes })}
               >
                 <span>{day.date.slice(8)}</span>
               </div>
             ))}
           </div>
           <div className="row between small muted" style={{ marginTop: 26 }}>
-            <span>this week: {Math.round(week.reduce((s, d) => s + d.minutes, 0) / 60 * 10) / 10}h</span>
-            <span>{openTasks} open tasks</span>
+            <span>
+              {t('dash.weekTotal', { n: Math.round(week.reduce((s, d) => s + d.minutes, 0) / 60 * 10) / 10 })}
+            </span>
+            <span>{t('dash.openTasks', { n: openTasks })}</span>
           </div>
         </div>
       </div>
@@ -234,14 +240,14 @@ export default function DashboardView() {
       <div className="grid wide">
         <div className="card pad">
           <div className="card-title">
-            <Ic name="calendarDays" size={17} /> today’s study blocks
+            <Ic name="calendarDays" size={17} /> {t('dash.blocks')}
             <span className="spacer" />
             <button type="button" className="btn btn-sm btn-soft" onClick={() => navigate('/planner')}>
-              open planner
+              {t('dash.openPlanner')}
             </button>
           </div>
           {todaysBlocks.length === 0 ? (
-            <EmptyState icon="sparkle" title="No blocks yet" hint="drag some study time into today!" />
+            <EmptyState icon="sparkle" title={t('dash.blocksEmpty')} hint={t('dash.blocksEmptyHint')} />
           ) : (
             <div className="stack" style={{ gap: 8 }}>
               {todaysBlocks.map((b) => (
@@ -259,24 +265,24 @@ export default function DashboardView() {
 
         <div className="card pad">
           <div className="card-title">
-            <Ic name="alarm" size={17} /> deadlines & reminders
+            <Ic name="alarm" size={17} /> {t('dash.deadlines')}
             <span className="spacer" />
             <button type="button" className="btn btn-sm btn-soft" onClick={() => navigate('/tasks')}>
-              tasks
+              {t('dash.tasks')}
             </button>
           </div>
           <div className="stack" style={{ gap: 8 }}>
             {dueTasks.length === 0 && !nextReminder && (
-              <EmptyState icon="rainbow" title="All clear!" hint="no deadlines haunting you~" />
+              <EmptyState icon="rainbow" title={t('dash.clear')} hint={t('dash.clearHint')} />
             )}
-            {dueTasks.map((t) => {
-              const days = daysUntil(t.due!);
+            {dueTasks.map((task) => {
+              const days = daysUntil(task.due!);
               return (
-                <div key={t.id} className="row" style={{ gap: 10 }}>
+                <div key={task.id} className="row" style={{ gap: 10 }}>
                   <span className="tag" style={{ background: days <= 0 ? '#ffd7e3' : undefined }}>
-                    {days < 0 ? `${-days}d late` : days === 0 ? 'today!' : `${days}d left`}
+                    {days < 0 ? t('dash.late', { n: -days }) : days === 0 ? t('dash.today') : t('dash.left', { n: days })}
                   </span>
-                  <span className="small bold">{t.title}</span>
+                  <span className="small bold">{task.title}</span>
                 </div>
               );
             })}

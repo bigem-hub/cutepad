@@ -61,7 +61,8 @@ export const DEFAULT_SETTINGS: Settings = {
     blockedSites: ['youtube.com', 'twitter.com', 'x.com', 'facebook.com', 'instagram.com', 'tiktok.com', 'reddit.com'],
   },
   accessibility: { dyslexiaFont: false, ttsEnabled: true, ttsVoice: '', speechRate: 1 },
-  legal: { sync: null, publish: null, share: null },
+  legal: { sync: null, publish: null, share: null, age: null },
+  onboarding: { hasCompletedOnboarding: false, step: 0 },
 };
 
 const WELCOME_HTML = `
@@ -157,6 +158,7 @@ export function createInitialData(): CutepadData {
     unlockedOutfits: [],
     settings: { ...DEFAULT_SETTINGS },
     buddy: { pairCode: null, partnerName: null, groupCode: null },
+    auth: { isLoggedIn: false, user: null },
     updatedAt: now,
   };
 }
@@ -177,10 +179,12 @@ export function normalizeSettings(raw: unknown): Settings {
     ai: { ...d.ai, ...(s.ai ?? {}) },
     guard: { ...d.guard, ...(s.guard ?? {}) },
     accessibility: { ...d.accessibility, ...(s.accessibility ?? {}) },
+    onboarding: { ...d.onboarding, ...(s.onboarding ?? {}) },
     legal: {
       sync: typeof s.legal?.sync === 'number' ? s.legal.sync : null,
       publish: typeof s.legal?.publish === 'number' ? s.legal.publish : null,
       share: typeof s.legal?.share === 'number' ? s.legal.share : null,
+      age: typeof s.legal?.age === 'number' ? s.legal.age : null,
     },
   };
 }
@@ -199,8 +203,8 @@ export function normalizeData(partial: Partial<CutepadData> | null | undefined, 
     stickies: p.stickies ?? base.stickies,
     reminders: p.reminders ?? base.reminders,
     achievements: p.achievements ?? base.achievements,
-    decks: p.decks ?? [],
-    flashcards: p.flashcards ?? [],
+    decks: p.decks ?? base.decks,
+    flashcards: p.flashcards ?? base.flashcards,
     reviewLogs: p.reviewLogs ?? [],
     moods: p.moods ?? [],
     docs: p.docs ?? [],
@@ -209,6 +213,7 @@ export function normalizeData(partial: Partial<CutepadData> | null | undefined, 
     settings: normalizeSettings(p.settings ?? base.settings),
     notes: (p.notes ?? base.notes).map((n) => ({ ...n, share: n.share ?? null })),
     buddy: { ...base.buddy, ...(p.buddy ?? {}), groupCode: p.buddy?.groupCode ?? base.buddy.groupCode ?? null },
+    auth: p.auth ?? base.auth,
     updatedAt: p.updatedAt ?? Date.now(),
   };
 }

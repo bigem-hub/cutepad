@@ -20,6 +20,8 @@ export interface CutepadBridge {
   guardNudge(): void;
   openExternal(url: string): void;
   setPresence(payload: { details?: string; state?: string; startMs?: number | null } | null): void;
+  /** synchronous OS-keychain string encryption (Electron safeStorage); returns null on failure/unavailable */
+  secureSync(op: 'encrypt' | 'decrypt', value: string): string | null;
 }
 
 interface WindowWithBridge {

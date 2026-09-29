@@ -10,6 +10,7 @@ import {
 import { PALETTE, useApp, type InkPoint, type InkStroke, type InkTool, type StudyDoc } from '@cutepad/core';
 import { EmptyState, Ic, MascotDock, Modal, Segmented, type IconName } from '@cutepad/ui';
 import { useT } from '../i18n';
+import { setDocPresence } from '../lib/presence';
 import './DocumentsView.css';
 
 type TFn = ReturnType<typeof useT>;
@@ -588,6 +589,15 @@ export default function DocumentsView() {
   const openDoc = docs.find((d) => d.id === openId) ?? null;
   const deleteTarget = docs.find((d) => d.id === deleteId) ?? null;
   const sortedNotes = useMemo(() => [...notes].sort((a, b) => a.title.localeCompare(b.title)), [notes]);
+
+  const openDocId = openDoc?.id ?? null;
+  const openDocName = openDoc?.name ?? '';
+
+  useEffect(() => {
+    setDocPresence(openDocId ? { id: openDocId, name: openDocName } : null);
+  }, [openDocId, openDocName]);
+
+  useEffect(() => () => setDocPresence(null), []);
 
   const openImport = () => {
     setPending(null);

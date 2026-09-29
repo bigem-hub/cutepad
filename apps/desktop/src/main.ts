@@ -16,6 +16,7 @@ import * as os from 'node:os';
 import * as path from 'node:path';
 import { makeKawaiiPng } from './icon';
 import { DiscordPresence, type PresenceActivity } from './discord-rpc';
+import { registerSecureStringHandler } from './secure';
 
 const DEV_SERVER = process.env.CUTEPAD_DEV_SERVER ?? '';
 const PRELOAD = path.join(__dirname, 'preload.js');
@@ -277,6 +278,8 @@ function setupIpc(): void {
       icon: trayIcon ?? undefined,
     }).show();
   });
+
+  registerSecureStringHandler();
 
   ipcMain.on('guard-set-active', (_event, payload: { active: boolean; blocked: { apps: string[]; sites: string[] } }) => {
     guardSites = Array.isArray(payload?.blocked?.sites) ? payload.blocked.sites : [];

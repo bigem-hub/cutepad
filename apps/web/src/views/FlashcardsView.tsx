@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   PALETTE,
   deckProgress,
@@ -24,6 +24,7 @@ import {
 } from '@cutepad/ui';
 import { useNow } from '../hooks';
 import { useT } from '../i18n';
+import { setStudyPresence } from '../lib/presence';
 import './FlashcardsView.css';
 
 const ICONS = ['🎴', '🧠', '🌸', '🧪', '📖', '🎨'];
@@ -133,6 +134,18 @@ export default function FlashcardsView() {
   const studyProgress = deckProgress(studyCards, now);
   const dueTotal = deckProgress(flashcards, now).due;
   const filtering = query.trim().length > 0 || browseDeckId !== 'all';
+
+  const presenceDeckId = tab === 'study' && studyDeck ? studyDeck.id : null;
+  const presenceDeckName = studyDeck?.name ?? '';
+  const presenceCards = studyCards.length;
+
+  useEffect(() => {
+    setStudyPresence(
+      presenceDeckId ? { id: presenceDeckId, name: presenceDeckName, cards: presenceCards } : null,
+    );
+  }, [presenceDeckId, presenceDeckName, presenceCards]);
+
+  useEffect(() => () => setStudyPresence(null), []);
 
   const activeQueue = useMemo(() => {
     if (!session) return [];

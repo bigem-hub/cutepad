@@ -1,9 +1,12 @@
-import { useEffect, useState, type ChangeEvent } from 'react';
+import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
 import {
   DEFAULT_SETTINGS,
   PALETTE,
+  deleteCloudBackup,
   exportAllDataJson,
   fileToDataUrl,
+  firebaseLogout,
+  firebaseUpdateProfile,
   isDesktop,
   parseImportJson,
   performSync,
@@ -32,7 +35,8 @@ import {
   Toggle,
   patternCss,
 } from '@cutepad/ui';
-import { ensureNotificationPermission, notificationPermission, useHashRoute, useNow } from '../hooks';
+import { ensureNotificationPermission, notificationPermission, REMEMBER_LOGIN_KEY, useHashRoute, useNow } from '../hooks';
+import { AI_PRESETS, matchAiPreset, type AiPresetDef } from '../lib/aiPresets';
 import { useT } from '../i18n';
 import './ExtraViews.css';
 
@@ -147,6 +151,7 @@ export default function SettingsView() {
   const importData = useApp((s) => s.importData);
   const resetAll = useApp((s) => s.resetAll);
   const syncStatus = useApp((s) => s.sync);
+  const account = useApp((s) => s.auth);
   const t = useT();
 
   const [perm, setPerm] = useState<'granted' | 'denied' | 'default' | 'unsupported'>(() =>
@@ -162,6 +167,15 @@ export default function SettingsView() {
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [resetOpen, setResetOpen] = useState(false);
+  const [cloudDeleteOpen, setCloudDeleteOpen] = useState(false);
+  const [cloudDeleteBusy, setCloudDeleteBusy] = useState(false);
+  const [cloudDeleteErr, setCloudDeleteErr] = useState<string | null>(null);
+  const [loggingOut, setLoggingOut] = useState(false);
+  const [logoutOpen, setLogoutOpen] = useState(false);
+  const [profileEdit, setProfileEdit] = useState(false);
+  const [profileName, setProfileName] = useState('');
+  const [profileBusy, setProfileBusy] = useState(false);
+  const [profileErr, setProfileErr] = useState<string | null>(null);
   const [newSubject, setNewSubject] = useState({ name: '', icon: '📚', color: PALETTE[0] });
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>(() => ttsVoices());
   const [appsText, setAppsText] = useState(() => settings.guard.blockedApps.join(', '));
@@ -173,6 +187,10 @@ export default function SettingsView() {
   const ai = settings.ai;
   const guard = settings.guard;
   const access = settings.accessibility;
+
+  const activePreset = ai.provider === 'openai' ? matchAiPreset(ai.baseUrl) : null;
+  const applyAiPreset = (preset: AiPresetDef) =>
+    setSettings({ ai: { ...ai, provider: 'openai', baseUrl: preset.baseUrl, model: preset.model } });
 
   const ttsReady = ttsAvailable();
 
@@ -233,6 +251,68 @@ export default function SettingsView() {
       if (result === 'ok') setNotice('synced! ✨');
     } finally {
       setBusy(false);
+    }
+  };
+
+  const runLogout = async () => {
+    setLoggingOut(true);
+    try {
+      // freshest possible backup before this device is wiped (no-op without consent)
+      if (settings.legal.sync) await performSync();
+      await firebaseLogout();
+      localStorage.removeItem(REMEMBER_LOGIN_KEY);
+      // wipe this device so the next account starts clean — no cross-account leakage
+      resetAll();
+      setLogoutOpen(false);
+      setNotice('logged out 🌸 see you soon');
+    } catch (err) {
+      setNotice(err instanceof Error ? err.message : 'logout failed');
+    } finally {
+      setLoggingOut(false);
+    }
+  };
+
+  const openProfileEdit = () => {
+    setProfileName(account.user?.name ?? '');
+    setProfileErr(null);
+    setProfileEdit(true);
+  };
+
+  const saveProfile = async (e: FormEvent) => {
+    e.preventDefault();
+    if (profileBusy) return;
+    const name = profileName.trim();
+    if (!name) {
+      setProfileErr('please enter a name');
+      return;
+    }
+    setProfileBusy(true);
+    setProfileErr(null);
+    try {
+      const user = await firebaseUpdateProfile(name);
+      useApp.getState().setAuth({ isLoggedIn: true, user });
+      setProfileEdit(false);
+      setNotice('profile updated ✨');
+    } catch (err) {
+      setProfileErr(err instanceof Error ? err.message : 'could not update your profile');
+    } finally {
+      setProfileBusy(false);
+    }
+  };
+
+  const runCloudDelete = async () => {
+    setCloudDeleteBusy(true);
+    setCloudDeleteErr(null);
+    try {
+      await deleteCloudBackup();
+      setSettings({ legal: { ...settings.legal, sync: null } });
+      useApp.getState().setSyncStatus({ state: 'off', error: null });
+      setCloudDeleteOpen(false);
+      setNotice('cloud backup deleted, sync consent withdrawn 🌱');
+    } catch (err) {
+      setCloudDeleteErr(err instanceof Error ? err.message : String(err));
+    } finally {
+      setCloudDeleteBusy(false);
     }
   };
 
@@ -657,21 +737,155 @@ export default function SettingsView() {
 
         <div className="card pad">
           <div className="card-title">
+            <Ic name="user" size={16} className="inline-icon" /> account
+          </div>
+          {account.isLoggedIn && account.user ? (
+            <div className="row between wrap" style={{ gap: 10 }}>
+              <div className="row" style={{ gap: 10, minWidth: 0 }}>
+                <span
+                  aria-hidden="true"
+                  style={{
+                    width: 38,
+                    height: 38,
+                    flexShrink: 0,
+                    borderRadius: '50%',
+                    background: 'var(--accent-soft)',
+                    display: 'grid',
+                    placeItems: 'center',
+                    fontFamily: 'var(--font-display)',
+                    fontWeight: 800,
+                    fontSize: 18,
+                  }}
+                >
+                  {(account.user.name || account.user.email).slice(0, 1).toUpperCase()}
+                </span>
+                <div style={{ minWidth: 0 }}>
+                  <div className="small bold">{account.user.name}</div>
+                  <div className="small muted" style={{ wordBreak: 'break-all' }}>
+                    {account.user.email}
+                  </div>
+                </div>
+              </div>
+              <div className="row" style={{ gap: 8 }}>
+                <button
+                  type="button"
+                  className="btn btn-soft btn-sm"
+                  disabled={loggingOut || profileBusy}
+                  onClick={openProfileEdit}
+                >
+                  <Ic name="pencil" size={15} className="inline-icon" /> edit profile
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-soft btn-sm"
+                  disabled={loggingOut || profileBusy}
+                  onClick={() => setLogoutOpen(true)}
+                >
+                  <Ic name="logout" size={15} className="inline-icon" /> {loggingOut ? 'logging out…' : 'log out'}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <p className="small muted" style={{ marginTop: 0 }}>
+                not signed in — create a free account to keep a backup of your notes across devices, or just keep
+                using cutepad locally 💗
+              </p>
+              <div className="row wrap" style={{ gap: 8 }}>
+                <button type="button" className="btn btn-primary btn-sm" onClick={() => navigate('/signup')}>
+                  create account
+                </button>
+                <button type="button" className="btn btn-soft btn-sm" onClick={() => navigate('/login')}>
+                  log in
+                </button>
+              </div>
+            </>
+          )}
+          {account.isLoggedIn && profileEdit && (
+            <form onSubmit={saveProfile} className="row wrap" style={{ gap: 8, marginTop: 12 }}>
+              <input
+                className="input"
+                style={{ flex: '1 1 160px', minWidth: 0 }}
+                value={profileName}
+                placeholder="your name"
+                aria-label="display name"
+                maxLength={40}
+                autoFocus
+                onChange={(e) => {
+                  setProfileName(e.target.value);
+                  if (profileErr) setProfileErr(null);
+                }}
+              />
+              <button type="submit" className="btn btn-primary btn-sm" disabled={profileBusy}>
+                {profileBusy ? 'saving…' : 'save'}
+              </button>
+              <button
+                type="button"
+                className="btn btn-soft btn-sm"
+                disabled={profileBusy}
+                onClick={() => setProfileEdit(false)}
+              >
+                cancel
+              </button>
+            </form>
+          )}
+          {account.isLoggedIn && profileEdit && profileErr && (
+            <div className="form-error" role="alert" style={{ marginTop: 8 }}>
+              {profileErr}
+            </div>
+          )}
+        </div>
+
+        <Modal
+          open={logoutOpen}
+          title="log out?"
+          onClose={() => setLogoutOpen(false)}
+          actions={
+            <>
+              <button type="button" className="btn btn-soft" disabled={loggingOut} onClick={() => setLogoutOpen(false)}>
+                stay signed in
+              </button>
+              <button type="button" className="btn btn-danger" disabled={loggingOut} onClick={() => void runLogout()}>
+                {loggingOut ? 'logging out…' : 'log out'}
+              </button>
+            </>
+          }
+        >
+          <div className="stack" style={{ gap: 10 }}>
+            {settings.legal.sync ? (
+              <p style={{ margin: 0 }}>
+                everything on this device will be cleared so the next person can&apos;t see it — but your backup is
+                safe. log back in anytime and your notes, streaks &amp; settings come right back 💗
+              </p>
+            ) : (
+              <p style={{ margin: 0 }}>
+                this clears <b>everything on this device</b> — notes, tasks, streaks and settings. you don&apos;t
+                have cloud sync turned on yet, so this data <b>can&apos;t be recovered</b>. turn on sync consent
+                first if you want to keep it.
+              </p>
+            )}
+          </div>
+        </Modal>
+
+        <div className="card pad">
+          <div className="card-title">
             <Ic name="cloud" size={16} className="inline-icon" /> cloud sync
           </div>
-          <span className="field-label">provider</span>
-          <select
-            className="select"
-            value={sync.provider}
-            aria-label="sync provider"
-            onChange={(e) =>
-              setSettings({ sync: { ...sync, provider: e.target.value as 'none' | 'supabase' | 'firebase' } })
-            }
-          >
-            <option value="none">none (local only)</option>
-            <option value="firebase">firebase (built-in cloud)</option>
-            <option value="supabase">supabase (self-hosted)</option>
-          </select>
+          <div className="field">
+            <span className="field-label">provider</span>
+            <select
+              className="select"
+              value={sync.provider}
+              aria-label="sync provider"
+              onChange={(e) =>
+                setSettings({ sync: { ...sync, provider: e.target.value as 'none' | 'supabase' | 'firebase' } })
+              }
+            >
+              <option value="none">none (local only)</option>
+              <option value="firebase">firebase (built-in cloud)</option>
+              <option value="supabase">supabase (self-hosted)</option>
+            </select>
+          </div>
 
           {sync.provider === 'firebase' && (
             <div className="stack" style={{ gap: 12, marginTop: 12 }}>
@@ -730,6 +944,7 @@ export default function SettingsView() {
           )}
 
           {sync.provider !== 'none' && (
+            <>
             <div className="stack" style={{ gap: 12, marginTop: 12 }}>
               <label className="consent-row" htmlFor="sync-consent">
                 <input
@@ -767,8 +982,65 @@ export default function SettingsView() {
                   label="Auto sync"
                 />
               </div>
+              <div className="row wrap">
+                <button
+                  type="button"
+                  className="btn btn-danger btn-sm"
+                  onClick={() => {
+                    setCloudDeleteErr(null);
+                    setCloudDeleteOpen(true);
+                  }}
+                >
+                  <Ic name="trash" size={15} className="inline-icon" /> delete synced backup
+                </button>
+              </div>
             </div>
-          )}
+            <Modal
+              open={cloudDeleteOpen}
+              title="delete your synced data?"
+              onClose={() => setCloudDeleteOpen(false)}
+              actions={
+                <>
+                  <button
+                    type="button"
+                    className="btn btn-soft"
+                    disabled={cloudDeleteBusy}
+                    onClick={() => setCloudDeleteOpen(false)}
+                  >
+                    cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-danger"
+                    disabled={cloudDeleteBusy}
+                    onClick={() => void runCloudDelete()}
+                  >
+                    {cloudDeleteBusy ? 'deleting…' : 'delete my synced data'}
+                  </button>
+                </>
+              }
+            >
+              <div className="stack" style={{ gap: 10 }}>
+                <p style={{ margin: 0 }}>
+                  this permanently deletes the copy of your data stored in the cloud{' '}
+                  {sync.provider === 'firebase'
+                    ? 'in the built-in Cutepad Firestore project'
+                    : 'in your Supabase project'}
+                  . your local data on this device stays untouched.
+                </p>
+                <p style={{ margin: 0 }}>
+                  it also withdraws your sync consent, so syncing stops until you switch it back on. auto-backups
+                  already saved on this device are kept.
+                </p>
+                {cloudDeleteErr && (
+                  <p className="small" style={{ color: 'var(--danger)', margin: 0 }} role="alert">
+                    {cloudDeleteErr}
+                  </p>
+                )}
+              </div>
+            </Modal>
+          </>
+        )}
 
           <div className="divider" />
           <div className="row wrap">
@@ -959,14 +1231,14 @@ export default function SettingsView() {
                   </button>
                 ))}
               </div>
-            <button
-              type="button"
-              className="btn btn-sm btn-primary"
-              disabled={!newSubject.name.trim()}
-              onClick={addNewSubject}
-            >
-              <Ic name="plus" size={16} className="inline-icon" /> add
-            </button>
+              <button
+                type="button"
+                className="btn btn-sm btn-primary"
+                disabled={!newSubject.name.trim()}
+                onClick={addNewSubject}
+              >
+                <Ic name="plus" size={16} className="inline-icon" /> add
+              </button>
             </div>
           </div>
         </div>
@@ -990,7 +1262,43 @@ export default function SettingsView() {
 
           {ai.provider === 'openai' && (
             <div className="stack" style={{ gap: 12, marginTop: 12 }}>
-              <div>
+              <div className="field">
+                <span className="field-label">{t('settings.ai.preset')}</span>
+                <div className="row wrap" style={{ gap: 6 }}>
+                  {AI_PRESETS.map((preset) => (
+                    <button
+                      key={preset.id}
+                      type="button"
+                      className={`chip ${activePreset?.id === preset.id ? 'active' : ''}`}
+                      aria-pressed={activePreset?.id === preset.id}
+                      onClick={() => applyAiPreset(preset)}
+                    >
+                      {preset.label}
+                    </button>
+                  ))}
+                  {!activePreset && (
+                    <span className="chip active" style={{ cursor: 'default' }}>
+                      custom
+                    </span>
+                  )}
+                </div>
+                <div className="small muted">
+                  {activePreset?.note ?? t('settings.ai.customNote')}
+                </div>
+                {activePreset?.keyUrl && (
+                  <div>
+                    <a
+                      className="btn btn-sm btn-soft"
+                      href={activePreset.keyUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <Ic name="key" size={15} className="inline-icon" /> {t('settings.ai.getKey')}
+                    </a>
+                  </div>
+                )}
+              </div>
+              <div className="field">
                 <label className="field-label" htmlFor="ai-base-url">
                   {t('settings.ai.baseUrl')}
                 </label>
@@ -1004,7 +1312,7 @@ export default function SettingsView() {
                   onChange={(e) => setSettings({ ai: { baseUrl: e.target.value } })}
                 />
               </div>
-              <div>
+              <div className="field">
                 <label className="field-label" htmlFor="ai-api-key">
                   {t('settings.ai.apiKey')}
                 </label>
@@ -1012,21 +1320,21 @@ export default function SettingsView() {
                   id="ai-api-key"
                   className="input"
                   type="password"
-                  placeholder="sk-…"
+                  placeholder={activePreset?.keyHint ?? 'sk-…'}
                   value={ai.apiKey}
                   autoComplete="off"
                   spellCheck={false}
                   onChange={(e) => setSettings({ ai: { apiKey: e.target.value } })}
                 />
               </div>
-              <div>
+              <div className="field">
                 <label className="field-label" htmlFor="ai-model">
                   {t('settings.ai.model')}
                 </label>
                 <input
                   id="ai-model"
                   className="input"
-                  placeholder="gpt-4o-mini"
+                  placeholder={activePreset?.model || 'gpt-4o-mini'}
                   value={ai.model}
                   autoComplete="off"
                   spellCheck={false}
@@ -1244,7 +1552,7 @@ export default function SettingsView() {
             <Ic name="flower" size={30} />
             <div>
               <div className="stat-value">Cutepad</div>
-              <div className="small muted">version 0.1.2 · kawaii notepad & study companion</div>
+              <div className="small muted">version 0.1.3 · kawaii notepad & study companion</div>
             </div>
           </div>
           <p className="small muted" style={{ marginTop: 10 }}>
@@ -1256,7 +1564,7 @@ export default function SettingsView() {
               <div className="row wrap" style={{ gap: 8 }}>
                 <a
                   className="btn btn-primary"
-                  href="https://github.com/bigem-hub/cutepad/releases/download/v0.1.2/Cutepad.Setup.0.1.2.exe"
+                  href="https://github.com/bigem-hub/cutepad/releases/download/v0.1.3/Cutepad.Setup.0.1.3.exe"
                   target="_blank"
                   rel="noreferrer"
                 >
@@ -1264,7 +1572,7 @@ export default function SettingsView() {
                 </a>
                 <a
                   className="btn"
-                  href="https://github.com/bigem-hub/cutepad/releases/download/v0.1.2/Cutepad-0.1.2.apk"
+                  href="https://github.com/bigem-hub/cutepad/releases/download/v0.1.3/Cutepad-0.1.3.apk"
                   target="_blank"
                   rel="noreferrer"
                 >

@@ -6,6 +6,8 @@ export interface PresenceActivity {
   details?: string;
   state?: string;
   startTimestamp?: number;
+  largeImage?: string;
+  largeText?: string;
 }
 
 const OP_HANDSHAKE = 0;
@@ -15,6 +17,12 @@ const OP_PING = 3;
 const OP_PONG = 4;
 
 const DEFAULT_CLIENT_ID = '1553668102376525845';
+// asset key — must match a "Rich Presence → Art Assets" upload name in the Discord
+// developer portal (override with CUTEPAD_DISCORD_ASSET; upload docs/discord-asset.png)
+const DEFAULT_LARGE_IMAGE = 'cutepad-logo';
+const DEFAULT_LARGE_TEXT = 'Cutepad · kawaii notepad & study buddy';
+// Discord SET_ACTIVITY supports up to 2 buttons (label 1-32 chars, https url ≤512)
+const DEFAULT_BUTTON = { label: 'Open Cutepad', url: 'https://cutepad.vercel.app' };
 const MIN_FLUSH_MS = 10000;
 const MAX_TEXT = 128;
 
@@ -23,6 +31,25 @@ function clamp(text: string | undefined): string | undefined {
   const value = text.trim();
   if (!value) return undefined;
   return value.length > MAX_TEXT ? `${value.slice(0, MAX_TEXT - 1)}…` : value;
+}
+
+/** Pure SET_ACTIVITY mapping (exported so the payload shape can be checked outside the socket). */
+export function mapActivity(activity: PresenceActivity | null): Record<string, unknown> | null {
+  if (!activity) return null;
+  const largeImage =
+    activity.largeImage?.trim() || process.env.CUTEPAD_DISCORD_ASSET?.trim() || DEFAULT_LARGE_IMAGE;
+  return {
+    details: clamp(activity.details),
+    state: clamp(activity.state),
+    timestamps: activity.startTimestamp
+      ? { start: Math.floor(activity.startTimestamp) }
+      : undefined,
+    assets: {
+      large_image: largeImage,
+      large_text: clamp(activity.largeText) ?? DEFAULT_LARGE_TEXT,
+    },
+    buttons: process.env.CUTEPAD_DISCORD_BUTTON === '0' ? undefined : [DEFAULT_BUTTON],
+  };
 }
 
 export class DiscordPresence {
@@ -195,18 +222,9 @@ export class DiscordPresence {
     if (key === this.lastSentKey) return;
     this.lastSentKey = key;
     this.lastSentAt = Date.now();
-    const mapped = activity
-      ? {
-          details: clamp(activity.details),
-          state: clamp(activity.state),
-          timestamps: activity.startTimestamp
-            ? { start: Math.floor(activity.startTimestamp) }
-            : undefined,
-        }
-      : null;
     this.send(OP_FRAME, {
       cmd: 'SET_ACTIVITY',
-      args: { pid: process.pid, activity: mapped },
+      args: { pid: process.pid, activity: mapActivity(activity) },
       nonce: String((this.nonce += 1)),
     });
   }

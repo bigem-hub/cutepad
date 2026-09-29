@@ -41,6 +41,12 @@
 
   --sidebar-w: 236px;
   --topbar-h: 60px;
+  /* set to 38px on the desktop app (custom titlebar) so layout math adds up to exactly 100dvh */
+  --titlebar-h: 0px;
+}
+
+html[data-platform='desktop'] {
+  --titlebar-h: 38px;
 }
 
 [data-theme='pastel-dream'] {
@@ -203,14 +209,16 @@ button,
 /* ---------- layout ---------- */
 .app-shell {
   display: flex;
-  min-height: 100vh;
+  min-height: calc(100vh - var(--titlebar-h));
+  min-height: calc(100dvh - var(--titlebar-h));
 }
 .sidebar {
   width: var(--sidebar-w);
   flex-shrink: 0;
   position: sticky;
-  top: 0;
-  height: 100vh;
+  top: var(--titlebar-h);
+  height: calc(100vh - var(--titlebar-h));
+  height: calc(100dvh - var(--titlebar-h));
   padding: 18px 14px;
   display: flex;
   flex-direction: column;
@@ -249,6 +257,8 @@ button,
   gap: 3px;
   overflow-y: auto;
   padding-bottom: 8px;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 .nav-item {
   display: flex;
@@ -292,6 +302,7 @@ button,
   display: flex;
   flex-direction: column;
   gap: 8px;
+  flex-shrink: 0;
 }
 .main {
   flex: 1;
@@ -306,7 +317,7 @@ button,
   gap: 12px;
   padding: 8px 22px;
   position: sticky;
-  top: 0;
+  top: var(--titlebar-h);
   z-index: 35;
   background: color-mix(in srgb, var(--surface) 92%, transparent);
   backdrop-filter: blur(14px);
@@ -317,7 +328,7 @@ button,
   width: 100%;
   max-width: 1180px;
   margin: 0 auto;
-  padding: 24px 26px 90px;
+  padding: 24px 26px 40px;
 }
 .page-head {
   display: flex;
@@ -386,6 +397,17 @@ button,
   .mobile-nav button.active {
     background: var(--active-grad);
     color: var(--active-fg);
+  }
+
+  /* desktop app: the side nav is locked open at any window width */
+  html[data-platform='desktop'] .sidebar {
+    display: flex;
+  }
+  html[data-platform='desktop'] .mobile-nav {
+    display: none;
+  }
+  html[data-platform='desktop'] .page {
+    padding-bottom: 40px;
   }
 }
 

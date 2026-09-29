@@ -1,6 +1,18 @@
 -- Cutepad cloud sync schema (Supabase / Postgres)
 -- Run this in the Supabase SQL editor, then paste the project URL + anon key
 -- into Cutepad → Settings → Cloud sync.
+--
+-- 🔐 SECURITY MODEL — read before running:
+-- * The tables below use demo-open RLS (`using (true)`): ANYONE with the anon key can
+--   read/write EVERY row. This is only acceptable for personal, self-hosted use where
+--   the anon key is treated like a password and never shared publicly.
+-- * Share links embed the anon key in the URL (?k=…) — treat published notes as PUBLIC.
+-- * Prefer the built-in Firebase sync (Settings → Cloud sync → Firebase): it uses
+--   per-device anonymous auth + uid-scoped Firestore rules, so rows are isolated per
+--   account (docs/firestore.rules).
+-- * If you do self-host Supabase: never store sensitive data in your personal sync
+--   project, and ROTATE the anon key (Supabase dashboard → Settings → API) if a share
+--   link leaks — rotation invalidates old links, which is the intended recovery.
 
 create table if not exists public.cutepad_docs (
   id          text primary key,

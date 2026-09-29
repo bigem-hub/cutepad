@@ -26,6 +26,7 @@ import {
 import { EmptyState, Ic, Modal, Segmented, STICKER_SETS } from '@cutepad/ui';
 import { useDictation, useNow } from '../hooks';
 import { useT } from '../i18n';
+import { setNotePresence } from '../lib/presence';
 import NoteDrawing from './NoteDrawing';
 import './NotesView.css';
 
@@ -402,6 +403,14 @@ export default function NotesView() {
     setTagDraft('');
     setTab('write');
   };
+
+  const selectedTitle = selected?.title ?? '';
+
+  useEffect(() => {
+    setNotePresence(selectedId ? { id: selectedId, title: selectedTitle } : null);
+  }, [selectedId, selectedTitle]);
+
+  useEffect(() => () => setNotePresence(null), []);
 
   useEffect(() => {
     currentIdRef.current = selectedId;

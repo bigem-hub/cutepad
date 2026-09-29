@@ -3,7 +3,7 @@ import { contextBridge, ipcRenderer } from 'electron';
 contextBridge.exposeInMainWorld('cutepad', {
   isDesktop: true,
   platform: process.platform,
-  appVersion: '0.1.2',
+  appVersion: '0.1.3',
   notify: (title: string, body: string) => ipcRenderer.send('notify', { title, body }),
   openSticky: (id: string) => ipcRenderer.send('open-sticky', id),
   closeWindow: () => ipcRenderer.send('close-this-window'),
@@ -30,4 +30,12 @@ contextBridge.exposeInMainWorld('cutepad', {
   openExternal: (url: string) => ipcRenderer.send('open-external', url),
   setPresence: (payload: { details?: string; state?: string; startMs?: number | null } | null) =>
     ipcRenderer.send('presence-set', payload),
+  secureSync: (op: 'encrypt' | 'decrypt', value: string): string | null => {
+    try {
+      const out = ipcRenderer.sendSync('secure-string', op, value);
+      return typeof out === 'string' ? out : null;
+    } catch {
+      return null;
+    }
+  },
 });

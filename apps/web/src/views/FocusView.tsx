@@ -155,13 +155,17 @@ export default function FocusView() {
       setFocusPresence(null);
       return;
     }
+    const subject = subjects.find((x) => x.id === subjectId);
     setFocusPresence({
       details:
-        phase === 'focus' ? '🍅 Focus session' : phase === 'short' ? '☕ Short break' : '🌿 Long break',
-      state: `${mmss(remaining)} left`,
+        phase === 'focus' ? 'Studying' : phase === 'short' ? '☕ Short break' : '🌿 Long break',
+      state:
+        phase === 'focus' && subject
+          ? `Studying ${subject.name}`
+          : `${mmss(remaining)} left`,
       startMs: Date.now() - (total - remaining) * 1000,
     });
-  }, [running, phase, remaining, total]);
+  }, [running, phase, remaining, total, subjectId, subjects]);
 
   useEffect(() => () => setFocusPresence(null), []);
 

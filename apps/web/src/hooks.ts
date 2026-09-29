@@ -1,9 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ambient,
   dueReminders,
+  firebaseLogout,
   getBridge,
   isDesktop,
+  onFirebaseAuthChange,
   playAlarm,
   selectData,
   todayKey,
@@ -225,11 +227,43 @@ export function useHashRoute(): [string, (to: string) => void] {
     window.addEventListener('hashchange', onChange);
     return () => window.removeEventListener('hashchange', onChange);
   }, []);
-  const navigate = (to: string) => {
+  const navigate = useCallback((to: string) => {
+    const current = window.location.hash.slice(1) || '/';
+    if (current === to) return; // already there — skip the touch() that would re-render every subscriber
     window.location.hash = to;
     useApp.getState().touch();
-  };
+  }, []);
   return [hash, navigate];
+}
+
+export const REMEMBER_LOGIN_KEY = 'cutepad-remember-login';
+
+/** Mirrors the Firebase session into the store; drops restored sessions when "remember me" was off. */
+export function useAuthBootstrap(): void {
+  useEffect(() => {
+    let cancelled = false;
+    let bootHandled = false;
+    const unsub = onFirebaseAuthChange((user) => {
+      if (cancelled) return;
+      if (!bootHandled) {
+        bootHandled = true;
+        if (user && localStorage.getItem(REMEMBER_LOGIN_KEY) === '0') {
+          void firebaseLogout().catch(() => undefined);
+          return;
+        }
+      }
+      const s = useApp.getState();
+      const same =
+        s.auth.isLoggedIn === !!user &&
+        s.auth.user?.email === user?.email &&
+        s.auth.user?.name === user?.name;
+      if (!same) s.setAuth({ isLoggedIn: !!user, user });
+    });
+    return () => {
+      cancelled = true;
+      unsub();
+    };
+  }, []);
 }
 
 // ===== V3: focus guard =====

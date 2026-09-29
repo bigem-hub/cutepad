@@ -81,6 +81,7 @@ export function mergeData(local: CutepadData, remote: CutepadData): CutepadData 
     unlockedOutfits: [...new Set([...(local.unlockedOutfits ?? []), ...(remote.unlockedOutfits ?? [])])],
     settings: normalizeSettings(remoteNewer ? remote.settings : local.settings),
     buddy: { ...(remoteNewer ? remote.buddy : local.buddy), groupCode: (remoteNewer ? remote.buddy : local.buddy)?.groupCode ?? null },
+    auth: local.auth,
     updatedAt: Math.max(local.updatedAt ?? 0, remote.updatedAt ?? 0),
   };
   return normalizeData(merged, local);
@@ -116,6 +117,43 @@ async function pushDoc(sync: Settings['sync'], data: CutepadData): Promise<void>
 }
 
 let inFlight: Promise<'ok' | 'skipped' | 'error'> | null = null;
+
+/** data-deletion flow: erase the remote backup for the current device/account (local data is kept). */
+export async function deleteCloudBackup(): Promise<void> {
+  const sync = useApp.getState().settings.sync;
+  if (!syncConfigured(sync)) throw new Error('sync is not configured');
+  if (sync.provider === 'firebase') {
+    const { firebaseDelete } = await import('./cloud');
+    await firebaseDelete();
+    return;
+  }
+  const url = `${restBase(sync)}/${DOC_TABLE}?id=eq.${DOC_ID}&owner=eq.${encodeURIComponent(sync.owner)}`;
+  const res = await fetch(url, { method: 'DELETE', headers: headers(sync) });
+  if (!res.ok) throw new Error(`delete failed (${res.status})`);
+}
+
+/**
+ * Login/restore path: fetch the signed-in account's own backup and replace this device's state
+ * with it. Applies NOTHING when the session changed while the fetch was in flight (logout or
+ * account switch) — no cross-account leakage, no resurrecting a logged-out session. Local state
+ * is kept when the account has no backup yet or the fetch fails.
+ */
+export async function restoreAccountData(expectedEmail?: string): Promise<'restored' | 'no-backup' | 'error'> {
+  try {
+    const { firebaseFetch } = await import('./cloud');
+    const remote = await firebaseFetch();
+    if (!remote) return 'no-backup';
+    const state = useApp.getState();
+    const live = state.auth;
+    if (!live.isLoggedIn || (expectedEmail !== undefined && live.user?.email !== expectedEmail)) return 'error';
+    const liveUser = live.user;
+    state.importData(remote);
+    if (liveUser) useApp.getState().setAuth({ isLoggedIn: true, user: liveUser });
+    return 'restored';
+  } catch {
+    return 'error';
+  }
+}
 
 export function performSync(): Promise<'ok' | 'skipped' | 'error'> {
   if (inFlight) return inFlight;

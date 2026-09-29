@@ -4,6 +4,7 @@ export * from './store';
 export * from './analytics';
 export * from './achievements';
 export * from './sync';
+export * from './cloud';
 export * from './ambient';
 export * from './chime';
 export * from './exporters';

@@ -53,6 +53,72 @@ function inCircle(x: number, y: number, cx: number, cy: number, r: number): bool
   return (x - cx) ** 2 + (y - cy) ** 2 <= r * r;
 }
 
+function inRoundRect(x: number, y: number, w: number, h: number, r: number): boolean {
+  if (x < 0 || y < 0 || x > w || y > h) return false;
+  const dx = Math.max(r - x, x - (w - r), 0);
+  const dy = Math.max(r - y, y - (h - r), 0);
+  return dx * dx + dy * dy <= r * r;
+}
+
+/**
+ * Discord / store logo: the kawaii face on a rounded pink tile (matches the favicon).
+ * Square, any size ≥ 512 — generate with:
+ *   node -e "require('fs').writeFileSync('docs/discord-asset.png', require('./apps/desktop/dist/icon.js').makeKawaiiLogoPng(1024))"
+ */
+export function makeKawaiiLogoPng(size = 1024): Buffer {
+  const rows: Buffer[] = [];
+  const cx = size / 2;
+  const cy = size / 2 + size * 0.04;
+  const corner = size * 0.22;
+  const pink: [number, number, number] = [255, 183, 213];
+  const mouthThickness = Math.max(1.2, size * 0.014);
+
+  for (let y = 0; y < size; y++) {
+    const row = Buffer.alloc(1 + size * 4);
+    row[0] = 0;
+    for (let x = 0; x < size; x++) {
+      const px = x + 0.5;
+      const py = y + 0.5;
+      let color: [number, number, number, number] = [0, 0, 0, 0];
+      if (inRoundRect(px, py, size, size, corner)) {
+        color = [...pink, 255];
+        const eyeR = size * 0.075;
+        if (inCircle(px, py, cx - size * 0.16, cy - size * 0.05, eyeR)) color = [...EYE, 255];
+        if (inCircle(px, py, cx + size * 0.16, cy - size * 0.05, eyeR)) color = [...EYE, 255];
+        if (inCircle(px, py, cx - size * 0.27, cy + size * 0.13, size * 0.075)) color = blend(color, BLUSH, 0.75);
+        if (inCircle(px, py, cx + size * 0.27, cy + size * 0.13, size * 0.075)) color = blend(color, BLUSH, 0.75);
+        const mouthY = cy + size * 0.13;
+        const mouth =
+          Math.abs(px - cx) < size * 0.11 &&
+          Math.abs(py - (mouthY - Math.abs(px - cx) * 0.55)) < mouthThickness;
+        if (mouth) color = [...EYE, 255];
+      }
+      const offset = 1 + x * 4;
+      row[offset] = color[0];
+      row[offset + 1] = color[1];
+      row[offset + 2] = color[2];
+      row[offset + 3] = color[3];
+    }
+    rows.push(row);
+  }
+
+  const ihdr = Buffer.alloc(13);
+  ihdr.writeUInt32BE(size, 0);
+  ihdr.writeUInt32BE(size, 4);
+  ihdr[8] = 8;
+  ihdr[9] = 6;
+  ihdr[10] = 0;
+  ihdr[11] = 0;
+  ihdr[12] = 0;
+
+  return Buffer.concat([
+    PNG_SIGNATURE,
+    chunk('IHDR', ihdr),
+    chunk('IDAT', deflateSync(Buffer.concat(rows))),
+    chunk('IEND', Buffer.alloc(0)),
+  ]);
+}
+
 /** Renders a tiny kawaii blob PNG for the tray icon — no binary assets required. */
 export function makeKawaiiPng(size = 32): Buffer {
   const rows: Buffer[] = [];
@@ -76,7 +142,7 @@ export function makeKawaiiPng(size = 32): Buffer {
         if (inCircle(px, py, cx - size * 0.27, cy + size * 0.13, size * 0.075)) color = blend(color, BLUSH, 0.75);
         if (inCircle(px, py, cx + size * 0.27, cy + size * 0.13, size * 0.075)) color = blend(color, BLUSH, 0.75);
         const mouthY = cy + size * 0.13;
-        const mouth = Math.abs(px - cx) < size * 0.11 && Math.abs(py - (mouthY + Math.abs(px - cx) * 0.55)) < 1.2;
+        const mouth = Math.abs(px - cx) < size * 0.11 && Math.abs(py - (mouthY - Math.abs(px - cx) * 0.55)) < 1.2;
         if (mouth) color = [...EYE, 255];
       }
       const offset = 1 + x * 4;
