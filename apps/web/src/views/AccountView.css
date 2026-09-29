@@ -1,0 +1,229 @@
+/* account system: topbar avatar menu, sidebar account bar, and the /account profile page */
+
+.acct-wrap {
+  position: relative;
+}
+.acct-btn {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  background: var(--surface-3);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    border-color 0.14s,
+    box-shadow 0.14s;
+}
+.acct-btn:hover {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-pop);
+}
+
+.acct-avatar {
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--fg-strong);
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-weight: 800;
+  flex-shrink: 0;
+  overflow: hidden;
+  line-height: 1;
+}
+.acct-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.acct-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  min-width: 244px;
+  max-width: min(300px, calc(100vw - 24px));
+  padding: 8px;
+  z-index: 70;
+  box-shadow: var(--shadow-2);
+}
+.acct-menu-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px;
+  border: none;
+  background: none;
+  border-radius: 14px;
+  cursor: pointer;
+  text-align: left;
+}
+.acct-menu-head:hover {
+  background: var(--surface-3);
+}
+.acct-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 9px 10px;
+  border: none;
+  background: none;
+  border-radius: 12px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--fg);
+  cursor: pointer;
+  text-align: left;
+}
+.acct-menu-item:hover {
+  background: var(--surface-3);
+}
+.acct-menu-item:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.acct-menu-item.acct-danger {
+  color: var(--danger-strong);
+}
+
+.sidebar-account {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 8px;
+  margin-top: 4px;
+  border: none;
+  border-top: 1px solid var(--line);
+  background: none;
+  cursor: pointer;
+  border-radius: 14px;
+  text-align: left;
+}
+.sidebar-account:hover {
+  background: var(--surface-3);
+}
+.acct-side-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+  gap: 1px;
+}
+.acct-side-text > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.3;
+}
+
+/* ---- /account page ---- */
+.acct-hero-top {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.acct-hero-avatar {
+  position: relative;
+  flex-shrink: 0;
+}
+.acct-cam {
+  position: absolute;
+  right: -3px;
+  bottom: -3px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: var(--fg-strong);
+  box-shadow: var(--shadow-1);
+}
+.acct-cam:hover {
+  background: var(--accent-soft);
+}
+.acct-hero-id {
+  min-width: 0;
+  flex: 1 1 200px;
+}
+.acct-hero-name {
+  font-family: var(--font-display);
+  font-size: 23px;
+  font-weight: 600;
+  color: var(--fg-strong);
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+.acct-hero-handle {
+  color: var(--link);
+  font-weight: 800;
+  font-size: 14px;
+  margin-top: 2px;
+}
+.acct-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+.acct-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+  gap: 12px;
+}
+.acct-rows {
+  display: flex;
+  flex-direction: column;
+}
+.acct-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 14px;
+  padding: 9px 0;
+  border-bottom: 1px dashed var(--line);
+  font-size: 14px;
+}
+.acct-row:last-child {
+  border-bottom: none;
+}
+.acct-row .k {
+  color: var(--fg-muted);
+  font-weight: 600;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+.acct-row .v {
+  font-weight: 700;
+  text-align: right;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 920px) {
+  .acct-menu {
+    right: -4px;
+  }
+  .acct-hero-top {
+    gap: 12px;
+  }
+}
+
+/* keep the topbar greeting from pushing the avatar button off small screens */
+.topbar > strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

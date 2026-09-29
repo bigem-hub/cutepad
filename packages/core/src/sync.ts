@@ -1,5 +1,6 @@
 import { selectData, useApp } from './store';
 import { normalizeData, normalizeSettings } from './defaults';
+import { applyAuthUser } from './profile';
 import type { CutepadData, Note, Settings, SyncStatus } from './types';
 
 const DOC_TABLE = 'cutepad_docs';
@@ -148,7 +149,8 @@ export async function restoreAccountData(expectedEmail?: string): Promise<'resto
     if (!live.isLoggedIn || (expectedEmail !== undefined && live.user?.email !== expectedEmail)) return 'error';
     const liveUser = live.user;
     state.importData(remote);
-    if (liveUser) useApp.getState().setAuth({ isLoggedIn: true, user: liveUser });
+    // re-assert the live session over the backup's auth record, carrying its @username back in
+    if (liveUser) applyAuthUser(liveUser);
     return 'restored';
   } catch {
     return 'error';

@@ -141,20 +141,35 @@ export async function firebaseDelete(): Promise<void> {
   }
 }
 
-export async function firebaseLogin(email: string, pass: string): Promise<{ email: string; name: string }> {
+export interface AuthUser {
+  email: string;
+  name: string;
+  /** profile picture as a data URL (Firebase photoURL) */
+  avatar?: string;
+  /** ISO date the Firebase account was created */
+  since?: string;
+}
+
+function toAuthUser(u: User): AuthUser {
+  return {
+    email: u.email ?? '',
+    name: u.displayName || u.email?.split('@')[0] || 'Friend',
+    avatar: u.photoURL || undefined,
+    since: u.metadata.creationTime || undefined,
+  };
+}
+
+export async function firebaseLogin(email: string, pass: string): Promise<AuthUser> {
   try {
     const { auth } = getServices();
     const cred = await signInWithEmailAndPassword(auth, email, pass);
-    return {
-      email: cred.user.email ?? email,
-      name: cred.user.displayName ?? cred.user.email?.split('@')[0] ?? 'Friend',
-    };
+    return toAuthUser(cred.user);
   } catch (err) {
     throw friendlyError(err);
   }
 }
 
-export async function firebaseSignUp(name: string, email: string, pass: string): Promise<{ email: string; name: string }> {
+export async function firebaseSignUp(name: string, email: string, pass: string): Promise<AuthUser> {
   try {
     const { auth } = getServices();
     const guest = auth.currentUser;
@@ -170,26 +185,34 @@ export async function firebaseSignUp(name: string, email: string, pass: string):
     if (name.trim()) {
       await updateProfile(user, { displayName: name.trim() });
     }
-    return {
-      email: user.email ?? email,
-      name: name.trim() || user.email?.split('@')[0] || 'Friend',
-    };
+    const base = toAuthUser(user);
+    return { ...base, name: name.trim() || base.name };
   } catch (err) {
     throw friendlyError(err);
   }
 }
 
-/** update the signed-in user's display name (profile editing) — travels with the account, not this device */
-export async function firebaseUpdateProfile(name: string): Promise<{ email: string; name: string }> {
+/**
+ * Update the signed-in user's display name and/or profile picture — travels with the account,
+ * not this device. `avatar` is a data URL to set, `null` to remove, `undefined` to keep.
+ */
+export async function firebaseUpdateProfile(name: string, avatar?: string | null): Promise<AuthUser> {
   try {
     const { auth } = getServices();
     const user = auth.currentUser;
     if (!user || !user.email) throw new Error('no signed-in user');
     const trimmed = name.trim();
-    if (trimmed) await updateProfile(user, { displayName: trimmed });
+    const patch: { displayName?: string; photoURL?: string | null } = {};
+    if (trimmed) patch.displayName = trimmed;
+    if (avatar !== undefined) patch.photoURL = avatar;
+    if (patch.displayName !== undefined || patch.photoURL !== undefined) {
+      await updateProfile(user, patch);
+    }
+    const base = toAuthUser(user);
     return {
-      email: user.email,
-      name: trimmed || user.displayName || user.email.split('@')[0] || 'Friend',
+      ...base,
+      name: trimmed || base.name,
+      avatar: avatar === undefined ? base.avatar : avatar || undefined,
     };
   } catch (err) {
     throw friendlyError(err);
@@ -214,20 +237,11 @@ export async function firebaseLogout(): Promise<void> {
   }
 }
 
-export interface AuthUser {
-  email: string;
-  name: string;
-}
-
 /** Fires with the signed-in email user (guest/anonymous sessions count as signed out) or null. */
 export function onFirebaseAuthChange(cb: (user: AuthUser | null) => void): () => void {
   const { auth } = getServices();
   return onAuthStateChanged(auth, (user) => {
-    cb(
-      user && user.email
-        ? { email: user.email, name: user.displayName || user.email.split('@')[0] }
-        : null,
-    );
+    cb(user && user.email ? toAuthUser(user) : null);
   });
 }
 

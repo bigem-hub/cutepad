@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ambient,
+  applyAuthUser,
   dueReminders,
   firebaseLogout,
   getBridge,
@@ -256,8 +257,12 @@ export function useAuthBootstrap(): void {
       const same =
         s.auth.isLoggedIn === !!user &&
         s.auth.user?.email === user?.email &&
-        s.auth.user?.name === user?.name;
-      if (!same) s.setAuth({ isLoggedIn: !!user, user });
+        s.auth.user?.name === user?.name &&
+        (s.auth.user?.avatar ?? null) === (user?.avatar ?? null);
+      if (same) return;
+      // merge path keeps the account's @username; logged-out clears the whole identity
+      if (user) applyAuthUser(user);
+      else s.setAuth({ isLoggedIn: false, user: null });
     });
     return () => {
       cancelled = true;

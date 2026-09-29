@@ -19,7 +19,9 @@ import SmartView from './views/SmartView';
 import AnalyticsView from './views/AnalyticsView';
 import AchievementsView from './views/AchievementsView';
 import BuddyView from './views/BuddyView';
+import AccountView from './views/AccountView';
 import SettingsView from './views/SettingsView';
+import { SidebarAccount, TopbarAccountMenu } from './components/Account';
 import { mascotLine, useAmbient, useAuthBootstrap, useDeadlineTicker, useDesktopBackup, useFocusGuard, useHashRoute, useMascotMood, useReminderTicker } from './hooks';
 import { useT } from './i18n';
 import { setRoutePresence } from './lib/presence';
@@ -45,6 +47,7 @@ const NAV: NavItem[] = [
   { path: '/analytics', labelKey: 'nav.analytics', fallback: 'Stats', icon: 'barChart', comp: AnalyticsView },
   { path: '/achievements', labelKey: 'nav.achievements', fallback: 'Badges', icon: 'trophy', comp: AchievementsView },
   { path: '/buddy', labelKey: 'nav.buddy', fallback: 'Buddy', icon: 'users', comp: BuddyView },
+  { path: '/account', labelKey: 'nav.account', fallback: 'Account', icon: 'user', comp: AccountView },
   { path: '/settings', labelKey: 'nav.settings', fallback: 'Settings', icon: 'settings', comp: SettingsView },
 ];
 
@@ -336,6 +339,7 @@ export default function App() {
                     ? t('side.syncIssue')
                     : t('side.local')}
             </div>
+            <SidebarAccount />
           </div>
         </aside>
 
@@ -356,6 +360,7 @@ export default function App() {
             >
               <Mascot mood={mascotMood} size={34} />
             </button>
+            <TopbarAccountMenu />
           </header>
 
           <main className="page" id="main-content" tabIndex={-1}>

@@ -1,11 +1,13 @@
 import { useState, type FormEvent } from 'react';
 import {
+  applyAuthUser,
   firebaseLogin,
   firebaseResetPassword,
   firebaseSignUp,
   performSync,
   restoreAccountData,
   useApp,
+  type AuthUser,
 } from '@cutepad/core';
 import { Ic, Mascot, type IconName } from '@cutepad/ui';
 import { REMEMBER_LOGIN_KEY, useHashRoute } from '../hooks';
@@ -77,9 +79,9 @@ function PasswordField({ id, label, value, onChange, autoComplete, hint }: Passw
 
 /** shared post-auth steps: persist the session + land them in the app instantly; the network
  * backup restore runs in the background (guarded — never blocks or hijacks the UI) */
-function finishAuth(navigate: (to: string) => void, user: { email: string; name: string }) {
+function finishAuth(navigate: (to: string) => void, user: AuthUser) {
+  applyAuthUser(user);
   const s = useApp.getState();
-  s.setAuth({ isLoggedIn: true, user });
   s.completeOnboarding();
   navigate('/');
   void restoreAccountData(user.email).then(() => {

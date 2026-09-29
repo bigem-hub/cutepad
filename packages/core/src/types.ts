@@ -125,7 +125,7 @@ export interface SyncSettings {
 
 export interface AuthState {
   isLoggedIn: boolean;
-  user: { email: string; name: string } | null;
+  user: { email: string; name: string; username?: string; avatar?: string; since?: string } | null;
 }
 
 export interface OnboardingState {

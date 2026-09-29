@@ -2,6 +2,7 @@ import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
 import {
   DEFAULT_SETTINGS,
   PALETTE,
+  applyAuthUser,
   deleteCloudBackup,
   exportAllDataJson,
   fileToDataUrl,
@@ -36,6 +37,7 @@ import {
   patternCss,
 } from '@cutepad/ui';
 import { ensureNotificationPermission, notificationPermission, REMEMBER_LOGIN_KEY, useHashRoute, useNow } from '../hooks';
+import { ProfileAvatar } from '../components/Account';
 import { AI_PRESETS, matchAiPreset, type AiPresetDef } from '../lib/aiPresets';
 import { useT } from '../i18n';
 import './ExtraViews.css';
@@ -290,7 +292,7 @@ export default function SettingsView() {
     setProfileErr(null);
     try {
       const user = await firebaseUpdateProfile(name);
-      useApp.getState().setAuth({ isLoggedIn: true, user });
+      applyAuthUser(user); // keeps the account's @username
       setProfileEdit(false);
       setNotice('profile updated ✨');
     } catch (err) {
@@ -742,23 +744,7 @@ export default function SettingsView() {
           {account.isLoggedIn && account.user ? (
             <div className="row between wrap" style={{ gap: 10 }}>
               <div className="row" style={{ gap: 10, minWidth: 0 }}>
-                <span
-                  aria-hidden="true"
-                  style={{
-                    width: 38,
-                    height: 38,
-                    flexShrink: 0,
-                    borderRadius: '50%',
-                    background: 'var(--accent-soft)',
-                    display: 'grid',
-                    placeItems: 'center',
-                    fontFamily: 'var(--font-display)',
-                    fontWeight: 800,
-                    fontSize: 18,
-                  }}
-                >
-                  {(account.user.name || account.user.email).slice(0, 1).toUpperCase()}
-                </span>
+                <ProfileAvatar user={account.user} size={38} />
                 <div style={{ minWidth: 0 }}>
                   <div className="small bold">{account.user.name}</div>
                   <div className="small muted" style={{ wordBreak: 'break-all' }}>
