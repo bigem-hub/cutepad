@@ -1538,7 +1538,7 @@ export default function SettingsView() {
             <Ic name="flower" size={30} />
             <div>
               <div className="stat-value">Cutepad</div>
-              <div className="small muted">version 0.1.3 · kawaii notepad & study companion</div>
+              <div className="small muted">version 0.1.4 · kawaii notepad & study companion</div>
             </div>
           </div>
           <p className="small muted" style={{ marginTop: 10 }}>
@@ -1550,7 +1550,7 @@ export default function SettingsView() {
               <div className="row wrap" style={{ gap: 8 }}>
                 <a
                   className="btn btn-primary"
-                  href="https://github.com/bigem-hub/cutepad/releases/download/v0.1.3/Cutepad.Setup.0.1.3.exe"
+                  href="https://github.com/bigem-hub/cutepad/releases/download/v0.1.4/Cutepad.Setup.0.1.4.exe"
                   target="_blank"
                   rel="noreferrer"
                 >
@@ -1558,7 +1558,7 @@ export default function SettingsView() {
                 </a>
                 <a
                   className="btn"
-                  href="https://github.com/bigem-hub/cutepad/releases/download/v0.1.3/Cutepad-0.1.3.apk"
+                  href="https://github.com/bigem-hub/cutepad/releases/download/v0.1.4/Cutepad-0.1.4.apk"
                   target="_blank"
                   rel="noreferrer"
                 >
