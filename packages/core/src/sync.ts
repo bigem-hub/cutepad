@@ -187,14 +187,20 @@ async function runSync(): Promise<'ok' | 'skipped' | 'error'> {
     const remote = await fetchDoc(sync);
     const merged = remote ? mergeData(local, remote) : local;
     await pushDoc(sync, merged);
-    const currentLocal = selectData(app.getState());
-    if (JSON.stringify(currentLocal) !== JSON.stringify(merged)) {
-      app.getState().importData(merged);
+    // apply merge results locally only when nothing changed while the run was
+    // in flight — the snapshot would otherwise clobber newer local edits
+    const latest = app.getState();
+    if (latest.updatedAt === state.updatedAt) {
+      const currentLocal = selectData(latest);
+      if (JSON.stringify(currentLocal) !== JSON.stringify(merged)) {
+        latest.importData(merged);
+      }
     }
     app.getState().setSyncStatus({ state: 'synced', lastSyncedAt: Date.now(), error: null });
     return 'ok';
   } catch (err) {
     const message = err instanceof Error ? err.message : 'sync failed';
+    console.error('cutepad: sync push failed —', message);
     app.getState().setSyncStatus({ state: 'error', error: message });
     return 'error';
   }

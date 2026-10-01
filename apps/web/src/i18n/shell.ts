@@ -13,6 +13,7 @@ export const en: Dict = {
   'nav.analytics': 'Stats',
   'nav.achievements': 'Badges',
   'nav.buddy': 'Buddy',
+  'nav.friends': 'Friends',
   'nav.account': 'Account',
   'nav.settings': 'Settings',
 
@@ -70,6 +71,7 @@ export const es: Dict = {
   'nav.analytics': 'Datos',
   'nav.achievements': 'Insignias',
   'nav.buddy': 'Compañero',
+  'nav.friends': 'Amigos',
   'nav.account': 'Cuenta',
   'nav.settings': 'Ajustes',
 
@@ -127,6 +129,7 @@ export const ja: Dict = {
   'nav.analytics': 'データ',
   'nav.achievements': '実績',
   'nav.buddy': 'なかま',
+  'nav.friends': 'フレンド',
   'nav.account': 'アカウント',
   'nav.settings': '設定',
 

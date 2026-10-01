@@ -54,6 +54,10 @@ export const en: Dict = {
   'account.menuSettings': 'settings',
   'account.menuLocal': 'local mode',
   'account.sideLocal': 'not signed in',
+  'account.connections': 'connections',
+  'account.friendsN': '{n} friends',
+  'account.requestsN': '{n} new requests',
+  'account.openFriends': 'open friends',
   'account.home': 'home',
 };
 
@@ -111,6 +115,10 @@ export const es: Dict = {
   'account.menuSettings': 'ajustes',
   'account.menuLocal': 'modo local',
   'account.sideLocal': 'sin sesión',
+  'account.connections': 'conexiones',
+  'account.friendsN': '{n} amigos',
+  'account.requestsN': '{n} solicitudes nuevas',
+  'account.openFriends': 'ver amigos',
   'account.home': 'inicio',
 };
 
@@ -168,5 +176,9 @@ export const ja: Dict = {
   'account.menuSettings': '設定',
   'account.menuLocal': 'ローカルモード',
   'account.sideLocal': '未ログイン',
+  'account.connections': 'つながり',
+  'account.friendsN': '{n}人のフレンド',
+  'account.requestsN': '{n}件の新着リクエスト',
+  'account.openFriends': 'フレンドを見る',
   'account.home': 'ホーム',
 };

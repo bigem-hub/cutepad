@@ -13,6 +13,7 @@ import { en as documentsEn, es as documentsEs, ja as documentsJa } from './views
 import { en as smartEn, es as smartEs, ja as smartJa } from './views/smart';
 import { en as dashboardEn, es as dashboardEs, ja as dashboardJa } from './views/dashboard';
 import { en as accountEn, es as accountEs, ja as accountJa } from './views/account';
+import { en as friendsEn, es as friendsEs, ja as friendsJa } from './views/friends';
 import { en as legalEn, es as legalEs, ja as legalJa } from './legal';
 import { ne as partialNe } from './ne';
 
@@ -26,10 +27,10 @@ function pack(...dicts: Dict[]): Dict {
 }
 
 export const DICTS: Record<Lang, Dict> = {
-  en: pack(shellEn, notesEn, analyticsEn, achievementsEn, buddyEn, settingsEn, flashcardsEn, moodEn, documentsEn, smartEn, dashboardEn, accountEn, legalEn),
-  es: pack(shellEn, shellEs, notesEn, notesEs, analyticsEn, analyticsEs, achievementsEn, achievementsEs, buddyEn, buddyEs, settingsEn, settingsEs, flashcardsEn, flashcardsEs, moodEn, moodEs, documentsEn, documentsEs, smartEn, smartEs, dashboardEn, dashboardEs, accountEn, accountEs, legalEn, legalEs),
-  ja: pack(shellEn, shellJa, notesEn, notesJa, analyticsEn, analyticsJa, achievementsEn, achievementsJa, buddyEn, buddyJa, settingsEn, settingsJa, flashcardsEn, flashcardsJa, moodEn, moodJa, documentsEn, documentsJa, smartEn, smartJa, dashboardEn, dashboardJa, accountEn, accountJa, legalEn, legalJa),
-  ne: pack(shellEn, notesEn, analyticsEn, achievementsEn, buddyEn, settingsEn, flashcardsEn, moodEn, documentsEn, smartEn, dashboardEn, accountEn, legalEn, partialNe),
+  en: pack(shellEn, notesEn, analyticsEn, achievementsEn, buddyEn, settingsEn, flashcardsEn, moodEn, documentsEn, smartEn, dashboardEn, accountEn, friendsEn, legalEn),
+  es: pack(shellEn, shellEs, notesEn, notesEs, analyticsEn, analyticsEs, achievementsEn, achievementsEs, buddyEn, buddyEs, settingsEn, settingsEs, flashcardsEn, flashcardsEs, moodEn, moodEs, documentsEn, documentsEs, smartEn, smartEs, dashboardEn, dashboardEs, accountEn, accountEs, friendsEn, friendsEs, legalEn, legalEs),
+  ja: pack(shellEn, shellJa, notesEn, notesJa, analyticsEn, analyticsJa, achievementsEn, achievementsJa, buddyEn, buddyJa, settingsEn, settingsJa, flashcardsEn, flashcardsJa, moodEn, moodJa, documentsEn, documentsJa, smartEn, smartJa, dashboardEn, dashboardJa, accountEn, accountJa, friendsEn, friendsJa, legalEn, legalJa),
+  ne: pack(shellEn, notesEn, analyticsEn, achievementsEn, buddyEn, settingsEn, flashcardsEn, moodEn, documentsEn, smartEn, dashboardEn, accountEn, friendsEn, legalEn, partialNe),
 };
 
 export function makeT(lang: Lang) {

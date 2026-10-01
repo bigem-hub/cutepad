@@ -1,10 +1,162 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // One private document per signed-in (anonymous) device account.
-    // Only the owner uid may read or write; no list access, no public data.
+
+    // ===== helpers =====
+    // social features require a real (email) account — guest/anon devices stay out
+    function social() {
+      return request.auth != null
+        && request.auth.token.email is string
+        && request.auth.token.email != '';
+    }
+    function me() { return request.auth.uid; }
+    function handle(h) {
+      // default handles come from email prefixes — allow their length/charset too
+      return h is string && h.size() >= 1 && h.size() <= 64 && h.matches('^[a-z0-9_.+-]+$');
+    }
+    function name(n) { return n is string && n.size() >= 1 && n.size() <= 60; }
+    function pair(a, b) { return a < b ? a + '_' + b : b + '_' + a; }
+    function uidLike(u) { return u is string && u.size() >= 8 && u.size() <= 64 && u.matches('^[A-Za-z0-9_-]+$'); }
+    function listOk(v, max) { return v is list && v.size() <= max; }
+    // recipient allows being interacted with and has not blocked the caller
+    function mayRequest(toUid) {
+      let p = get(/databases/$(database)/documents/profiles/$(toUid)).data;
+      return p.requestsAllowed != false
+        && !('blocked' in p && me() in p.blocked);
+    }
+    function validShare(s) {
+      return s is map
+        && s.title is string && s.title.size() <= 200
+        && s.html is string && s.html.size() <= 120000
+        && (!('text' in s) || (s.text is string && s.text.size() <= 120000))
+        && (!('color' in s) || (s.color is string && s.color.size() <= 32));
+    }
+    function validEvent(d, toUid) {
+      return d.type is string && d.type.size() <= 16
+        && uidLike(d.from) && d.from == me()
+        && name(d.fromName)
+        && d.fromUsername is string && d.fromUsername.size() <= 64
+        && (!('message' in d) || (d.message is string && d.message.size() <= 500))
+        && (
+          d.type == 'request'
+            // the pending request must exist post-write (same batch) — carries all its rules with it
+            ? getAfter(/databases/$(database)/documents/friend_requests/$(pair(d.from, toUid))).data.status == 'pending'
+            : d.type == 'accepted'
+              ? existsAfter(/databases/$(database)/documents/connections/$(pair(d.from, toUid)))
+              : d.type == 'share'
+                ? existsAfter(/databases/$(database)/documents/connections/$(pair(d.from, toUid)))
+                  && validShare(d.share)
+                : false
+        );
+    }
+
+    // ===== existing: one private document per account (cloud backup) =====
     match /users/{userId}/{document=**} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // ===== notifications + shared content inbox =====
+    match /users/{userId}/inbox/{eventId} {
+      allow read, update, delete: if request.auth != null && me() == userId;
+      allow create: if social()
+        && request.resource.data.to == userId
+        && me() != userId
+        && validEvent(request.resource.data, userId);
+    }
+
+    // ===== public profile directory (search results + profile pages) =====
+    match /profiles/{uid} {
+      allow get: if social();
+      // list queries: only discoverable profiles (and your own) come back
+      allow list: if social() && (resource.data.uid == me() || resource.data.discoverable != false);
+      allow create: if social() && uid == me()
+        && request.resource.data.uid == me()
+        && name(request.resource.data.name)
+        && ('nameLower' in request.resource.data && request.resource.data.nameLower is string)
+        && (!('username' in request.resource.data) || handle(request.resource.data.username))
+        && (!('blocked' in request.resource.data) || listOk(request.resource.data.blocked, 200))
+        && (!('requestsAllowed' in request.resource.data) || request.resource.data.requestsAllowed is bool)
+        && (!('discoverable' in request.resource.data) || request.resource.data.discoverable is bool);
+      allow update: if social() && uid == me()
+        && resource.data.uid == me()
+        && request.resource.data.uid == me()
+        && name(request.resource.data.name)
+        && ('nameLower' in request.resource.data && request.resource.data.nameLower is string)
+        && (!('username' in request.resource.data) || handle(request.resource.data.username))
+        && (!('blocked' in request.resource.data) || listOk(request.resource.data.blocked, 200))
+        && (!('requestsAllowed' in request.resource.data) || request.resource.data.requestsAllowed is bool)
+        && (!('discoverable' in request.resource.data) || request.resource.data.discoverable is bool);
+      allow delete: if social() && uid == me() && resource.data.uid == me();
+    }
+
+    // ===== unique @handle registry (one doc per handle — duplicates fail server-side) =====
+    match /usernames/{handleId} {
+      allow read: if social();
+      allow create: if social()
+        && handle(handleId)
+        && request.resource.data.username == handleId
+        && request.resource.data.uid == me()
+        && uidLike(request.resource.data.uid)
+        && name(request.resource.data.name);
+      allow update: if social()
+        && resource.data.uid == me()
+        && request.resource.data.uid == me()
+        && request.resource.data.username == handleId;
+      allow delete: if social() && resource.data.uid == me();
+    }
+
+    // ===== friend requests — one doc per pair (id = sorted uids) =====
+    match /friend_requests/{reqId} {
+      // both list queries carry where(to|from)==me, so the rule stays statically provable
+      allow read: if social() && (resource.data.from == me() || resource.data.to == me());
+      allow create: if social()
+        && request.resource.data.status == 'pending'
+        && uidLike(request.resource.data.from)
+        && uidLike(request.resource.data.to)
+        && request.resource.data.from == me()
+        && request.resource.data.to != me()
+        && reqId == pair(request.resource.data.from, request.resource.data.to)
+        && name(request.resource.data.fromName)
+        && request.resource.data.fromUsername is string
+        && exists(/databases/$(database)/documents/profiles/$(request.resource.data.to))
+        && mayRequest(request.resource.data.to)
+        && !exists(/databases/$(database)/documents/connections/$(reqId));
+      allow update: if social()
+        && request.resource.data.from == resource.data.from
+        && request.resource.data.to == resource.data.to
+        && reqId == pair(resource.data.from, resource.data.to)
+        && request.resource.data.status in ['pending', 'accepted', 'rejected', 'cancelled']
+        && (
+          // the recipient accepts or rejects a pending request
+          (me() == resource.data.to && resource.data.status == 'pending'
+            && request.resource.data.status in ['accepted', 'rejected'])
+          // the sender cancels their own pending request
+          || (me() == resource.data.from && resource.data.status == 'pending'
+            && request.resource.data.status == 'cancelled')
+        );
+      // either party may clear a request record (after connecting, or to re-send later)
+      allow delete: if social() && me() in [resource.data.from, resource.data.to];
+    }
+
+    // ===== connections (established friends) =====
+    match /connections/{connId} {
+      allow read: if social() && me() in resource.data.members;
+      allow create: if social()
+        && request.resource.data.members is list
+        && request.resource.data.members.size() == 2
+        && uidLike(request.resource.data.members[0])
+        && uidLike(request.resource.data.members[1])
+        && request.resource.data.members[0] != request.resource.data.members[1]
+        && me() in request.resource.data.members
+        && connId == pair(request.resource.data.members[0], request.resource.data.members[1])
+        && request.resource.data.since is number
+        && getAfter(/databases/$(database)/documents/friend_requests/$(connId)).data.status == 'accepted';
+      // members may refresh their display snapshot, never swap the members list
+      allow update: if social()
+        && me() in resource.data.members
+        && request.resource.data.members == resource.data.members
+        && connId == pair(request.resource.data.members[0], request.resource.data.members[1]);
+      allow delete: if social() && me() in resource.data.members;
     }
   }
 }

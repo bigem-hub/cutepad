@@ -26,6 +26,7 @@ import {
 import { EmptyState, Ic, Modal, Segmented, STICKER_SETS } from '@cutepad/ui';
 import { useDictation, useNow } from '../hooks';
 import { useT } from '../i18n';
+import { ShareSheet } from '../components/Social';
 import { setNotePresence } from '../lib/presence';
 import NoteDrawing from './NoteDrawing';
 import './NotesView.css';
@@ -84,6 +85,7 @@ export default function NotesView() {
   const t = useT();
 
   const notes = useApp((s) => s.notes);
+  const auth = useApp((s) => s.auth);
   const folders = useApp((s) => s.folders);
   const addNote = useApp((s) => s.addNote);
   const updateNote = useApp((s) => s.updateNote);
@@ -131,6 +133,8 @@ export default function NotesView() {
   const [shareBusy, setShareBusy] = useState(false);
   const [shareErr, setShareErr] = useState<string | null>(null);
   const [shareCopied, setShareCopied] = useState(false);
+  const [sendOpen, setSendOpen] = useState(false);
+  const [sentMsg, setSentMsg] = useState<string | null>(null);
   const [confirmUnpublish, setConfirmUnpublish] = useState(false);
 
   const surfaceRef = useRef<HTMLDivElement>(null);
@@ -829,6 +833,16 @@ export default function NotesView() {
                       {shareBusy ? t('notes.publishing') : t('notes.publish')}
                     </button>
                   )}
+                  {auth.isLoggedIn && (
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-soft"
+                      title={t('friends.shareTitle')}
+                      onClick={() => setSendOpen(true)}
+                    >
+                      <Ic name="send" size={15} /> {t('friends.shareTitle')}
+                    </button>
+                  )}
                 </span>
                 <span className="save-slot">
                   {savedKey > 0 && (
@@ -861,6 +875,11 @@ export default function NotesView() {
                 <p className="notes-alert error" role="status">
                   <Ic name="alert" size={15} className="inline-icon" /> 
                   {shareErr}
+                </p>
+              )}
+              {sentMsg && (
+                <p className="notes-alert" role="status">
+                  {sentMsg}
                 </p>
               )}
 
@@ -1486,6 +1505,17 @@ export default function NotesView() {
       >
         <p style={{ margin: 0, fontWeight: 700 }}>{t('notes.unpublishBody')}</p>
       </Modal>
+
+      {sendOpen && selected && (
+        <ShareSheet
+          note={selected}
+          onClose={() => setSendOpen(false)}
+          onSent={(n) => {
+            setSentMsg(t('friends.shareOk', { n }));
+            window.setTimeout(() => setSentMsg(null), 5000);
+          }}
+        />
+      )}
     </div>
   );
 }

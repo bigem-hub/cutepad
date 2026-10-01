@@ -18,3 +18,4 @@ export * from './mood';
 export * from './ai';
 export * from './syllabus';
 export * from './tts';
+export * from './social';

@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, type CSSProperties, type ReactElement } from 'react';
-import { deriveStats, isDesktop, useApp, type BackgroundConfig } from '@cutepad/core';
+import { deriveStats, ensureMyProfile, isDesktop, startSocialPolling, useApp, type BackgroundConfig } from '@cutepad/core';
 import { AmbientPopover, CelebrationLayer, Ic, Mascot, Modal, PlantCompanion, patternCss, type IconName } from '@cutepad/ui';
 import Titlebar from './components/Titlebar';
 import StickyLayer from './components/StickyLayer';
@@ -19,9 +19,11 @@ import SmartView from './views/SmartView';
 import AnalyticsView from './views/AnalyticsView';
 import AchievementsView from './views/AchievementsView';
 import BuddyView from './views/BuddyView';
+import FriendsView from './views/FriendsView';
 import AccountView from './views/AccountView';
 import SettingsView from './views/SettingsView';
 import { SidebarAccount, TopbarAccountMenu } from './components/Account';
+import { SocialBell } from './components/Social';
 import { mascotLine, useAmbient, useAuthBootstrap, useDeadlineTicker, useDesktopBackup, useFocusGuard, useHashRoute, useMascotMood, useReminderTicker } from './hooks';
 import { useT } from './i18n';
 import { setRoutePresence } from './lib/presence';
@@ -46,7 +48,8 @@ const NAV: NavItem[] = [
   { path: '/smart', labelKey: 'nav.smart', fallback: 'Smart', icon: 'sparkles', comp: SmartView },
   { path: '/analytics', labelKey: 'nav.analytics', fallback: 'Stats', icon: 'barChart', comp: AnalyticsView },
   { path: '/achievements', labelKey: 'nav.achievements', fallback: 'Badges', icon: 'trophy', comp: AchievementsView },
-  { path: '/buddy', labelKey: 'nav.buddy', fallback: 'Buddy', icon: 'users', comp: BuddyView },
+  { path: '/buddy', labelKey: 'nav.buddy', fallback: 'Buddy', icon: 'paw', comp: BuddyView },
+  { path: '/friends', labelKey: 'nav.friends', fallback: 'Friends', icon: 'users', comp: FriendsView },
   { path: '/account', labelKey: 'nav.account', fallback: 'Account', icon: 'user', comp: AccountView },
   { path: '/settings', labelKey: 'nav.settings', fallback: 'Settings', icon: 'settings', comp: SettingsView },
 ];
@@ -93,6 +96,15 @@ export default function App() {
   useDesktopBackup();
   useAmbient();
   useAuthBootstrap();
+
+  const isLoggedIn = useApp((s) => s.auth.isLoggedIn);
+
+  // social layer: claim/refresh the public profile, then keep the bell fresh
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    void ensureMyProfile().catch(() => undefined);
+    return startSocialPolling();
+  }, [isLoggedIn]);
 
   useEffect(() => {
     document.documentElement.dataset.theme = settings.theme;
@@ -360,6 +372,7 @@ export default function App() {
             >
               <Mascot mood={mascotMood} size={34} />
             </button>
+            <SocialBell />
             <TopbarAccountMenu />
           </header>
 

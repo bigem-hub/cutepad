@@ -1,0 +1,76 @@
+/* /friends page: find people, requests, friend list, privacy controls */
+
+.soc-tabs {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.soc-tab-badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  margin-left: 6px;
+  border-radius: 9px;
+  background: #ff6b8f;
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.soc-search {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.soc-search .input {
+  flex: 1;
+  min-width: 200px;
+}
+
+.soc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.soc-section {
+  margin: 12px 0 4px;
+  opacity: 0.75;
+  text-transform: uppercase;
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+}
+.soc-blank {
+  margin: 4px 0;
+}
+
+.soc-guest {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.soc-guest-ic {
+  width: 66px;
+  height: 66px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--fg-strong);
+  display: grid;
+  place-items: center;
+  margin-bottom: 12px;
+}
+
+@media (max-width: 640px) {
+  .soc-tabs {
+    gap: 8px;
+  }
+  .soc-search {
+    flex-direction: column;
+  }
+  .soc-search .btn {
+    width: 100%;
+  }
+}

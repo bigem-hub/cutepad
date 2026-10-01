@@ -19,6 +19,7 @@ export const ne: Dict = {
   'nav.analytics': 'तथ्याङ्क',
   'nav.achievements': 'उपलब्धि',
   'nav.buddy': 'साथी',
+  'nav.friends': 'मित्र',
   'nav.settings': 'सेटिङ',
 
   'top.streak': '🔥 {n} दिनको स्ट्रिक',

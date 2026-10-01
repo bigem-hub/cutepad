@@ -94,8 +94,22 @@ function friendlyError(err: unknown): Error {
   return new Error(`firebase: ${message}`);
 }
 
+/**
+ * Resolves once the persisted auth session has finished restoring (or failed).
+ * Guards the post-reload race where `currentUser` is briefly null and a
+ * call would otherwise create a stray anonymous session.
+ */
+export async function authReady(): Promise<void> {
+  try {
+    await getServices().auth.authStateReady();
+  } catch {
+    // restore failed — callers fall through to the signed-out path
+  }
+}
+
 async function ensureUid(): Promise<string> {
   const { auth } = getServices();
+  await authReady();
   if (auth.currentUser) return auth.currentUser.uid;
   try {
     const cred = await signInAnonymously(auth);
@@ -243,5 +257,26 @@ export function onFirebaseAuthChange(cb: (user: AuthUser | null) => void): () =>
   return onAuthStateChanged(auth, (user) => {
     cb(user && user.email ? toAuthUser(user) : null);
   });
+}
+
+/**
+ * uid of the signed-in email user — null for guests.
+ * Unlike `ensureUid` this never creates an anonymous session, so social
+ * features (which must never run as a guest device) can check it safely.
+ */
+export function currentUid(): string | null {
+  const { auth } = getServices();
+  const user = auth.currentUser;
+  return user && user.email ? user.uid : null;
+}
+
+/** the Firestore instance shared by cloud backup and the social features */
+export function firestoreDb(): Firestore {
+  return getServices().db;
+}
+
+/** shared user-facing error mapping (permission-denied, network, auth issues…) */
+export function cloudError(err: unknown): Error {
+  return friendlyError(err);
 }
 

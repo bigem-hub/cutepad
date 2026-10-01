@@ -3,7 +3,7 @@ import { contextBridge, ipcRenderer } from 'electron';
 contextBridge.exposeInMainWorld('cutepad', {
   isDesktop: true,
   platform: process.platform,
-  appVersion: '0.1.4',
+  appVersion: '0.1.5',
   notify: (title: string, body: string) => ipcRenderer.send('notify', { title, body }),
   openSticky: (id: string) => ipcRenderer.send('open-sticky', id),
   closeWindow: () => ipcRenderer.send('close-this-window'),

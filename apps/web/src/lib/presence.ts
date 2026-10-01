@@ -115,6 +115,10 @@ const ROUTES: Record<string, RouteActivity> = {
     },
   },
   '/buddy': { details: 'With the study buddy' },
+  '/friends': {
+    details: 'With friends',
+    state: (s) => (s.auth.isLoggedIn ? 'Connections' : 'Sign in to connect'),
+  },
   '/account': {
     details: 'Viewing my profile',
     state: (s) => (s.auth.isLoggedIn ? s.auth.user?.name || 'Signed in' : 'Local mode'),

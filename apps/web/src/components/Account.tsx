@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { defaultUsername, firebaseLogout, performSync, useApp } from '@cutepad/core';
+import { defaultUsername, firebaseLogout, performSync, resetSocial, useApp } from '@cutepad/core';
 import { Ic, Modal } from '@cutepad/ui';
 import { REMEMBER_LOGIN_KEY, useHashRoute } from '../hooks';
 import { useT } from '../i18n';
@@ -39,6 +39,7 @@ export async function runAccountLogout(): Promise<void> {
   await firebaseLogout();
   localStorage.removeItem(REMEMBER_LOGIN_KEY);
   useApp.getState().resetAll();
+  resetSocial();
 }
 
 export function TopbarAccountMenu() {

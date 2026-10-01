@@ -2,9 +2,11 @@ import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
 import {
   applyAuthUser,
   deriveStats,
+  ensureMyProfile,
   fileToDataUrl,
   firebaseUpdateProfile,
   useApp,
+  useSocial,
 } from '@cutepad/core';
 import { Ic, Modal } from '@cutepad/ui';
 import { useHashRoute } from '../hooks';
@@ -46,6 +48,8 @@ export default function AccountView() {
   const sessions = useApp((s) => s.sessions);
   const tasks = useApp((s) => s.tasks);
   const achievements = useApp((s) => s.achievements);
+  const friends = useSocial((s) => s.friends);
+  const incoming = useSocial((s) => s.incoming);
 
   const [edit, setEdit] = useState(false);
   const [name, setName] = useState('');
@@ -106,6 +110,8 @@ export default function AccountView() {
       const avatarChanged = (avatar ?? '') !== (user.avatar ?? '');
       const next = await firebaseUpdateProfile(trimmedName, avatarChanged ? avatar ?? null : undefined);
       applyAuthUser(next, handle || null);
+      // sync the public profile + @handle registry with the fresh identity
+      void ensureMyProfile().catch(() => undefined);
       setEdit(false);
       setNotice(t('account.saved'));
     } catch (error) {
@@ -262,6 +268,34 @@ export default function AccountView() {
           </form>
         )}
       </div>
+
+      {user && (
+        <div className="card pad">
+          <div className="card-title">
+            <Ic name="users" size={16} className="inline-icon" /> {t('account.connections')}
+          </div>
+          <div className="row wrap" style={{ gap: 8, alignItems: 'center' }}>
+            <span className="tag">{t('account.friendsN', { n: friends.length })}</span>
+            <span className={incoming.length > 0 ? 'tag' : 'small muted'}>
+              {incoming.length > 0 ? t('account.requestsN', { n: incoming.length }) : t('friends.emptyIncoming')}
+            </span>
+            <span className="spacer" />
+            <button type="button" className="btn btn-soft btn-sm" onClick={() => navigate('/friends')}>
+              <Ic name="users" size={15} className="inline-icon" /> {t('account.openFriends')}
+            </button>
+          </div>
+          {friends.length > 0 && (
+            <div className="row wrap" style={{ gap: 6, marginTop: 10 }}>
+              {friends.slice(0, 8).map((f) => (
+                <span key={f.uid} className="pill small">
+                  {f.name}
+                </span>
+              ))}
+              {friends.length > 8 && <span className="pill small">+{friends.length - 8}</span>}
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="card pad">
         <div className="card-title">

@@ -8,6 +8,7 @@ import {
   isDesktop,
   onFirebaseAuthChange,
   playAlarm,
+  resetSocial,
   selectData,
   todayKey,
   useApp,
@@ -262,7 +263,10 @@ export function useAuthBootstrap(): void {
       if (same) return;
       // merge path keeps the account's @username; logged-out clears the whole identity
       if (user) applyAuthUser(user);
-      else s.setAuth({ isLoggedIn: false, user: null });
+      else {
+        s.setAuth({ isLoggedIn: false, user: null });
+        resetSocial();
+      }
     });
     return () => {
       cancelled = true;
