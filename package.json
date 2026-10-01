@@ -1,6 +1,6 @@
 {
   "name": "cutepad",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "private": true,
   "description": "Cutepad - a kawaii notepad & study companion (Windows desktop app, companion website & mobile apps)",
   "workspaces": [
